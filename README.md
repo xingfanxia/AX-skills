@@ -103,7 +103,7 @@ Open an issue with the skill name in the title.
 
 ## Submission to 繁星计划·Fun Skills 全国大赛
 
-- [`jewelry-marketing`](./jewelry-marketing/) — 赛道二 · 电商赛道。See [商业价值说明书](./jewelry-marketing/商业价值说明书.md).
+- [`jewelry-marketing`](./jewelry-marketing/) — 赛道二 · 电商赛道。See [商业价值说明书](./jewelry-marketing/商业价值说明书.md). 🎬 [演示视频](https://www.bilibili.com/video/BV19hdwBNEDy/)
 - [`banxian-skill`](./banxian-skill/) — 赛道三 · 邪修脑洞。See [商业价值说明书](./banxian-skill/商业价值说明书.md). 🎬 [演示视频](https://www.bilibili.com/video/BV1C9dwBJEKr/)
 
 ## Routing cheatsheet

@@ -5,6 +5,11 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Skill](https://img.shields.io/badge/Claude%20Code-Skill-purple)](https://docs.claude.com/en/docs/claude-code)
+[![Demo Video](https://img.shields.io/badge/Bilibili-演示视频-fb7299)](https://www.bilibili.com/video/BV19hdwBNEDy/)
+
+## 📺 效果演示视频
+
+<https://www.bilibili.com/video/BV19hdwBNEDy/> — Funskills 参赛 · 珠宝 skill 讲解（B 站，≤3 分钟）
 
 ## 它做什么
 
