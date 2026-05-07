@@ -46,13 +46,17 @@ cat > "$STAGE_DIR/README.md" <<'EOF'
 赛道：电商赛道（赛道二）
 对应参考方向：电商营销文案生成 Skill（向上扩展为：分析 + 图 + 文 全链路）
 
+## 📺 演示视频
+
+<https://www.bilibili.com/video/BV19hdwBNEDy/> — 珠宝 skill 讲解（B 站，≤3 分钟）
+
 ## 提交内容
 
 | # | 文件 | 说明 |
 |---|---|---|
 | 1 | `skill.md` | Skill 核心配置文件（YAML frontmatter + 调用说明） |
 | 2 | `generate.py` + `prompts/` | Python 主入口 + 20 个 prompt 模板（12 营销 + 8 设计） |
-| 3 | (见提交表单) | 效果演示视频链接 |
+| 3 | <https://www.bilibili.com/video/BV19hdwBNEDy/> | 效果演示视频（B 站，≤3 分钟） |
 | 4 | `商业价值说明书.md` | 200 字商业价值说明 |
 
 ## 辅助资源
