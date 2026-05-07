@@ -6,6 +6,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Skill](https://img.shields.io/badge/Claude%20Code-Skill-purple)](https://docs.claude.com/en/docs/claude-code)
 [![赛道](https://img.shields.io/badge/繁星计划-邪修脑洞-9b59b6)](https://atomclub.cn)
+[![Demo Video](https://img.shields.io/badge/Bilibili-演示视频-fb7299)](https://www.bilibili.com/video/BV1C9dwBJEKr/)
+
+## 📺 效果演示视频
+
+<https://www.bilibili.com/video/BV1C9dwBJEKr/> — Funskills 参赛 · 半仙 skill 讲解（≤3 分钟）
 
 ## 它做什么
 
