@@ -6,11 +6,45 @@ A collection of production-grade Claude Code skills built by [@xingfanxia](https
 
 ## Skills in this repo
 
+### Vertical / domain skills
+
 | Skill | Purpose | Status |
 |---|---|---|
 | [`jewelry-marketing`](./jewelry-marketing/) | One photo in → full XHS marketing bundle out (12 images + 6 copy styles + analysis) for jewelry e-commerce merchants. Auto-routes finished products vs raw stones. | ✅ v1.0 |
 | [`banxian-skill`](./banxian-skill/) | 三合一东方占卜（小六壬 / 梅花易数 / 六爻）+ 赛博半仙人设。py 算法引擎从 panpanmao 玄学平台 TS 移植，64 卦完整数据 + 守"一事一占""医不问卦"规矩。 | ✅ v1.0 |
-| _more coming…_ | | |
+
+### Writing
+
+| Skill | Purpose | Status |
+|---|---|---|
+| [`khazix-writer`](./khazix-writer/) | 卡兹克风格中文公众号长文 — 强口语化、叙事驱动、四层自检（L1 硬性规则 → L2 风格 → L3 内容 → L4 活人感）。Personal-experience / methodology long-form. | ✅ |
+| [`wandian-writer`](./wandian-writer/) | 晚点 LatePost 风格中文深度长文 — 冷静判断、数据先行、判断式 header、段尾落点、对立面陈述。Industry analysis / company breakdown. Includes 6-范文 in-context reference. | ✅ |
+
+### Research
+
+| Skill | Purpose | Status |
+|---|---|---|
+| [`deep-research`](./deep-research/) | Verification-style research — multi-agent parallel investigation, Tier 1-4 source authority cross-validation, traceable decision memo output. **Use when judging claims to make a decision.** | ✅ |
+| [`hv-analysis`](./hv-analysis/) | 虎嗅风格深度分析与叙事性研究报告 — 系统性追溯一个事件 / 公司 / 趋势的"来龙去脉"。**Use for understanding a thing from zero.** Narrative counterpart to `deep-research`. | ✅ |
+
+### Media generation
+
+| Skill | Purpose | Status |
+|---|---|---|
+| [`gpt-image`](./gpt-image/) | OpenAI gpt-image-2 image generation — Azure-routed with auto fallback to OpenAI direct on rate-limit. Defaults to JPG. The default for photorealistic / editorial / product / UI mockup / brand imagery. | ✅ |
+| [`transcribe`](./transcribe/) | Audio / video transcription via Google Gemini 3 Flash. Speaker diarization, auto language detection, files up to 500MB / ~8.4 hours. ~\$0.50/M input tokens. | ✅ |
+
+### Documents
+
+| Skill | Purpose | Status |
+|---|---|---|
+| [`apple-pdf`](./apple-pdf/) | Markdown / notes / reports → professionally formatted PDFs with SF typography. Default PDF generator. | ✅ |
+
+### Companion skills (third-party, install separately)
+
+| Skill | Where to get it | Why it's here |
+|---|---|---|
+| `nanobanana` (Gemini Nano Banana image gen) | Upstream: [`feedtailor/ccskill-nanobanana`](https://github.com/feedtailor/ccskill-nanobanana) | The illustration / anime / watercolor / hand-drawn counterpart to `gpt-image`. Also for multi-reference-image editing (background swap, character consistency). Set `GEMINI_API_KEY`. We don't republish the upstream code — install from there. |
 
 ## Install (Claude Code)
 
@@ -70,3 +104,16 @@ Open an issue with the skill name in the title.
 
 - [`jewelry-marketing`](./jewelry-marketing/) — 赛道二 · 电商赛道。See [商业价值说明书](./jewelry-marketing/商业价值说明书.md).
 - [`banxian-skill`](./banxian-skill/) — 赛道三 · 邪修脑洞。See [商业价值说明书](./banxian-skill/商业价值说明书.md).
+
+## Routing cheatsheet
+
+When the agent has multiple candidate skills, route by intent:
+
+- **Image gen**, photorealistic / editorial / product / UI / text-in-image → `gpt-image`
+- **Image gen**, illustration / anime / watercolor / hand-drawn / multi-ref edit → `nanobanana` (upstream)
+- **Research**, "should I pick A or B" / verify a claim / decide → `deep-research`
+- **Research**, "tell me the full story of X" / understand from zero → `hv-analysis`
+- **ZH long-form**, personal experience / methodology / 活人感 → `khazix-writer`
+- **ZH long-form**, industry analysis / company breakdown / cold judgment → `wandian-writer`
+- **PDF** generation from markdown → `apple-pdf`
+- **Audio → text** → `transcribe`
