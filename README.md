@@ -41,6 +41,22 @@ A collection of production-grade Claude Code skills built by [@xingfanxia](https
 |---|---|---|
 | [`apple-pdf`](./apple-pdf/) | Markdown / notes / reports → professionally formatted PDFs with SF typography. Default PDF generator. | ✅ |
 
+### Workflow / quality
+
+| Skill | Purpose | Status |
+|---|---|---|
+| [`mtc`](./mtc/) | **More Than Coding** — full product workflow from concept to code. Iterates design / story first → aligned data → build → polish. For games, demos, prototypes, interactive experiences. The signature AX workflow. | ✅ |
+| [`plan-design-review`](./plan-design-review/) | Design-completeness review for `PLAN.md` / spec docs. Rates 7 dimensions 0-10, detects AI-slop patterns, builds interaction state tables. Catches gaps before code goes in. | ✅ |
+| [`codebase-sweep`](./codebase-sweep/) | Full-codebase audit + cleanup loop (parallel reviewers + iterative fix + docs cleanup + architecture documentation + orphan-script archiving). One-shot comprehensive review of the whole project. | ✅ |
+| [`audit-fix-loop`](./audit-fix-loop/) | Multi-round code-quality pass scoped to recent changes. Loops until no high-confidence issues remain (max 5 rounds). Each round adds tests for fixed code + incremental doc updates. | ✅ |
+| [`pr-fix-loop`](./pr-fix-loop/) | Autonomously respond to GitHub PR review feedback until all comments resolved + CI green. Polls **all four** comment surfaces — `@claude` posts to issue thread, not formal reviews, so single-surface polls miss it. Max 5 rounds. | ✅ |
+
+### Meta / knowledge
+
+| Skill | Purpose | Status |
+|---|---|---|
+| [`neat-freak`](./neat-freak/) | 洁癖 — End-of-session knowledge sync. Reconciles agent memory + project root markdown + `docs/` + README against actual code so nothing rots. Three-audience editorial pass (agent / project-AI / external readers). Cross-platform (Claude Code · Codex · OpenCode · OpenClaw). Idempotent — safe to run every phase. | ✅ |
+
 ### Companion skills (third-party, install separately)
 
 | Skill | Where to get it | Why it's here |
@@ -110,11 +126,24 @@ Open an issue with the skill name in the title.
 
 When the agent has multiple candidate skills, route by intent:
 
+**Content / media**
 - **Image gen**, photorealistic / editorial / product / UI / text-in-image → `gpt-image`
 - **Image gen**, illustration / anime / watercolor / hand-drawn / multi-ref edit → `nanobanana` (upstream)
-- **Research**, "should I pick A or B" / verify a claim / decide → `deep-research`
-- **Research**, "tell me the full story of X" / understand from zero → `hv-analysis`
-- **ZH long-form**, personal experience / methodology / 活人感 → `khazix-writer`
-- **ZH long-form**, industry analysis / company breakdown / cold judgment → `wandian-writer`
 - **PDF** generation from markdown → `apple-pdf`
 - **Audio → text** → `transcribe`
+
+**Writing**
+- **ZH long-form**, personal experience / methodology / 活人感 → `khazix-writer`
+- **ZH long-form**, industry analysis / company breakdown / cold judgment → `wandian-writer`
+
+**Research**
+- "Should I pick A or B" / verify a claim / decide → `deep-research`
+- "Tell me the full story of X" / understand from zero → `hv-analysis`
+
+**Workflow / quality**
+- Build a game / demo / interactive prototype → `mtc`
+- Reviewing a `PLAN.md` / spec → `plan-design-review`
+- "Audit the whole codebase" / "clean up everything" → `codebase-sweep`
+- "Audit and fix" / iterative fix on recent changes → `audit-fix-loop`
+- Autonomously close out PR review feedback + CI → `pr-fix-loop`
+- End-of-session knowledge sync (memory + docs + README) → `neat-freak`
