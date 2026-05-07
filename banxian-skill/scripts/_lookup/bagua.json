@@ -1,0 +1,10 @@
+{
+  "乾": {"xianTianNum": 1, "houTianNum": 6, "wuXing": "金", "symbol": "☰", "binary": "111", "nature": "天、健、刚"},
+  "兑": {"xianTianNum": 2, "houTianNum": 7, "wuXing": "金", "symbol": "☱", "binary": "110", "nature": "泽、悦、说"},
+  "离": {"xianTianNum": 3, "houTianNum": 9, "wuXing": "火", "symbol": "☲", "binary": "101", "nature": "火、丽、明"},
+  "震": {"xianTianNum": 4, "houTianNum": 3, "wuXing": "木", "symbol": "☳", "binary": "001", "nature": "雷、动、起"},
+  "巽": {"xianTianNum": 5, "houTianNum": 4, "wuXing": "木", "symbol": "☴", "binary": "110", "nature": "风、入、伏"},
+  "坎": {"xianTianNum": 6, "houTianNum": 1, "wuXing": "水", "symbol": "☵", "binary": "010", "nature": "水、险、陷"},
+  "艮": {"xianTianNum": 7, "houTianNum": 8, "wuXing": "土", "symbol": "☶", "binary": "100", "nature": "山、止、静"},
+  "坤": {"xianTianNum": 8, "houTianNum": 2, "wuXing": "土", "symbol": "☷", "binary": "000", "nature": "地、顺、柔"}
+}

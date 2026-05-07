@@ -9,6 +9,7 @@ A collection of production-grade Claude Code skills built by [@xingfanxia](https
 | Skill | Purpose | Status |
 |---|---|---|
 | [`jewelry-marketing`](./jewelry-marketing/) | One photo in → full XHS marketing bundle out (12 images + 6 copy styles + analysis) for jewelry e-commerce merchants. Auto-routes finished products vs raw stones. | ✅ v1.0 |
+| [`banxian-skill`](./banxian-skill/) | 三合一东方占卜（小六壬 / 梅花易数 / 六爻）+ 赛博半仙人设。py 算法引擎从 panpanmao 玄学平台 TS 移植，64 卦完整数据 + 守"一事一占""医不问卦"规矩。 | ✅ v1.0 |
 | _more coming…_ | | |
 
 ## Install (Claude Code)
@@ -67,4 +68,5 @@ Open an issue with the skill name in the title.
 
 ## Submission to 繁星计划·Fun Skills 全国大赛
 
-`jewelry-marketing` is a submission for the e-commerce track (赛道二). See [`jewelry-marketing/商业价值说明书.md`](./jewelry-marketing/商业价值说明书.md) for the value prop summary.
+- [`jewelry-marketing`](./jewelry-marketing/) — 赛道二 · 电商赛道。See [商业价值说明书](./jewelry-marketing/商业价值说明书.md).
+- [`banxian-skill`](./banxian-skill/) — 赛道三 · 邪修脑洞。See [商业价值说明书](./banxian-skill/商业价值说明书.md).

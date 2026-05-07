@@ -1,0 +1,329 @@
+{
+  "子时": {
+    "name": "子时",
+    "alias": "夜半",
+    "timeRange": "23:00-01:00",
+    "hourStart": 23,
+    "hourEnd": 1,
+    "element": "水",
+    "yinYang": "阳",
+    "meridian": "足少阳胆经",
+    "organ": "胆",
+    "direction": "北",
+    "fortuneType": "静守型",
+    "energyLevel": 3,
+    "suitable": [
+      "熟睡",
+      "冥想",
+      "静养",
+      "夜间灵感记录"
+    ],
+    "avoid": [
+      "熬夜",
+      "饮酒",
+      "做重大决策",
+      "剧烈运动"
+    ],
+    "healthTip": "胆经当令，宜熟睡养胆。子时不睡损胆气，影响次日判断力。",
+    "emotionTip": "夜深人静，情绪易波动，不宜独自思考烦心事。"
+  },
+  "丑时": {
+    "name": "丑时",
+    "alias": "鸡鸣",
+    "timeRange": "01:00-03:00",
+    "hourStart": 1,
+    "hourEnd": 3,
+    "element": "土",
+    "yinYang": "阴",
+    "meridian": "足厥阴肝经",
+    "organ": "肝",
+    "direction": "东北",
+    "fortuneType": "积蓄型",
+    "energyLevel": 2,
+    "suitable": [
+      "深度睡眠",
+      "养肝血",
+      "让身体自我修复"
+    ],
+    "avoid": [
+      "熬夜",
+      "酗酒",
+      "工作",
+      "生闷气"
+    ],
+    "healthTip": "肝经当令，宜熟睡养肝。丑时不睡伤肝血，面色易萎黄。",
+    "emotionTip": "此时醒来易心烦，多与肝气郁结有关，需调理情绪。"
+  },
+  "寅时": {
+    "name": "寅时",
+    "alias": "平旦",
+    "timeRange": "03:00-05:00",
+    "hourStart": 3,
+    "hourEnd": 5,
+    "element": "木",
+    "yinYang": "阳",
+    "meridian": "手太阴肺经",
+    "organ": "肺",
+    "direction": "东北",
+    "fortuneType": "萌发型",
+    "energyLevel": 4,
+    "suitable": [
+      "深睡",
+      "呼吸调息",
+      "早起者可做深呼吸"
+    ],
+    "avoid": [
+      "起床过早",
+      "剧烈运动",
+      "吸烟"
+    ],
+    "healthTip": "肺经当令，宜深睡或静卧深呼吸。此时肺部排毒，咳嗽者多在此时发作。",
+    "emotionTip": "天将明未明，新计划的灵感易在此时涌现。"
+  },
+  "卯时": {
+    "name": "卯时",
+    "alias": "日出",
+    "timeRange": "05:00-07:00",
+    "hourStart": 5,
+    "hourEnd": 7,
+    "element": "木",
+    "yinYang": "阴",
+    "meridian": "手阳明大肠经",
+    "organ": "大肠",
+    "direction": "东",
+    "fortuneType": "启动型",
+    "energyLevel": 6,
+    "suitable": [
+      "起床",
+      "排便",
+      "饮温水",
+      "轻度晨练"
+    ],
+    "avoid": [
+      "赖床",
+      "剧烈运动",
+      "大量进食"
+    ],
+    "healthTip": "大肠经当令，宜起床排便。卯时排便最顺畅，一杯温水助排毒。",
+    "emotionTip": "日出东方，一日之计在于晨，适合规划当天事务。"
+  },
+  "辰时": {
+    "name": "辰时",
+    "alias": "食时",
+    "timeRange": "07:00-09:00",
+    "hourStart": 7,
+    "hourEnd": 9,
+    "element": "土",
+    "yinYang": "阳",
+    "meridian": "足阳明胃经",
+    "organ": "胃",
+    "direction": "东南",
+    "fortuneType": "补给型",
+    "energyLevel": 8,
+    "suitable": [
+      "吃早餐",
+      "洽谈",
+      "开工",
+      "处理重要事务"
+    ],
+    "avoid": [
+      "不吃早餐",
+      "暴饮暴食",
+      "空腹喝浓茶咖啡"
+    ],
+    "healthTip": "胃经当令，宜吃早餐。辰时胃气最旺，此时进食消化吸收最好。",
+    "emotionTip": "能量上升期，头脑清醒，适合开展新工作。"
+  },
+  "巳时": {
+    "name": "巳时",
+    "alias": "隅中",
+    "timeRange": "09:00-11:00",
+    "hourStart": 9,
+    "hourEnd": 11,
+    "element": "火",
+    "yinYang": "阴",
+    "meridian": "足太阴脾经",
+    "organ": "脾",
+    "direction": "东南",
+    "fortuneType": "高效型",
+    "energyLevel": 9,
+    "suitable": [
+      "工作",
+      "学习",
+      "思考",
+      "处理复杂事务",
+      "会议"
+    ],
+    "avoid": [
+      "久坐不动",
+      "过度思虑",
+      "吃甜食过多"
+    ],
+    "healthTip": "脾经当令，脾主运化。此时工作效率最高，但需适当活动避免久坐。",
+    "emotionTip": "精力充沛期，思维敏捷，是一天中最适合攻坚克难的时段。"
+  },
+  "午时": {
+    "name": "午时",
+    "alias": "日中",
+    "timeRange": "11:00-13:00",
+    "hourStart": 11,
+    "hourEnd": 13,
+    "element": "火",
+    "yinYang": "阳",
+    "meridian": "手少阴心经",
+    "organ": "心",
+    "direction": "南",
+    "fortuneType": "转折型",
+    "energyLevel": 7,
+    "suitable": [
+      "午餐",
+      "小憩15-30分钟",
+      "养心",
+      "轻松社交"
+    ],
+    "avoid": [
+      "剧烈运动",
+      "暴怒",
+      "大喜大悲",
+      "午睡超过1小时"
+    ],
+    "healthTip": "心经当令，宜小憩养心。午时阴生，小睡片刻可养心血，但不宜过久。",
+    "emotionTip": "阳极生阴的转折点，情绪易起伏，宜平和心态。"
+  },
+  "未时": {
+    "name": "未时",
+    "alias": "日昳",
+    "timeRange": "13:00-15:00",
+    "hourStart": 13,
+    "hourEnd": 15,
+    "element": "土",
+    "yinYang": "阴",
+    "meridian": "手太阳小肠经",
+    "organ": "小肠",
+    "direction": "西南",
+    "fortuneType": "分辨型",
+    "energyLevel": 6,
+    "suitable": [
+      "分类整理",
+      "消化吸收（知识/食物）",
+      "做判断选择"
+    ],
+    "avoid": [
+      "暴饮暴食",
+      "午后过饱",
+      "做重大决定（精力下降）"
+    ],
+    "healthTip": "小肠经当令，主分清泌浊。午餐后小肠吸收营养，宜清淡饮食。",
+    "emotionTip": "能量略降，适合处理不需要太多创意的事务。"
+  },
+  "申时": {
+    "name": "申时",
+    "alias": "哺时",
+    "timeRange": "15:00-17:00",
+    "hourStart": 15,
+    "hourEnd": 17,
+    "element": "金",
+    "yinYang": "阳",
+    "meridian": "足太阳膀胱经",
+    "organ": "膀胱",
+    "direction": "西南",
+    "fortuneType": "记忆型",
+    "energyLevel": 8,
+    "suitable": [
+      "学习记忆",
+      "完成重要工作",
+      "运动",
+      "多喝水"
+    ],
+    "avoid": [
+      "憋尿",
+      "过度消耗",
+      "久坐不动"
+    ],
+    "healthTip": "膀胱经当令，宜多饮水、适量运动。此时记忆力最佳，是学习黄金时段。",
+    "emotionTip": "精力回升，思路清晰，适合收尾上午未完成的重要工作。"
+  },
+  "酉时": {
+    "name": "酉时",
+    "alias": "日入",
+    "timeRange": "17:00-19:00",
+    "hourStart": 17,
+    "hourEnd": 19,
+    "element": "金",
+    "yinYang": "阴",
+    "meridian": "足少阴肾经",
+    "organ": "肾",
+    "direction": "西",
+    "fortuneType": "收敛型",
+    "energyLevel": 5,
+    "suitable": [
+      "补肾",
+      "轻度运动",
+      "清淡晚餐",
+      "归纳总结"
+    ],
+    "avoid": [
+      "过度劳累",
+      "房事过度",
+      "暴饮暴食"
+    ],
+    "healthTip": "肾经当令，宜养肾。此时宜吃晚餐，但不宜过饱，可做轻柔运动。",
+    "emotionTip": "日落西山，适合回顾一天，收敛心神。"
+  },
+  "戌时": {
+    "name": "戌时",
+    "alias": "黄昏",
+    "timeRange": "19:00-21:00",
+    "hourStart": 19,
+    "hourEnd": 21,
+    "element": "土",
+    "yinYang": "阳",
+    "meridian": "手厥阴心包经",
+    "organ": "心包",
+    "direction": "西北",
+    "fortuneType": "和谐型",
+    "energyLevel": 4,
+    "suitable": [
+      "散步",
+      "娱乐",
+      "与家人相处",
+      "轻松阅读"
+    ],
+    "avoid": [
+      "剧烈运动",
+      "过度劳神",
+      "情绪激动"
+    ],
+    "healthTip": "心包经当令，宜愉悦心情。此时适合散步、聊天等放松活动。",
+    "emotionTip": "一天将尽，适合与亲友交流，分享喜悦。"
+  },
+  "亥时": {
+    "name": "亥时",
+    "alias": "人定",
+    "timeRange": "21:00-23:00",
+    "hourStart": 21,
+    "hourEnd": 23,
+    "element": "水",
+    "yinYang": "阴",
+    "meridian": "手少阳三焦经",
+    "organ": "三焦",
+    "direction": "西北",
+    "fortuneType": "归藏型",
+    "energyLevel": 2,
+    "suitable": [
+      "泡脚",
+      "入睡",
+      "调理",
+      "冥想",
+      "阅读"
+    ],
+    "avoid": [
+      "熬夜",
+      "进食",
+      "剧烈活动",
+      "情绪激动"
+    ],
+    "healthTip": "三焦经当令，宜入睡。亥时百脉皆通，此时入睡最养生。泡脚可助眠。",
+    "emotionTip": "夜深宜静，放下一天的纷扰，准备进入梦乡。"
+  }
+}
