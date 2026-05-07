@@ -9,6 +9,7 @@ license: MIT
 # /banxian-zhanbu — 三合一东方占卜・赛博半仙
 
 > Source: <https://github.com/xingfanxia/AX-skills/tree/main/banxian-skill>
+> Demo: <https://www.bilibili.com/video/BV1C9dwBJEKr/>（B 站演示视频）
 > License: MIT — fork & adapt freely
 > 算法 + 知识库源自 [panpanmao](https://panpanmao.com) 玄学平台真实业务代码
 
