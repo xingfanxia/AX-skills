@@ -12,6 +12,7 @@ A collection of production-grade Claude Code skills built by [@xingfanxia](https
 |---|---|---|
 | [`jewelry-marketing`](./jewelry-marketing/) | One photo in → full XHS marketing bundle out (12 images + 6 copy styles + analysis) for jewelry e-commerce merchants. Auto-routes finished products vs raw stones. | ✅ v1.0 |
 | [`banxian-skill`](./banxian-skill/) | 三合一东方占卜（小六壬 / 梅花易数 / 六爻）+ 赛博半仙人设。py 算法引擎从 panpanmao 玄学平台 TS 移植，64 卦完整数据 + 守"一事一占""医不问卦"规矩。 | ✅ v1.0 |
+| [`pet-forge`](./pet-forge/) | AI desk-pet asset generator — text or photo → 10 character-consistent APNG state animations + ready-to-install `theme.json` for clawd-on-desk (or any APNG-based pet runtime). Productionizes the 小肥 + 胖猫 build workflow. ~$2.30/pet, ~6-8 min. | ✅ v1.0 |
 
 ### Writing
 
