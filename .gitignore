@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+.venv/
+venv/
+.pytest_cache/
+
+# Build artifacts
+*.zip
+*.tar.gz
+build/
+dist/
+
+# Per-skill outputs and test artifacts
+**/test_results/
+**/jewelry_bundle/
+**/output/
+**/*-submission.zip
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# Local-only credentials (just in case)
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# Personal submission cheat-sheets (these are AX's private notes, not for the repo)
+**/提交清单.md
+
+# Big binaries (we keep examples small via low-res JPEG; Git LFS not needed)
+*.mp4
+*.mov
