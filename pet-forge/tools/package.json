@@ -1,0 +1,16 @@
+{
+  "name": "pet-forge-apng-tools",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "pet-forge APNG animation generation and post-processing tools",
+  "scripts": {
+    "test-api": "node test-api.js",
+    "gen:images": "node gen-images.js",
+    "gen:video": "node gen-video.js",
+    "batch": "node batch-gen.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.0"
+  }
+}

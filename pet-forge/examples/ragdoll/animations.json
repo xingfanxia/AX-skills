@@ -1,0 +1,16 @@
+{
+  "delayMs": 60000,
+  "stopOnError": false,
+  "jobs": [
+    { "key": "idle-dozing", "image": "refs/ragdoll/idle-dozing-ref.png", "lastFrame": "refs/ragdoll/idle-dozing-ref.png", "api": "doubao" },
+    { "key": "sleeping", "image": "refs/ragdoll/sleep-final-ref.png", "lastFrame": "refs/ragdoll/sleep-final-ref.png", "api": "doubao" },
+    { "key": "working-typing", "image": "refs/ragdoll/working-typing-ref.png", "lastFrame": "refs/ragdoll/working-typing-ref.png", "api": "doubao" },
+    { "key": "thinking", "image": "refs/ragdoll/thinking-ref.png", "lastFrame": "refs/ragdoll/thinking-ref.png", "api": "doubao" },
+    { "key": "happy", "image": "refs/ragdoll/happy-ref.png", "lastFrame": "refs/ragdoll/happy-ref.png", "api": "doubao" },
+    { "key": "notification", "image": "refs/ragdoll/notification-ref.png", "lastFrame": "refs/ragdoll/notification-ref.png", "api": "doubao" },
+    { "key": "react-poke", "image": "refs/ragdoll/main-ref.png", "lastFrame": "refs/ragdoll/main-ref.png", "api": "doubao" },
+    { "key": "error", "image": "refs/ragdoll/error-ref.png", "lastFrame": "refs/ragdoll/error-ref.png", "api": "doubao" },
+    { "key": "collapse-sleep", "image": "refs/ragdoll/main-ref.png", "lastFrame": "refs/ragdoll/sleep-final-ref.png", "api": "doubao" },
+    { "key": "wake", "image": "refs/ragdoll/sleep-final-ref.png", "lastFrame": "refs/ragdoll/main-ref.png", "api": "doubao" }
+  ]
+}

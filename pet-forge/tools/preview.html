@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>pet-forge APNG — 预览</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a2e; color: #eee;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    padding: 20px;
+  }
+  h1 { text-align: center; margin-bottom: 10px; font-size: 1.4em; }
+  .subtitle { text-align: center; color: #888; margin-bottom: 20px; font-size: 0.9em; }
+
+  .controls {
+    display: flex; justify-content: center; gap: 12px;
+    margin-bottom: 20px; flex-wrap: wrap;
+  }
+  .controls label { color: #aaa; font-size: 0.85em; }
+  .controls select, .controls input {
+    background: #2a2a3e; color: #eee; border: 1px solid #444;
+    border-radius: 4px; padding: 4px 8px; font-size: 0.85em;
+  }
+
+  .grid {
+    display: flex; flex-wrap: wrap; gap: 20px;
+    justify-content: center;
+  }
+
+  .card {
+    background: #16213e; border-radius: 8px;
+    padding: 12px; width: 320px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .card h3 { font-size: 0.95em; margin-bottom: 8px; color: #7fdbca; }
+  .card .preview-box {
+    position: relative;
+    background-image:
+      linear-gradient(45deg, #333 25%, transparent 25%),
+      linear-gradient(-45deg, #333 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #333 75%),
+      linear-gradient(-45deg, transparent 75%, #333 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 200px;
+    overflow: hidden;
+  }
+  .card img, .card video {
+    max-width: 100%; max-height: 300px;
+    display: block;
+  }
+  .card .info {
+    margin-top: 8px; font-size: 0.8em; color: #888;
+  }
+  .card .info span { color: #aaa; }
+
+  .section-title {
+    width: 100%; text-align: center;
+    font-size: 1.1em; color: #c792ea;
+    margin: 20px 0 10px; padding: 8px;
+    border-bottom: 1px solid #333;
+  }
+
+  .bg-toggle { cursor: pointer; padding: 4px 12px; border-radius: 4px;
+    background: #2a2a3e; border: 1px solid #444; color: #eee; font-size: 0.85em; }
+  .bg-toggle:hover { background: #3a3a5e; }
+
+  .empty { text-align: center; color: #666; padding: 40px; font-size: 1.1em; }
+</style>
+</head>
+<body>
+
+<h1>pet-forge APNG — 动画预览</h1>
+<p class="subtitle">APNG / 图片 / 视频 预览（棋盘格背景 = 透明区域）</p>
+
+<div class="controls">
+  <div>
+    <label>背景色</label><br>
+    <button class="bg-toggle" onclick="toggleBg('checker')">棋盘格</button>
+    <button class="bg-toggle" onclick="toggleBg('#1a1a2e')">深色</button>
+    <button class="bg-toggle" onclick="toggleBg('#ffffff')">白色</button>
+    <button class="bg-toggle" onclick="toggleBg('#00B140')">绿幕</button>
+  </div>
+  <div>
+    <label>过滤</label><br>
+    <select id="filterType" onchange="applyFilter()">
+      <option value="all">全部</option>
+      <option value="apng">APNG</option>
+      <option value="image">图片</option>
+      <option value="video">视频</option>
+    </select>
+  </div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+// ── 扫描 output 目录，自动加载文件 ──
+// 因为 file:// 无法列目录，手动列出已知文件
+// 每次新生成后在这里追加即可
+
+const FILES = [
+  // ── idle-yawn ──
+  { name: 'idle-yawn / APNG',    path: 'output/idle-yawn/veo31-result.apng',    type: 'apng',  anim: 'idle-yawn' },
+  { name: 'idle-yawn / 视频',    path: 'output/idle-yawn/veo31-video.mp4',      type: 'video', anim: 'idle-yawn' },
+  // ── happy ──
+  { name: 'happy / APNG',        path: 'output/happy/veo31-result.apng',        type: 'apng',  anim: 'happy' },
+  { name: 'happy / 视频',        path: 'output/happy/veo31-video.mp4',          type: 'video', anim: 'happy' },
+  // ── working-typing ──
+  { name: 'working-typing / 定稿',  path: 'output/working-typing/working-typing-final.apng', type: 'apng',  anim: 'working-typing' },
+  // ── sleeping ──
+  { name: 'sleeping / 呼吸循环终版',       path: 'output/sleeping/breathing-loop.apng',   type: 'apng',  anim: 'sleeping' },
+  { name: 'sleeping / 呼吸循环终版视频',  path: 'output/sleeping/breathing-loop.mp4',    type: 'video', anim: 'sleeping' },
+  { name: 'sleeping / 入睡 v2 APNG',      path: 'output/sleeping/falling-asleep-v2.apng',    type: 'apng',  anim: 'sleeping' },
+  { name: 'sleeping / 入睡 v2 视频',     path: 'output/sleeping/falling-asleep-v2.mp4',     type: 'video', anim: 'sleeping' },
+  // ── wake ──
+  { name: 'wake / 终版 APNG',     path: 'output/wake/wake-final.apng',           type: 'apng',  anim: 'wake' },
+  { name: 'wake / 终版视频',      path: 'output/wake/wake-final.mp4',            type: 'video', anim: 'wake' },
+  // ── notification ──
+  { name: 'notification / v3 红感叹号右侧', path: 'output/notification/notification-v3.apng',      type: 'apng',  anim: 'notification' },
+  { name: 'notification / v3 视频',         path: 'output/notification/doubao-v3.mp4',             type: 'video', anim: 'notification' },
+  // ── working-thinking ──
+  { name: 'thinking / 前摇（单次）',  path: 'output/working-thinking/thinking-normal.apng', type: 'apng',  anim: 'working-thinking' },
+  { name: 'thinking / 循环',          path: 'output/working-thinking/thinking-loop.apng',   type: 'apng',  anim: 'working-thinking' },
+  // ── error ──
+  { name: 'error / XX眼循环 APNG',  path: 'output/error/error-loop.apng',         type: 'apng',  anim: 'error' },
+  { name: 'error / XX眼剪辑版视频', path: 'output/error/error-final.mp4',         type: 'video', anim: 'error' },
+  // ── react-drag ──
+  { name: 'react-drag / 循环 APNG',   path: 'output/react-drag/react-drag-loop.apng',    type: 'apng',  anim: 'react-drag' },
+  { name: 'react-drag / 剪辑版视频',  path: 'output/react-drag/react-drag-final.mp4',    type: 'video', anim: 'react-drag' },
+  { name: 'react-drag / 参考图',      path: 'output/react-drag/react-drag-ref.png',      type: 'image', anim: 'react-drag' },
+  // ── mini-crabwalk ──
+  { name: 'mini-crabwalk / 循环 APNG',  path: 'output/mini-crabwalk/mini-crabwalk-loop.apng',   type: 'apng',  anim: 'mini-crabwalk' },
+  { name: 'mini-crabwalk / 剪辑版视频', path: 'output/mini-crabwalk/mini-crabwalk-final.mp4',    type: 'video', anim: 'mini-crabwalk' },
+  // ── dozing ──
+  { name: 'dozing / APNG',           path: 'output/dozing/doubao-video.apng',              type: 'apng',  anim: 'dozing' },
+  { name: 'dozing / 视频',           path: 'output/dozing/doubao-video.mp4',               type: 'video', anim: 'dozing' },
+  // ── react-poke ──
+  { name: 'react-poke / APNG',       path: 'output/react-poke/doubao-video.apng',          type: 'apng',  anim: 'react-poke' },
+  { name: 'react-poke / 视频',       path: 'output/react-poke/doubao-video.mp4',           type: 'video', anim: 'react-poke' },
+  // ── collapse-sleep ──
+  { name: 'collapse-sleep / APNG',   path: 'output/collapse-sleep/doubao-video.apng',      type: 'apng',  anim: 'collapse-sleep' },
+  { name: 'collapse-sleep / 视频',   path: 'output/collapse-sleep/doubao-video.mp4',       type: 'video', anim: 'collapse-sleep' },
+  // ── working-juggling ──
+  { name: 'working-juggling / APNG', path: 'output/working-juggling/doubao-video.apng',    type: 'apng',  anim: 'working-juggling' },
+  { name: 'working-juggling / 视频', path: 'output/working-juggling/doubao-video.mp4',     type: 'video', anim: 'working-juggling' },
+  // ── working-building ──
+  { name: 'working-building / v2 修螺丝刀', path: 'output/working-building/doubao-video-v2.apng', type: 'apng',  anim: 'working-building' },
+  { name: 'working-building / 视频', path: 'output/working-building/doubao-video.mp4',     type: 'video', anim: 'working-building' },
+  // ── working-conducting ──
+  { name: 'working-conducting / APNG', path: 'output/working-conducting/doubao-video.apng', type: 'apng',  anim: 'working-conducting' },
+  { name: 'working-conducting / 视频', path: 'output/working-conducting/doubao-video.mp4',  type: 'video', anim: 'working-conducting' },
+  // ── working-sweeping ──
+  { name: 'working-sweeping / APNG', path: 'output/working-sweeping/doubao-video.apng',    type: 'apng',  anim: 'working-sweeping' },
+  { name: 'working-sweeping / 视频', path: 'output/working-sweeping/doubao-video.mp4',     type: 'video', anim: 'working-sweeping' },
+  // ── idle-living ──
+  { name: 'idle-living / APNG',      path: 'output/idle-living/doubao-video.apng',          type: 'apng',  anim: 'idle-living' },
+  { name: 'idle-living / 视频',      path: 'output/idle-living/doubao-video.mp4',           type: 'video', anim: 'idle-living' },
+  // ── working-carrying ──
+  { name: 'working-carrying / APNG', path: 'output/working-carrying/doubao-video.apng',    type: 'apng',  anim: 'working-carrying' },
+  { name: 'working-carrying / 视频', path: 'output/working-carrying/doubao-video.mp4',     type: 'video', anim: 'working-carrying' },
+  // ── mini-idle ──
+  { name: 'mini-idle / APNG',        path: 'output/mini-idle/doubao-video.apng',        type: 'apng',  anim: 'mini-idle' },
+  { name: 'mini-idle / 视频',        path: 'output/mini-idle/doubao-video.mp4',         type: 'video', anim: 'mini-idle' },
+  // ── mini-enter ──
+  { name: 'mini-enter / APNG',       path: 'output/mini-enter/doubao-video.apng',       type: 'apng',  anim: 'mini-enter' },
+  { name: 'mini-enter / 视频',       path: 'output/mini-enter/doubao-video.mp4',        type: 'video', anim: 'mini-enter' },
+  // ── mini-peek ──
+  { name: 'mini-peek / APNG',        path: 'output/mini-peek/doubao-video.apng',        type: 'apng',  anim: 'mini-peek' },
+  { name: 'mini-peek / 视频',        path: 'output/mini-peek/doubao-video.mp4',         type: 'video', anim: 'mini-peek' },
+  // ── mini-alert ──
+  { name: 'mini-alert / APNG',       path: 'output/mini-alert/doubao-video.apng',       type: 'apng',  anim: 'mini-alert' },
+  { name: 'mini-alert / 视频',       path: 'output/mini-alert/doubao-video.mp4',        type: 'video', anim: 'mini-alert' },
+  // ── mini-happy ──
+  { name: 'mini-happy / APNG',       path: 'output/mini-happy/doubao-video.apng',       type: 'apng',  anim: 'mini-happy' },
+  { name: 'mini-happy / 视频',       path: 'output/mini-happy/doubao-video.mp4',        type: 'video', anim: 'mini-happy' },
+  // ── mini-sleep ──
+  { name: 'mini-sleep / APNG',       path: 'output/mini-sleep/doubao-video.apng',       type: 'apng',  anim: 'mini-sleep' },
+  { name: 'mini-sleep / 视频',       path: 'output/mini-sleep/doubao-video.mp4',        type: 'video', anim: 'mini-sleep' },
+  // ── 参考图 ──
+  { name: '参考图 / 原始',           path: 'reference/main-ref.png',               type: 'image', anim: 'ref' },
+];
+
+const grid = document.getElementById('grid');
+let currentBg = 'checker';
+
+function toggleBg(bg) {
+  currentBg = bg;
+  document.querySelectorAll('.preview-box').forEach(el => {
+    if (bg === 'checker') {
+      el.style.background = '';
+      el.style.backgroundImage = 'linear-gradient(45deg, #333 25%, transparent 25%), linear-gradient(-45deg, #333 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #333 75%), linear-gradient(-45deg, transparent 75%, #333 75%)';
+      el.style.backgroundSize = '16px 16px';
+      el.style.backgroundPosition = '0 0, 0 8px, 8px -8px, -8px 0';
+    } else {
+      el.style.backgroundImage = 'none';
+      el.style.background = bg;
+    }
+  });
+}
+
+function applyFilter() {
+  const f = document.getElementById('filterType').value;
+  document.querySelectorAll('.card').forEach(card => {
+    const type = card.dataset.type;
+    card.style.display = (f === 'all' || f === type) ? '' : 'none';
+  });
+}
+
+function render() {
+  grid.innerHTML = '';
+  let lastAnim = '';
+
+  FILES.forEach(file => {
+    if (file.anim !== lastAnim) {
+      const title = document.createElement('div');
+      title.className = 'section-title';
+      title.textContent = file.anim === 'ref' ? '参考图' : `动画: ${file.anim}`;
+      grid.appendChild(title);
+      lastAnim = file.anim;
+    }
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.type = file.type;
+
+    let mediaHtml = '';
+    if (file.type === 'video') {
+      mediaHtml = `<video src="${file.path}" controls loop muted playsinline></video>`;
+    } else {
+      // APNG 和普通图片都用 img 标签，浏览器自动播放 APNG
+      mediaHtml = `<img src="${file.path}" alt="${file.name}">`;
+    }
+
+    card.innerHTML = `
+      <h3>${file.name}</h3>
+      <div class="preview-box">${mediaHtml}</div>
+      <div class="info">路径: <span>${file.path}</span></div>
+    `;
+    grid.appendChild(card);
+  });
+
+  if (FILES.length === 0) {
+    grid.innerHTML = '<div class="empty">还没有生成任何文件，先跑 gen-images.js 或 gen-video.js</div>';
+  }
+}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "name": "小肥",
+  "author": "user (custom from real cat)",
+  "version": "1.0.0",
+  "description": "小肥 — 圆滚滚的金虎斑短腿英短，翡翠绿大眼睛 (Munchkin, gold tabby, jade eyes)",
+  "viewBox": {
+    "x": 0,
+    "y": 0,
+    "width": 266,
+    "height": 200
+  },
+  "layout": {
+    "contentBox": {
+      "x": 36,
+      "y": 10,
+      "width": 194,
+      "height": 160
+    },
+    "centerX": 133,
+    "baselineY": 170,
+    "visibleHeightRatio": 0.35,
+    "baselineBottomRatio": 0.05
+  },
+  "eyeTracking": {
+    "enabled": false
+  },
+  "states": {
+    "idle": ["munchkin-idle-dozing.apng"],
+    "yawning": ["munchkin-idle-dozing.apng"],
+    "dozing": ["munchkin-idle-dozing.apng"],
+    "collapsing": ["munchkin-collapse-sleep.apng"],
+    "thinking": ["munchkin-thinking.apng"],
+    "working": ["munchkin-working-typing.apng"],
+    "error": ["munchkin-error.apng"],
+    "attention": ["munchkin-happy.apng"],
+    "notification": ["munchkin-notification.apng"],
+    "sleeping": ["munchkin-sleeping.apng"],
+    "waking": ["munchkin-wake.apng"]
+  },
+  "workingTiers": [
+    {
+      "minSessions": 1,
+      "file": "munchkin-working-typing.apng"
+    }
+  ],
+  "idleAnimations": [
+    {
+      "file": "munchkin-idle-dozing.apng",
+      "duration": 5000
+    }
+  ],
+  "timings": {
+    "minDisplay": {
+      "attention": 5000,
+      "error": 5000,
+      "notification": 5200,
+      "working": 1000,
+      "thinking": 1000
+    },
+    "autoReturn": {
+      "attention": 5000,
+      "error": 5000,
+      "notification": 5200
+    },
+    "dndSkipYawn": true,
+    "collapseDuration": 800,
+    "wakeDuration": 1500,
+    "deepSleepTimeout": 600000,
+    "mouseIdleTimeout": 20000,
+    "mouseSleepTimeout": 60000
+  },
+  "hitBoxes": {
+    "default": {
+      "x": 80,
+      "y": 30,
+      "w": 106,
+      "h": 140
+    },
+    "sleeping": {
+      "x": 60,
+      "y": 60,
+      "w": 146,
+      "h": 100
+    }
+  },
+  "sleepingHitboxFiles": [
+    "munchkin-sleeping.apng",
+    "munchkin-collapse-sleep.apng"
+  ],
+  "reactions": {
+    "clickLeft": {
+      "file": "munchkin-react-poke.apng",
+      "duration": 2500
+    },
+    "clickRight": {
+      "file": "munchkin-react-poke.apng",
+      "duration": 2500
+    }
+  },
+  "miniMode": {
+    "supported": false
+  },
+  "transitions": {},
+  "objectScale": {
+    "widthRatio": 0.58,
+    "heightRatio": 0.44,
+    "imgWidthRatio": 0.6,
+    "objBottom": 0.05,
+    "imgBottom": 0.05,
+    "offsetX": 0.21,
+    "offsetY": 0.28,
+    "fileScales": {
+      "munchkin-idle-dozing.apng": 1.05,
+      "munchkin-thinking.apng": 1.2,
+      "munchkin-working-typing.apng": 1.2,
+      "munchkin-notification.apng": 1.02,
+      "munchkin-error.apng": 1.25,
+      "munchkin-happy.apng": 1.2,
+      "munchkin-collapse-sleep.apng": 1.05,
+      "munchkin-sleeping.apng": 1.05,
+      "munchkin-wake.apng": 1.05,
+      "munchkin-react-poke.apng": 1.05
+    }
+  }
+}

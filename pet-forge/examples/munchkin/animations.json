@@ -1,0 +1,66 @@
+{
+  "delayMs": 60000,
+  "stopOnError": false,
+  "jobs": [
+    {
+      "key": "idle-dozing",
+      "image": "refs/munchkin/main-ref.png",
+      "lastFrame": "refs/munchkin/main-ref.png",
+      "api": "doubao"
+    },
+    {
+      "key": "sleeping",
+      "image": "refs/munchkin/sleep-final-ref.png",
+      "lastFrame": "refs/munchkin/sleep-final-ref.png",
+      "api": "doubao"
+    },
+    {
+      "key": "working-typing",
+      "image": "refs/munchkin/main-ref.png",
+      "lastFrame": "refs/munchkin/main-ref.png",
+      "api": "doubao"
+    },
+    {
+      "key": "thinking",
+      "image": "refs/munchkin/main-ref.png",
+      "lastFrame": "refs/munchkin/main-ref.png",
+      "api": "doubao"
+    },
+    {
+      "key": "happy",
+      "image": "refs/munchkin/main-ref.png",
+      "lastFrame": "refs/munchkin/main-ref.png",
+      "api": "doubao"
+    },
+    {
+      "key": "notification",
+      "image": "refs/munchkin/main-ref.png",
+      "lastFrame": "refs/munchkin/main-ref.png",
+      "api": "doubao"
+    },
+    {
+      "key": "react-poke",
+      "image": "refs/munchkin/main-ref.png",
+      "lastFrame": "refs/munchkin/main-ref.png",
+      "api": "doubao"
+    },
+    {
+      "key": "error",
+      "image": "refs/munchkin/main-ref.png",
+      "lastFrame": "refs/munchkin/main-ref.png",
+      "api": "doubao"
+    },
+    {
+      "key": "collapse-sleep",
+      "image": "refs/munchkin/main-ref.png",
+      "lastFrame": "refs/munchkin/sleep-final-ref.png",
+      "api": "doubao"
+    },
+    {
+      "key": "wake",
+      "image": "refs/munchkin/sleep-final-ref.png",
+      "lastFrame": "refs/munchkin/main-ref.png",
+      "api": "doubao"
+    }
+  ]
+}

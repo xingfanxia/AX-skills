@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "name": "胖猫",
+  "author": "user (custom from real cat)",
+  "version": "1.0.0",
+  "description": "胖猫 — 海豹色重点双色布偶，毛茸茸大尾巴，天蓝色眼睛 (Ragdoll, seal-point bicolor, blue eyes)",
+  "viewBox": {
+    "x": 0,
+    "y": 0,
+    "width": 266,
+    "height": 200
+  },
+  "layout": {
+    "contentBox": {
+      "x": 36,
+      "y": 10,
+      "width": 194,
+      "height": 160
+    },
+    "centerX": 133,
+    "baselineY": 170,
+    "visibleHeightRatio": 0.35,
+    "baselineBottomRatio": 0.05
+  },
+  "eyeTracking": {
+    "enabled": false
+  },
+  "states": {
+    "idle": ["ragdoll-idle-dozing.apng"],
+    "yawning": ["ragdoll-idle-dozing.apng"],
+    "dozing": ["ragdoll-idle-dozing.apng"],
+    "collapsing": ["ragdoll-collapse-sleep.apng"],
+    "thinking": ["ragdoll-thinking.apng"],
+    "working": ["ragdoll-working-typing.apng"],
+    "error": ["ragdoll-error.apng"],
+    "attention": ["ragdoll-happy.apng"],
+    "notification": ["ragdoll-notification.apng"],
+    "sleeping": ["ragdoll-sleeping.apng"],
+    "waking": ["ragdoll-wake.apng"]
+  },
+  "workingTiers": [
+    {
+      "minSessions": 1,
+      "file": "ragdoll-working-typing.apng"
+    }
+  ],
+  "idleAnimations": [
+    {
+      "file": "ragdoll-idle-dozing.apng",
+      "duration": 5000
+    }
+  ],
+  "timings": {
+    "minDisplay": {
+      "attention": 5000,
+      "error": 5000,
+      "notification": 5200,
+      "working": 1000,
+      "thinking": 1000
+    },
+    "autoReturn": {
+      "attention": 5000,
+      "error": 5000,
+      "notification": 5200
+    },
+    "dndSkipYawn": true,
+    "collapseDuration": 800,
+    "wakeDuration": 1500,
+    "deepSleepTimeout": 600000,
+    "mouseIdleTimeout": 20000,
+    "mouseSleepTimeout": 60000
+  },
+  "hitBoxes": {
+    "default": {
+      "x": 80,
+      "y": 30,
+      "w": 106,
+      "h": 140
+    },
+    "sleeping": {
+      "x": 60,
+      "y": 60,
+      "w": 146,
+      "h": 100
+    }
+  },
+  "sleepingHitboxFiles": [
+    "ragdoll-sleeping.apng",
+    "ragdoll-collapse-sleep.apng"
+  ],
+  "reactions": {
+    "clickLeft": {
+      "file": "ragdoll-react-poke.apng",
+      "duration": 2500
+    },
+    "clickRight": {
+      "file": "ragdoll-react-poke.apng",
+      "duration": 2500
+    }
+  },
+  "miniMode": {
+    "supported": false
+  },
+  "transitions": {},
+  "objectScale": {
+    "widthRatio": 0.58,
+    "heightRatio": 0.44,
+    "imgWidthRatio": 0.6,
+    "objBottom": 0.05,
+    "imgBottom": 0.05,
+    "offsetX": 0.21,
+    "offsetY": 0.28,
+    "fileScales": {
+      "ragdoll-idle-dozing.apng": 1.10,
+      "ragdoll-thinking.apng": 1.25,
+      "ragdoll-working-typing.apng": 1.25,
+      "ragdoll-notification.apng": 1.07,
+      "ragdoll-error.apng": 1.30,
+      "ragdoll-happy.apng": 1.25,
+      "ragdoll-collapse-sleep.apng": 1.10,
+      "ragdoll-sleeping.apng": 1.10,
+      "ragdoll-wake.apng": 1.10,
+      "ragdoll-react-poke.apng": 1.10
+    }
+  }
+}
