@@ -26,13 +26,14 @@ A collection of production-grade Claude Code skills built by [@xingfanxia](https
 | Skill | Purpose | Status |
 |---|---|---|
 | [`deep-research`](./deep-research/) | Verification-style research — multi-agent parallel investigation, Tier 1-4 source authority cross-validation, traceable decision memo output. **Use when judging claims to make a decision.** | ✅ |
-| [`hv-analysis`](./hv-analysis/) | 虎嗅风格深度分析与叙事性研究报告 — 系统性追溯一个事件 / 公司 / 趋势的"来龙去脉"。**Use for understanding a thing from zero.** Narrative counterpart to `deep-research`. | ✅ |
+| [`narrative-research`](./narrative-research/) | 横纵分析法（Horizontal-Vertical Analysis）by 卡兹克 — 双轴叙事型调研。纵轴追溯生命历程，横轴对比共时竞品，交叉出洞察 + PDF 报告。**Use for understanding a thing from zero.** Narrative counterpart to `deep-research`. | ✅ |
 
 ### Media generation
 
 | Skill | Purpose | Status |
 |---|---|---|
-| [`gpt-image`](./gpt-image/) | OpenAI gpt-image-2 image generation — Azure-routed with auto fallback to OpenAI direct on rate-limit. Defaults to JPG. The default for photorealistic / editorial / product / UI mockup / brand imagery. | ✅ |
+| [`gpt-image`](./gpt-image/) | OpenAI gpt-image-2 image generation — Azure-routed with auto fallback to OpenAI direct on rate-limit. Defaults to JPG. Best for photorealistic / editorial / product / UI mockups / images with rendered text. Sister to `gemini-image`. | ✅ |
+| [`gemini-image`](./gemini-image/) | Google Gemini 3.1 Flash Image generation. Sister to `gpt-image` — same shape, different provider. Best for **multi-reference image input** (background swap, character consistency across scenes — gpt-image cannot do this) and softer / illustrated / Studio Ghibli / watercolor aesthetics. | ✅ |
 | [`transcribe`](./transcribe/) | Audio / video transcription via Google Gemini 3 Flash. Speaker diarization, auto language detection, files up to 500MB / ~8.4 hours. ~\$0.50/M input tokens. | ✅ |
 
 ### Documents
@@ -56,12 +57,6 @@ A collection of production-grade Claude Code skills built by [@xingfanxia](https
 | Skill | Purpose | Status |
 |---|---|---|
 | [`neat-freak`](./neat-freak/) | 洁癖 — End-of-session knowledge sync. Reconciles agent memory + project root markdown + `docs/` + README against actual code so nothing rots. Three-audience editorial pass (agent / project-AI / external readers). Cross-platform (Claude Code · Codex · OpenCode · OpenClaw). Idempotent — safe to run every phase. | ✅ |
-
-### Companion skills (third-party, install separately)
-
-| Skill | Where to get it | Why it's here |
-|---|---|---|
-| `nanobanana` (Gemini Nano Banana image gen) | Upstream: [`feedtailor/ccskill-nanobanana`](https://github.com/feedtailor/ccskill-nanobanana) | The illustration / anime / watercolor / hand-drawn counterpart to `gpt-image`. Also for multi-reference-image editing (background swap, character consistency). Set `GEMINI_API_KEY`. We don't republish the upstream code — install from there. |
 
 ## Install (Claude Code)
 
@@ -87,8 +82,7 @@ For OpenAI Codex / OpenClaw, follow your platform's skill installation conventio
 ├── generate.py           # Main CLI entry point (PEP 723 uv script preferred)
 ├── prompts/              # Prompt builders, helpers, output formatters
 ├── references/           # Domain-specific reference docs
-├── examples/             # Test fixtures (small images, sample inputs)
-└── 商业价值说明书.md     # 200-word value prop (for 繁星计划 submissions)
+└── examples/             # Test fixtures (small images, sample inputs)
 ```
 
 ## Why these skills
@@ -117,18 +111,12 @@ Open an issue with the skill name in the title.
 - [Google Gemini](https://ai.google.dev/) — multimodal analysis
 - 千瓜 · 数英 · 我是产品经理 · fxbaogao — XHS merchant research foundation
 
-## Submission to 繁星计划·Fun Skills 全国大赛
-
-- [`jewelry-marketing`](./jewelry-marketing/) — 赛道二 · 电商赛道。See [商业价值说明书](./jewelry-marketing/商业价值说明书.md). 🎬 [演示视频](https://www.bilibili.com/video/BV19hdwBNEDy/)
-- [`banxian-skill`](./banxian-skill/) — 赛道三 · 邪修脑洞。See [商业价值说明书](./banxian-skill/商业价值说明书.md). 🎬 [演示视频](https://www.bilibili.com/video/BV1C9dwBJEKr/)
-
 ## Routing cheatsheet
 
 When the agent has multiple candidate skills, route by intent:
 
 **Content / media**
-- **Image gen**, photorealistic / editorial / product / UI / text-in-image → `gpt-image`
-- **Image gen**, illustration / anime / watercolor / hand-drawn / multi-ref edit → `nanobanana` (upstream)
+- **Image gen** — default to `gpt-image` (photorealistic / editorial / product / UI / text-in-image / batches > 5). Switch to `gemini-image` for multi-reference image input (background swap, character consistency) OR softer / illustrated / Studio Ghibli / watercolor aesthetics. Both can do every category — pick by the differentiators above
 - **PDF** generation from markdown → `apple-pdf`
 - **Audio → text** → `transcribe`
 
@@ -138,7 +126,7 @@ When the agent has multiple candidate skills, route by intent:
 
 **Research**
 - "Should I pick A or B" / verify a claim / decide → `deep-research`
-- "Tell me the full story of X" / understand from zero → `hv-analysis`
+- "Tell me the full story of X" / understand from zero → `narrative-research`
 
 **Workflow / quality**
 - Build a game / demo / interactive prototype → `mtc`

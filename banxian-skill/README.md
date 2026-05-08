@@ -5,12 +5,6 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Skill](https://img.shields.io/badge/Claude%20Code-Skill-purple)](https://docs.claude.com/en/docs/claude-code)
-[![赛道](https://img.shields.io/badge/繁星计划-邪修脑洞-9b59b6)](https://atomclub.cn)
-[![Demo Video](https://img.shields.io/badge/Bilibili-演示视频-fb7299)](https://www.bilibili.com/video/BV1C9dwBJEKr/)
-
-## 📺 效果演示视频
-
-<https://www.bilibili.com/video/BV1C9dwBJEKr/> — Funskills 参赛 · 半仙 skill 讲解（≤3 分钟）
 
 ## 它做什么
 
@@ -121,9 +115,6 @@ banxian-skill/
 ├── SKILL.md                  # 主控（半仙人设 + 7 步流程，含 frontmatter）
 ├── README.md                 # 本文件（GitHub-facing）
 ├── requirements.txt          # lunardate 单依赖
-├── 商业价值说明书.md          # 200 字（繁星计划用）
-├── demo_script.md            # 3 分钟视频脚本
-├── package.sh                # 打 submission ZIP 用
 ├── scripts/
 │   ├── _common.py            # 农历 + 八卦 + 五行 + JSON IO
 │   ├── liuren.py / meihua.py / liuyao.py
@@ -136,14 +127,6 @@ banxian-skill/
 ├── examples/                 # 3 个真实卦象 demo 对话
 └── tests/                    # 26 个 pytest 单测
 ```
-
-## 评委 audit 路径（5 分钟看完）
-
-1. **30s** — README.md（本文件）：干嘛 / 怎么用 / demo
-2. **1min** — SKILL.md：半仙人设 + 7 步流程
-3. **1min** — scripts/：真有算法引擎，不是 prompt 装的
-4. **2min** — data/ + _lookup/：真有专业知识，从 panpanmao 移植
-5. **30s** — 跑 examples/01：实际效果
 
 ## 致谢
 

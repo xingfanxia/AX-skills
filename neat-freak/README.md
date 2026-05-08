@@ -51,3 +51,9 @@ Most "doc sync" skills reconcile one surface and call it done. neat-freak reconc
 The first is internal-to-AI. The second is project-AI. The third is *external* — and it's the one that costs the most when it drifts (a downstream team integrating against stale docs is far worse than your own next session forgetting a small fact).
 
 See [SKILL.md](./SKILL.md) for the full 5-step protocol (inventory → identify changes → modify → self-check → summary) and [`references/sync-matrix.md`](./references/sync-matrix.md) for the change-type → docs-to-update mapping.
+
+## Credit / Attribution
+
+This skill originated in **数字生命卡兹克 (Khazix)**'s open-sourced [KKKKhazix/khazix-skills](https://github.com/KKKKhazix/khazix-skills) collection (MIT). The 5-step protocol, three-audience model, and cross-platform agent-paths reference are all his work.
+
+This is a **modified version** — packaged into the AX-skills ecosystem with light edits for install paths and cross-references. **Not maintained by the original author** — for the canonical version, follow upstream.

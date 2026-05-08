@@ -35,6 +35,10 @@ The full SKILL.md (~30KB) includes:
 
 See [SKILL.md](./SKILL.md) for the full prompting contract.
 
-## Credit
+## Credit / Attribution
 
-Style profile distilled from [数字生命卡兹克](https://mp.weixin.qq.com/) public posts. Used here as a writing-style reference, with full credit to the original author. The skill encodes the *style*, not the author's specific opinions or claims.
+This skill originated in **数字生命卡兹克 (Khazix)**'s open-sourced [KKKKhazix/khazix-skills](https://github.com/KKKKhazix/khazix-skills) collection (MIT). The voice profile, 4-layer self-check, and AI-slop kill list are all his work.
+
+This is a **modified version** — packaged into the AX-skills ecosystem with light edits for cross-platform install conventions. **Not maintained by the original author** — for the canonical version, follow upstream.
+
+The skill encodes the *style*, not the original author's specific opinions or claims.

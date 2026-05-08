@@ -276,7 +276,6 @@ banxian-skill/
 │   └── liuyao/                    # 六爻 5 个 md
 ├── examples/                      # 3 个 demo 对话
 ├── tests/                         # pytest 单测
-└── docs/                          # 商业价值书 + 视频脚本
 ```
 
 底层算法、64 卦数据、纳甲表、六亲规则、6 神知识、玄学风格指南、不占事项规则全部来自 [panpanmao](https://panpanmao.com) 玄学平台真实业务代码。
