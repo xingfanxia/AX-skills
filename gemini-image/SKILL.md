@@ -1,24 +1,6 @@
 ---
 name: gemini-image
-description: |
-  Generate images via Google Gemini (Gemini 3.1 Flash Image / Nano Banana 2).
-  Sister skill to `gpt-image` — same shape, different provider. Pick by aesthetic
-  preference: Gemini's baseline tends toward soft / illustrated / photographic-natural;
-  GPT Image tends toward sharper / more graphic / better text rendering. Both can do
-  every category — there is no "illustration vs realistic" hard divide.
-
-  PREFER this skill when:
-  - You need to edit / extend an existing image (multi-reference image input — supports up to 14 reference images)
-    Use cases: background swap, character consistency across scenes, style transfer
-  - The aesthetic you want leans soft / illustrated / hand-drawn / Studio Ghibli / Chiikawa-like
-  - You want to A/B test the same prompt across providers (`gpt-image` for sharpness, `gemini-image` for warmth)
-
-  PREFER `gpt-image` when:
-  - The image must contain rendered text that has to be readable (titles, infographic labels, logos)
-  - You need batches > 5 with the same prompt (gpt-image has built-in concurrency)
-  - You want photorealistic editorial / product / brand-imagery default
-
-  Triggers: generate image, create image, AI drawing, make an image, gemini image, nano banana, illustration, watercolor, anime style, multi-reference edit, character consistency, background swap.
+description: Generate images or image edits with Google Gemini / Nano Banana. Use for Gemini image, nano banana, multi-reference image edits, background swaps, character consistency, style transfer, or soft illustrated / watercolor / anime aesthetics; prefer gpt-image for readable text, large same-prompt batches, and sharp product/editorial defaults.
 ---
 
 # Gemini Image Generation
