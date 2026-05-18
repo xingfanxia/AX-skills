@@ -116,16 +116,22 @@ def _fmt_ts(sec: float) -> str:
 
 
 def _parse_ts(ts: str) -> int:
+    """Parse `HH:MM:SS` (3-component) or `MM:SS` (2-component) — Gemini drops
+    the hour on short chunks. Returns seconds."""
     parts = ts.split(":")
-    return int(parts[0]) * 3600 + int(parts[1]) * 60 + int(parts[2])
+    if len(parts) == 3:
+        return int(parts[0]) * 3600 + int(parts[1]) * 60 + int(parts[2])
+    if len(parts) == 2:
+        return int(parts[0]) * 60 + int(parts[1])
+    raise ValueError(f"unrecognized timestamp: {ts!r}")
 
 
-# Lenient enough to catch single-digit timestamp components (e.g., "00:1:04")
-# that the model sometimes emits despite the prompt asking for HH:MM:SS.
-_TIMESTAMP_RE = re.compile(r"\[(\d{1,2}:\d{1,2}:\d{1,2})\s*-\s*(\d{1,2}:\d{1,2}:\d{1,2})\]")
-# A diarized turn line: [HH:MM:SS - HH:MM:SS] SPEAKER_N: content   (or A/B/C for OpenAI)
+# Accept 2- or 3-component timestamps (Gemini sometimes emits MM:SS), lenient digit counts.
+_TIMESTAMP_RE = re.compile(
+    r"\[(\d{1,2}:\d{1,2}(?::\d{1,2})?)\s*-\s*(\d{1,2}:\d{1,2}(?::\d{1,2})?)\]"
+)
 _TURN_RE = re.compile(
-    r"^\[(\d{1,2}:\d{1,2}:\d{1,2})\s*-\s*(\d{1,2}:\d{1,2}:\d{1,2})\]\s+(SPEAKER_\d+|[A-Z]):\s*(.*)$"
+    r"^\[(\d{1,2}:\d{1,2}(?::\d{1,2})?)\s*-\s*(\d{1,2}:\d{1,2}(?::\d{1,2})?)\]\s+(SPEAKER_\d+|[A-Z]):\s*(.*)$"
 )
 
 
