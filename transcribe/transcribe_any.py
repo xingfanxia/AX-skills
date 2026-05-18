@@ -126,12 +126,21 @@ def _parse_ts(ts: str) -> int:
     raise ValueError(f"unrecognized timestamp: {ts!r}")
 
 
-# Accept 2- or 3-component timestamps (Gemini sometimes emits MM:SS), lenient digit counts.
+# Accept 2- or 3-component timestamps (Gemini sometimes emits MM:SS) AND an
+# optional trailing `:` artifact like `[06:41: - 06:42]` (truncated HH:MM:SS
+# emission that left the separator). Lenient digit counts.
 _TIMESTAMP_RE = re.compile(
-    r"\[(\d{1,2}:\d{1,2}(?::\d{1,2})?)\s*-\s*(\d{1,2}:\d{1,2}(?::\d{1,2})?)\]"
+    r"\[(\d{1,2}:\d{1,2}(?::\d{1,2})?):?\s*-\s*(\d{1,2}:\d{1,2}(?::\d{1,2})?):?\]"
 )
 _TURN_RE = re.compile(
-    r"^\[(\d{1,2}:\d{1,2}(?::\d{1,2})?)\s*-\s*(\d{1,2}:\d{1,2}(?::\d{1,2})?)\]\s+(SPEAKER_\d+|[A-Z]):\s*(.*)$"
+    r"^\[(\d{1,2}:\d{1,2}(?::\d{1,2})?):?\s*-\s*(\d{1,2}:\d{1,2}(?::\d{1,2})?):?\]\s+(SPEAKER_\d+|[A-Z]):\s*(.*)$"
+)
+# Lines Gemini sometimes emits that aren't part of the transcript itself:
+# compliance preambles ("好的，以下是…"), meta-commentary ("（注：...）"),
+# refusal phrases. Drop them.
+_META_LINE_RE = re.compile(
+    r"^\s*(好的|以下是|这是.{0,15}(转录|音频)|（注[：:]|\(Note[：:]|Here.{0,5}(is|'s).{0,20}(transcription|transcript)|\[?.*?as an? AI)",
+    re.IGNORECASE,
 )
 
 
@@ -146,29 +155,63 @@ def _offset_timestamps(transcript: str, offset_sec: float) -> str:
     return _TIMESTAMP_RE.sub(replace, transcript)
 
 
-def _offset_and_filter_timestamps(transcript: str, offset_sec: float, max_internal_sec: float) -> str:
-    """Shift timestamps by offset; drop turn lines whose internal start > max_internal_sec.
+def _offset_and_filter_timestamps(
+    transcript: str,
+    offset_sec: float,
+    max_internal_sec: float,
+    audio_duration_sec: float = 0.0,
+) -> str:
+    """Shift timestamps by offset; clean up Gemini chunk-output anomalies.
 
-    Gemini occasionally hallucinates timestamps far past the chunk's actual
-    duration (e.g., a 12-min chunk emits `[10:20:00]`). Drop those before
-    they get offset into obviously-bogus absolute times.
+    Handles:
+      - Turn line with start past chunk end → drop (hallucinated).
+      - Turn line with end past chunk end / end before start / huge utterance → clamp.
+      - Turn line with absolute start/end past audio_duration_sec (if set) →
+        drop or clamp. Filters out trailing-silence hallucinations.
+      - Lines that OPEN with `[<time>` but never close `]` → drop (malformed turn).
+      - Gemini compliance preamble / `（注：...）` meta lines → drop.
     """
-    out_lines = []
+    out_lines: List[str] = []
     tolerance = 30.0
+    max_utterance_sec = 120.0
     for line in transcript.splitlines():
         m = _TURN_RE.match(line)
-        if not m:
-            out_lines.append(line)
+        if m:
+            internal_start = _parse_ts(m.group(1))
+            if internal_start > max_internal_sec + tolerance:
+                continue
+            internal_end = _parse_ts(m.group(2))
+            # Clamp in priority order.
+            if internal_end - internal_start > max_utterance_sec:
+                internal_end = internal_start + max_utterance_sec
+            if internal_end > max_internal_sec + tolerance:
+                internal_end = max_internal_sec
+            if internal_end < internal_start:
+                internal_end = internal_start + 5
+            new_start = internal_start + offset_sec
+            new_end = internal_end + offset_sec
+            if audio_duration_sec > 0:
+                if new_start >= audio_duration_sec:
+                    continue
+                if new_end > audio_duration_sec:
+                    new_end = audio_duration_sec
+                if new_end < new_start:
+                    new_end = min(new_start + 5, audio_duration_sec)
+                    if new_end <= new_start:
+                        continue
+            new_line = _TIMESTAMP_RE.sub(
+                f"[{_fmt_ts(new_start)} - {_fmt_ts(new_end)}]", line, count=1,
+            )
+            out_lines.append(new_line)
+        elif line.startswith("[") and "]" not in line[:80]:
+            # Opens like a turn but never closes `]` — Gemini garbage.
             continue
-        internal_start = _parse_ts(m.group(1))
-        if internal_start > max_internal_sec + tolerance:
+        elif _META_LINE_RE.match(line):
+            # Gemini compliance preamble or `（注：...）` meta — not transcript.
             continue
-        internal_end = _parse_ts(m.group(2))
-        new_line = _TIMESTAMP_RE.sub(
-            f"[{_fmt_ts(internal_start + offset_sec)} - {_fmt_ts(internal_end + offset_sec)}]",
-            line, count=1,
-        )
-        out_lines.append(new_line)
+        else:
+            shifted = _offset_timestamps(line, offset_sec) if _TIMESTAMP_RE.search(line) else line
+            out_lines.append(shifted)
     return "\n".join(out_lines)
 
 
@@ -252,27 +295,26 @@ def _reconcile_speakers_across_chunks(chunk_records):
 
 
 def _join_chunks_dropping_overlap(chunk_records) -> str:
-    """Concatenate chunk texts; for chunks k>0, drop everything up to the first
-    turn whose start >= chunk_{k-1}.end_abs (the overlap region is already in
-    the previous chunk's output).
+    """Collect all turn lines across chunks, drop overlap-region duplicates,
+    sort chronologically.
+
+    For each chunk k: keep turns whose start >= chunk_{k-1}.end_abs (k=0 → keep
+    all). Per-turn filter is robust to Gemini emitting chunk-internal turns out
+    of chronological order, which slice-from-first-past-overlap mis-handled.
+
+    Non-turn lines dropped — upstream _offset_and_filter_timestamps already
+    stripped the legitimate Gemini-meta lines.
     """
-    parts = []
+    all_turns = []
     for k, rec in enumerate(chunk_records):
         if "parsed" not in rec:
             rec["parsed"] = _parse_diarized_lines(rec["text"])
-        if k == 0:
-            parts.append("\n".join(t["raw"] for t in rec["parsed"]))
-            continue
-        prev_end = chunk_records[k - 1]["end_abs"]
-        first_past = None
-        for i, t in enumerate(rec["parsed"]):
+        prev_end = chunk_records[k - 1]["end_abs"] if k > 0 else 0.0
+        for t in rec["parsed"]:
             if t["is_turn"] and t["start"] >= prev_end:
-                first_past = i
-                break
-        if first_past is None:
-            continue
-        parts.append("\n".join(t["raw"] for t in rec["parsed"][first_past:]))
-    return "\n\n".join(parts)
+                all_turns.append(t)
+    all_turns.sort(key=lambda t: t["start"])
+    return "\n".join(t["raw"] for t in all_turns)
 
 
 # ---------------------------------------------------------------------------
@@ -406,20 +448,48 @@ def _gemini_upload(client, audio_path: Path):
 
 
 def _gemini_transcribe_one(client, audio_path: Path, model: str, prompt: str) -> str:
-    """Single Gemini call on one chunk. Returns plain text."""
+    """Single Gemini call on one chunk. Returns plain text.
+
+    Retries `generate_content` on transient errors (503 UNAVAILABLE, 429
+    RESOURCE_EXHAUSTED, 5xx) with exponential backoff — Gemini hits demand
+    spikes occasionally and one chunk failing would otherwise abort the
+    entire multi-chunk pipeline.
+    """
     uploaded = _gemini_upload(client, audio_path)
-    resp = client.models.generate_content(
-        model=model,
-        contents=[uploaded, prompt],
-        config={
-            # Gemini 3 thinking models share max_output_tokens between thinking
-            # + actual output. For transcription (perceptual, not reasoning),
-            # thinking_level=minimal lets the full budget go to the transcript.
-            "thinking_config": {"thinking_level": "minimal"},
-            "max_output_tokens": 65536,
-        },
-    )
-    text = (resp.text or "").strip()
+    max_attempts = 4
+    transient_codes = {429, 500, 502, 503, 504}
+    transient_status = {"UNAVAILABLE", "RESOURCE_EXHAUSTED", "INTERNAL", "DEADLINE_EXCEEDED"}
+    resp = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            resp = client.models.generate_content(
+                model=model,
+                contents=[uploaded, prompt],
+                config={
+                    # Gemini 3 thinking models share max_output_tokens between
+                    # thinking + actual output. For transcription (perceptual,
+                    # not reasoning), thinking_level=minimal lets the full
+                    # budget go to the transcript.
+                    "thinking_config": {"thinking_level": "minimal"},
+                    "max_output_tokens": 65536,
+                },
+            )
+            break
+        except Exception as e:
+            msg = str(e)
+            code = getattr(e, "code", None) or getattr(e, "status_code", None)
+            status_match = any(s in msg.upper() for s in transient_status)
+            code_match = code in transient_codes if code else False
+            generic_5xx = " 5" in msg and ("503" in msg or "502" in msg or "504" in msg or "500" in msg)
+            is_transient = status_match or code_match or generic_5xx
+            if is_transient and attempt < max_attempts:
+                backoff = 2 ** attempt
+                _info(f"[retry] transient Gemini error (attempt {attempt}/{max_attempts-1}): {msg[:120]} — backing off {backoff}s")
+                time.sleep(backoff)
+                continue
+            raise
+
+    text = (resp.text or "").strip() if resp else ""
     try:
         finish = resp.candidates[0].finish_reason
         if finish and str(finish).upper().endswith("MAX_TOKENS"):
@@ -431,6 +501,24 @@ def _gemini_transcribe_one(client, audio_path: Path, model: str, prompt: str) ->
     except Exception:
         pass
     return text
+
+
+def _detect_speech_end(audio_path: Path) -> float:
+    """Return the timestamp at which actual speech ends (start of trailing
+    silence). Voice Memos / m4a files often pad recordings with trailing silence
+    past the last spoken word; Gemini "transcribes" that silence into fabricated
+    dialogue with bogus timestamps. Treating speech_end (not file end) as the
+    effective audio bound drops those hallucinations. Falls back to file
+    duration when no trailing silence is detected.
+    """
+    file_dur = _get_audio_duration(audio_path)
+    silences = _detect_silence(audio_path, noise_db=-30, min_duration=2.0)
+    if not silences:
+        return file_dur
+    trailing = [(s, e) for s, e in silences if e >= file_dur - 2.0]
+    if not trailing:
+        return file_dur
+    return min(s for s, _ in trailing)
 
 
 def transcribe_gemini(
@@ -489,6 +577,7 @@ def transcribe_gemini(
         }
         prompt += f"\n\n音频语言是{lang_names.get(language, language)}，请用原语言转录。"
 
+    speech_end = _detect_speech_end(audio_path)
     chunks, cleanup = _chunk_audio_at_silence(audio_path)
     try:
         if len(chunks) == 1:
@@ -506,8 +595,11 @@ def transcribe_gemini(
                 chunk_text = _gemini_transcribe_one(client, chunk_path, model, prompt)
                 _info(f"chunk {i+1}/{n} DONE  ({time.time()-t0:.0f}s, {len(chunk_text)} chars)")
                 if diarize:
-                    # Filter out timestamps Gemini hallucinated beyond chunk bounds, then offset.
-                    chunk_text = _offset_and_filter_timestamps(chunk_text, offset, chunk_dur)
+                    # Filter out timestamps Gemini hallucinated beyond chunk bounds,
+                    # offset to absolute time, clamp post-EOF hallucinations.
+                    chunk_text = _offset_and_filter_timestamps(
+                        chunk_text, offset, chunk_dur, audio_duration_sec=speech_end,
+                    )
                 return i, chunk_text
 
             results: List[Optional[str]] = [None] * n
