@@ -38,6 +38,7 @@ PEP 723 uv script — no venv setup, `uv` handles deps on first run.
 - `--analyze-only` — skip everything, just write `analysis.json`
 - `--seller-description TEXT` — extra context to inject into analysis (e.g., "天然 GIA 钻 1ct")
 - `--concurrency N` — parallel image gens (default 4 — bump higher if your OpenAI tier allows)
+- `--no-html` — skip the Vogue-style `index.html` lookbook (default: generate + auto-open in browser on macOS)
 
 ### Marketing template IDs (12)
 
@@ -72,6 +73,7 @@ jewelry_bundle/<timestamp>/
 ├── analysis.json          # Product analysis (gemstones, materials, colors, design concept, target audience, scenes, ...)
 ├── copy.md                # 6 XHS copy styles: 闺蜜种草 / 专业测评 / 情绪叙事 / 穿搭攻略 / 文化叙事 / 送礼仪式感
 │                          # Each style: 5 hooks (titles), 5 selling points, full post (300-500字), 5 tags
+├── index.html             # Vogue-style lookbook (米白/香槟金/Cormorant Garamond) — auto-opens on macOS; suppress with --no-html
 ├── marketing/             # finished_product pipeline
 │   ├── 01_hero.jpg                    # 棚拍主图
 │   ├── 02_wristNeck.jpg               # 上手图/锁骨图（爆款封面）

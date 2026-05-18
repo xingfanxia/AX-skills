@@ -40,6 +40,7 @@ license: MIT
        → ④ 调 py 脚本（stdin JSON）拿结构化卦象
        → ⑤ 按 py 输出的 knowledge_pointers 加载 data/ 章节
        → ⑥ 半仙化解读输出（玄学开场 + 卦象描述 + 针对落点 + 留白收尾）
+       → ⑥.5 调 render_html.py 渲染古卷卦签 HTML + 自动浏览器打开（默认行为）
        → ⑦ 多轮处理：同事追问沿用同卦，新事项回 ②，重摇守"一事一占"
 ```
 
@@ -215,6 +216,66 @@ py 输出的 `knowledge_pointers` 数组指向具体 markdown 章节。
 
 ---
 
+## 8.5 步骤 ⑥.5 渲染古卷卦签 HTML（默认行为）
+
+解读输出完毕后,**默认**调 `scripts/render_html.py` 产出古卷立轴风格的 HTML 卦签并自动在浏览器打开。这是给用户的最终成品呈现，比纯文字更有仪式感。
+
+**何时跳过**：用户明确说"不要 HTML"/"只要文字"/"不打开浏览器"，或多轮追问场景（沿用同卦不需重新渲染）。
+
+### 输入构造
+
+把 py 输出 + 用户问题 + 你刚写的 5 段解读拼成一个 payload JSON：
+
+```json
+{
+  "py_output": { ...完整 py 脚本输出... },
+  "question": "用户的原始问题（不带半仙称呼，干净版）",
+  "interpretation": {
+    "opening":          "玄学开场 1-2 句",
+    "gua_description":  "卦象描述 3-5 句",
+    "specific_landing": "针对用户问题的具体落点 3-5 句",
+    "advice":           "贫道之言 / 行动建议",
+    "closing":          "（可选）收尾点睛 1 句，留空也行因为页面底部已经有「天机已泄三分」收尾"
+  }
+}
+```
+
+文本里支持两种 inline 强调：
+- `**关键词**` → 渲染为烫金底高亮（用于"益卦本意可续"等小标题/重点）
+- `「引文」` → 渲染为朱砂色（自动识别中文引号，无需手动标记）
+
+### 调用
+
+```bash
+echo '<上面构造的 payload JSON>' \
+  | python3 scripts/render_html.py --open
+# 输出到 ./banxian_results/<ts>_<method>_<卦名>.html
+# --open 在 macOS 自动调 `open` 打开
+```
+
+或先把 payload 写到临时文件再 pipe（payload 较长时更稳）：
+
+```bash
+python3 scripts/render_html.py --open < /tmp/banxian_payload.json
+```
+
+### 输出位置
+
+- 默认目录：`./banxian_results/`（相对 cwd）
+- 文件名：`<YYYYMMDD-HHMMSS>_<method>_<primary_keyword>.html`
+- 单文件 self-contained（CSS + Google Fonts CDN inline），可直接分享
+- 用 `--output DIR` 自定义路径，用 `--stdout` 输出到 stdout 不写文件
+
+### 用户告知
+
+调用完后用 1 句话告诉用户卦签位置：
+
+> 「卦签已挂上墙——`./banxian_results/20260518-...html`，已在浏览器打开。」
+
+不要把整段 HTML 复制到回复里。
+
+---
+
 ## 9. 步骤 ⑦ 多轮对话处理
 
 | 用户后续行为 | 半仙处理 |
@@ -265,9 +326,10 @@ banxian-skill/
 ├── skill.md                       # 本文件（主控）
 ├── README.md                      # 项目说明
 ├── requirements.txt               # lunardate
-├── scripts/                       # Python 算法引擎
+├── scripts/                       # Python 算法引擎 + HTML 渲染
 │   ├── _common.py                 # 农历+五行+JSON IO 工具
 │   ├── liuren.py / meihua.py / liuyao.py
+│   ├── render_html.py             # 古卷卦签 HTML 渲染（步骤 ⑥.5 调用）
 │   └── _lookup/                   # 8 卦/64 卦/纳甲/六亲/6 神/12 时辰 JSON
 ├── data/                          # 知识库（按需加载）
 │   ├── _shared/                   # 半仙 voice + 边界 + 路由

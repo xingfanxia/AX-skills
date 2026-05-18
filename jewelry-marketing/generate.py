@@ -492,6 +492,11 @@ def parse_args() -> argparse.Namespace:
         default="jpeg",
         help="Output image format (default jpeg)",
     )
+    p.add_argument(
+        "--no-html",
+        action="store_true",
+        help="Skip the Vogue-style index.html lookbook (default: generate + open in browser on macOS)",
+    )
     return p.parse_args()
 
 
@@ -624,6 +629,26 @@ def main() -> int:
     print(f"\n{'─' * 60}")
     print(f"✅ Done: {succ} succeeded, {fail} failed in {elapsed}s")
     print(f"   Bundle: {output_dir.resolve()}")
+
+    # ─── Lookbook HTML (default on; skip with --no-html) ──────────
+    if not args.no_html and succ > 0:
+        try:
+            import importlib.util
+            renderer_path = Path(__file__).parent / "lookbook_renderer.py"
+            spec = importlib.util.spec_from_file_location("lookbook_renderer", renderer_path)
+            if spec and spec.loader:
+                mod = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(mod)
+                html_out = mod.render(output_dir.resolve())
+                index_path = output_dir / "index.html"
+                index_path.write_text(html_out, encoding="utf-8")
+                print(f"   Lookbook: {index_path.resolve()}")
+                if sys.platform == "darwin":
+                    import subprocess
+                    subprocess.run(["open", str(index_path)], check=False)
+        except Exception as e:
+            print(f"⚠️  Lookbook render failed (non-fatal): {e}", file=sys.stderr)
+
     return 0 if fail == 0 else 4
 
 
