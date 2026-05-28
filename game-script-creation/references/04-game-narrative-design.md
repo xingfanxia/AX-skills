@@ -138,6 +138,18 @@ No central plot; story emerges from system interaction and accumulated encounter
 ### Key Concept: The Illusion of Choice
 Research consensus is that players *remember* choices more vividly than they experience their consequences. In Telltale's Walking Dead, most choices foldback — but players recall them as deeply consequential. This is a design superpower: you can create emotional investment in agency without paying the exponential content cost of true branching. The mechanism is *acknowledgment* — NPCs must verbally confirm they remember your choices, even if the outcome was identical.
 
+### 4.7 Emily Short 的"选择架构"分类（与上面的分支拓扑正交，可叠加）
+
+§4.1–4.6 讲的是**分支拓扑**(故事图的形状)；Emily Short 的分类讲的是**内容如何被选中**——两者正交，可同时使用。对预算有限的二游/独立游戏尤其有用。
+
+- **Storylet / 质量驱动叙事(QBN, Quality-Based Narrative)**：把内容拆成一个个 storylet(一段内容 + 出现的前置条件 + 触发后对状态的改变)；场景按**数值状态(quality)跨过阈值**解锁，而非按"走过哪条分支序列"。Failbetter《Fallen London》靠这个运营 15 年——每段新内容只要嵌进现有 quality 矩阵，**无需重写旧路径**。**对长线二游极契合**：哪怕一个简单的 5 变量系统(对 A/B/C 的好感 + 阵营值 + 故事阶段)就能在线性框架上生成大量"个性化"内容而不组合爆炸。
+- **显著性驱动(salience-based)**：系统从一个内容池里**自动挑"当前最相关"的一条**，玩家不显式选择。用于 NPC 环境对白(《求生之路》闲聊、《看火人》无线电)。适合在线性主干上叠一层"环境反应"。
+- **路标叙事(waypoint)**：固定"必经的关键节拍(路标)"，**路标之间自由探索/任意顺序**(《Outer Wilds》是典范——谜底固定，但 30+ 信息节点任意顺序发现，系统"不断把故事缝合回来")。
+- **反思性选择(reflective choices, Cat Manning)**：**不改变世界状态、只改变玩家"感受"**的选择——表达角色性格、澄清情感、让玩家参与主角的内心。是预算最低的"代入"超能力。**前提**：场景必须已建立足够情感语境，否则它就像没意义的"左还是右"。
+- **预算内的"被看见"(reactivity on a budget, Hades 法)**：与其加一条真分支，不如加一句反应性台词。"我记得你救了她"只花一行写作 + 一个旗标判断；一条新分支要花 3 倍内容。**玩家对"被游戏记住"的感受，比对"看不见的分叉"更值钱。** 二游里"角色记得你之前的选择/赠礼/战绩"就是这套思路（详见 ref 11 §5 的"微反应"）。
+
+> 来源：Emily Short — Storylets / QBN https://emshort.blog/2019/11/29/storylets-you-want-them/ ; 选择架构分类 https://emshort.blog/2016/04/12/beyond-branching-quality-based-and-salience-based-narrative-structures/ ; Cat Manning 反思性选择 https://catacalypto.wordpress.com/2018/06/19/successful-reflective-choices-in-interactive-narrative/ ; Hades 反应性叙事 https://www.gamedeveloper.com/design/how-supergiant-weaves-narrative-rewards-into-i-hades-i-cycle-of-perpetual-death
+
 ---
 
 ## 5. Quest and Mission Architecture
@@ -170,6 +182,21 @@ Games chunk main story into chapters not just for save-state reasons — chapter
 - **Chapter close:** Climax event + revelation that changes the protagonist's situation for the next chapter
 
 **Pacing ratio:** AAA narrative games typically target 60-70% gameplay, 15-20% cutscene/dialogue, 10-15% exploration/incidental. Gacha games invert this for story chapters: heavy text/VN presentation with lighter combat gating.
+
+### 5.4 开场一小时 / 序章叙事（onboarding craft）
+
+第一次会话决定玩家有没有第二次。二游尤其致命：序章常**一口气甩五个阵营、十二个专名、一套宇宙观和"世界危机"**——可玩家还没有理由在乎任何角色。理解需要记忆，记忆需要在乎，在乎需要一个**人**。鸣潮 1.0、白荆回廊前两章、HSR 翁法罗斯 3.0 都栽在这（见 ref 05 §2.2/§2.5、ref 11 §10）。
+
+**开场处方（按顺序）**：
+1. **先给一个值得在乎的"人"**——前 5 分钟一个角色、一个具体问题。不是世界，是一个人。
+2. **给一个具体张力**——一个具体、迫在眉睫的威胁/疑问，不是泛泛的"世界有难"。
+3. **给一个清晰的下一步**——玩家接下来做什么、为什么这对那个角色重要。
+- **先点名敌人，再点名世界**："她正冲我们来"先于"游荡之潮使回声共鸣框架失稳"。威胁在前，专名在后。
+- **In-medias-res(入场即动作) vs 慢热**：前者适合"动作本身无需背景也读得懂情绪"(《尼尔:机械纪元》开场即战斗)；后者适合"先把开场关系做到动人，再揭世界复杂度"(早期原神靠空/荧兄妹失散撑起 30 分钟世界观)。最差是"开场即动作、却需要没解释的设定才看得懂"——多数被骂的二游序章正是这种。
+
+**教学即叙事(tutorial-as-narrative)**：用**后果**教规则，不用讲座。"按 A 闪避，闪避减伤"是说明书；让导师角色**因为没闪避而受伤/牺牲、玩家亲眼目睹**，世界规则(闪避=活命)就被赋予了情感重量(《传送门》GLaDOS 边教边塑造角色是范例)。二游序章常用一个**不是主角的可玩角色**(导师/老兵)在教完机制后离场或牺牲——既用有性格的角色教了机制，又在赌注到来前建立情感投资(HSR 序章用姬子作向导即此结构)。
+
+> 来源：Microsoft Research "The First Hour Experience" https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/First20Hour20-20CHIPlay20201420-20preprint2.pdf ; 教学即叙事 https://www.meegle.com/en_us/topics/game-design/tutorial-narrative-integration ; 翻车案例交叉引用 ref 05 §2.5(鸣潮)
 
 ---
 
@@ -390,6 +417,21 @@ This is the primary deliverable for the skill. For each genre: how narrative is 
 **Writer's primary job:** Creating a survival world that feels like it has a history — like people lived and died here before the player arrived. Environmental storytelling and found-text (journals, logs, distress signals) carry the burden of implied narrative. The writer creates backstory that the player discovers, not story that the player watches.
 
 **Pitfall:** Making story content feel mandatory in a genre where player freedom is the contract. Subnautica's solution: story discoveries are never required to survive, but they recontextualize everything the player has experienced and motivate endgame exploration.
+
+---
+
+### 6.11 其余类型速查（adapter quick-table — 未在上面单列的类型）
+
+下面四类未单列深拆，给一行式适配表（叙事核心单位 / 关键风险 / 核心文档），需要时再展开。其余如 视觉小说 / JRPG / 开放世界 / Roguelike / 模拟 / 解谜 / MOBA / 沙盒 已在 §6.1–6.10 详述。
+
+| 类型 | 叙事核心单位 | 关键风险 | 核心文档 |
+|---|---|---|---|
+| **策略 / 4X**（文明 / 战棋 / 全战） | 阵营、战役、外交、科技树 | 阵营同质化；剧情跟不上系统（玩家自己生成的叙事盖过作者写的） | 阵营圣经、战役脚本、事件卡池（CK3 式事件卡） |
+| **恐怖**（生存恐怖 / 心理恐怖） | 信息控制、脆弱感、未知 | **解释太多 → 恐怖失效**；节奏疲劳（一直紧绷会麻木） | 恐怖节拍表、信息释放表、怪物规则（何时让玩家看清 / 永远不让看清） |
+| **MMO** | 区域、职业、阵营、团队副本 | 玩家不是唯一主角，个人化困难；区域剧情各自为政 | 区域故事线、职业任务、世界事件表、阵营冲突圣经 |
+| **卡牌 / TCG** | 卡牌 flavor 文本、阵营关键词、套牌主题 | 卡牌 lore 零散、机制与世界无关（贴皮） | 卡牌文本规范、阵营关键词表、扩展包主题圣经 |
+
+> 恐怖的核心铁律值得单记：**恐惧来自未知，解释是恐惧的解药**——给规则，但永远留一块不解释的暗处（参 ref 03 软魔法 + ref 10 谜的"留白"）。4X / MMO / 沙盒大量依赖**涌现叙事**（见 §2.4、§6.7），作者写的是"规则与事件卡"，不是"一条线"。
 
 ---
 

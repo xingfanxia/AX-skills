@@ -310,6 +310,13 @@ A banner story (角色传说任务, 邀约任务) is a short, self-contained nar
 
 The practical structure: establish the character's surface-persona in the first beat, disrupt it with a situation that can't be handled by the persona, force the character into the gap-moe moment, let the player see the contradiction, and resolve with a quiet truth rather than a proclamation.
 
+### 延伸：从"角色 craft"到"商业机器里的角色"
+
+本节讲的是角色**好不好**（wound/lie、反差萌、声音、银幕故事）。但二游角色还必须在一台商业机器里**持续供货**——这需要两份配套工具：
+
+- **可抽角色价值栈（10 层）** —— 把"角色设计 × 商业"拆成 10 个可独立验收的层（视觉锚点 / 身份 / 能力幻想 / 性格矛盾 / 关系钩子 / 剧情功能 / 拥有回报 / 未拥有体验 / 社区传播点 / 长线空间）。其中"**拥有回报 vs 未拥有体验**"是二游特有的双重写作责任。完整检查表见 **ref 11 §2**。
+- **角色塌房 / OOC 一致性管理** —— 玩家把抽到的角色当"自己的"，对人设的任何"背叛"反应极激烈。一致性靠"伤口-谎言-弧线锚定"+ "该角色绝不会做的事"清单 + 让行为被可观察的世界观信息解释。羁绊/拟社会关系的情感工艺（脆弱时刻、"亲密要挣得"、万人迷陷阱）见 **ref 10 PART 三·萌·恋**。
+
 ---
 
 ## 7. Common Beginner Pitfalls and Corrections

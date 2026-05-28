@@ -217,6 +217,23 @@ The professional secret: **revise in passes, one type of problem at a time, bigg
 ### 8c. Self-editing without paralysis
 Over-analysis paralysis comes from comparing a rough draft to an *imagined finished book* (Killzone Blog) — they're different objects, and that comparison is "hugely unfair." Antidotes: one-problem-per-pass (never hold the whole novel in your head at once), and a hard stopping point — "edit until you can't do more," then ship it or get outside eyes. Robert Graves: *"There is no such thing as good writing, only good rewriting"* — but rewriting has to *end*.
 
+### 8d. 交付前 10 项修订清单（结构级，配合 ref 09 的反 AI 味清单一起跑）
+
+§8b 是修订的**流程**（分几遍、什么顺序）；这是修订的**检查项**——一份可逐条 pattern-match 的清单（综合自 McKee / Swain / Hocking 与游戏叙事实践）。交付任何一段前过一遍：**ref 09 管"AI 味 / 字句套路"，本清单管"结构 / 玩法 / 弧线"。**
+
+1. **主题测试**：每场戏是否都在为 controlling idea（主题句）**辩护或反驳**？纯装饰、不碰主题的场景，删或改（ref 01 §1）。
+2. **赌注测试**：每场戏是否以**变化**（灾难或决定）收尾？停在平衡态的场景，删（§1）。
+3. **展示测试**：标出每个直接描述情绪的形容词，至少一半换成行为 / 感官（§4）。
+4. **⚠️ 玩法叙事测试（ludonarrative）**：列出这场戏里玩家**实际做的动作（gameplay verb）**——它和角色宣称的价值观一致吗？不一致就是 ludonarrative dissonance：要么改玩法、要么把不和谐写成**有意的反讽**（ref 04 §3）。**这是游戏叙事独有、小说 / 影视没有的一项。**
+5. **解说测试**：标出每段只为传递设定而存在的话——它在一个有目标的场景里吗？不在就戏剧化或删（§3d、ref 03）。
+6. **声音测试**：盖住说话人标签，还能认出谁在说吗（§3c）？
+7. **角色弧测试**：主角的"谎言"在这一稿里被削弱或强化了吗？两者都没有 = 弧线死了（ref 02）。
+8. **节奏测试**："全剧最低点 / All Is Lost"落在大致正确的位置吗（救猫咪 ~75%）？不对就重构第二幕（ref 01 §2.4 / §3.4）。
+9. **世界观蔓延测试**：有没有冒出某个**不被任何节拍需要**的新设定？删，除非它挣到了位置（ref 03 §5）。
+10. **（二游）伏笔节奏 + 演出测试**：打开的循环有没有计划好的回收版本（ref 10 谜）？关键情绪点有没有演出配合、还是静态对话墙（ref 05 §7.3、ref 11 §7）？
+
+> 不是每段都要全过 10 项——但 **主题 / 赌注 / 玩法叙事** 这三项是任何场景都该过的最小集。
+
 ---
 
 # PART B — ADAPTIVE COACHING / PEDAGOGY

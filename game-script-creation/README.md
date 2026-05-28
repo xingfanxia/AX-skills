@@ -26,9 +26,11 @@ templates/                   ← 你填写的实体文档
   main-story-outline-template.md 主线框架表（+ 二游伏笔账本）
   character-sheet-template.md    人物档案（伤口-谎言-渴望-需要 + 反差萌）
   scene-script-template.md       场景脚本（含 ADV / 演出层）
+  character-value-stack.md       （二游）可抽角色价值栈 10 层
+  version-roadmap.md             （二游）版本故事 + 卡池协同 + 路线图
 examples/
   worked-example-erciyuan.md  一个二游从概念到场景脚本的完整范例
-references/                  ← 深度知识库，AI 按需调取（见下）
+references/                  ← 深度知识库（12 篇），AI 按需调取（见下）
 ```
 
 ## 研究基础（Research Foundation）
@@ -46,8 +48,18 @@ references/                  ← 深度知识库，AI 按需调取（见下）
 | 07 | **写作 craft + 自适应辅导** | Swain 场景/续景、Lamott "狗屎初稿"、King《On Writing》、Le Guin、Gardner 心理距离；**+ 创作教学法**：plotter/pantser、维果茨基最近发展区、渐进释放责任、苏格拉底 vs 示范、**四级水平校准量表** |
 | 08 | **剧本格式 + 工具 + 交付** | ink/Ren'Py/Yarn/Twine/articy/表格；**二游 ADV 演出脚本模板**（立绘/表情/背景/BGM/语音/分支）；本地化与配音交付 |
 | 09 | **反 AI 味 / 反套路清单** | 综合 01–08 + 创作社区公认雷区，蒸馏成交付前检查清单 |
+| 10 | **四种情感工艺**（v2 新增） | 刀（Pixar《飞屋》催泪三要素 / catharsis / 反卖惨）、笑（七个命名喜剧机制 / tsukkomi-boke / 反降智）、萌·恋（脆弱时刻 / 亲密要"挣得" / 万人迷陷阱 / 角色塌房一致性）、谜（Knox 公平伏笔 / Lindelof《迷失》谜题箱陷阱 / 重新语境化）|
+| 11 | **二游生产与长线运营**（v2 新增） | Canon/Project State、可抽角色价值栈、卡池-叙事协同、玩家身份模型 + 主角能动性（鸣潮教训）、可跳过写作、版本路线图、演出 scope、12 项交付、工作模式选择器、篇幅基准 |
 
-> 研究方法、各流的执行蓝图见 `references/00-research-map.md`。所有结构性论断都锚定到具名章节/角色/来源；搜不到的内容诚实标注而非编造。
+### v2 复研究（2026-05-28，Opus 4.8 第二轮）
+
+第一版交付后，做了一次**全量复审 + 二轮深度调研 + 整合三份独立外部研究产出**，新增上面 10、11 两个知识域，并修正了一个概念框架：
+
+- **整合的外部产出**：两份 compass 深研究（Story-Bible pipeline / character-first vs world-first day-one declaration；theme-first controlling-idea + 主线/角色/活动 tri-layer 跨 6 游戏对照 + 篇幅基准 + Emily Short 选择架构）+ 一份完整的中文 skill 草案（大量生产/长线运营机制）。
+- **二轮深研究（Tavily-backed，force web search，一手来源，⚠️ 诚实标注）**：补盲案例 **绝区零（TV 模式翻车→快速透明回应）**、**鸣潮（90% 剧情重写→Rinascita 复盘→主角能动性）**、2025-26 二游格局（HSR 翁法罗斯伏笔节奏失控、演出军备竞赛、AI 在叙事生产的边界）、引述核查 + **概念纠正**（character-first/world-first 轴**正交于国别**——修正了"中式=世界第一"的旧框架）；以及四种情感工艺 + 选择架构 + 序章 onboarding 的 craft 深挖。
+- **质量保障**：成稿后跑两轮独立 Opus 评审（可用性 GREEN 测试 + 一致性/准确性/反 AI 味审计），所发现问题（旧框架在 creative-bible 模板的残留、一处自违反 anti-slop、价值栈示范不完整）**全部修复并复验**。
+
+> 研究方法、两轮调研蓝图见 `references/00-research-map.md`。所有结构性论断都锚定到具名章节/角色/来源；搜不到的内容诚实标注而非编造。
 
 ## 设计原则
 - **结果导向，不空谈**——每个工位都落一份实体文档。

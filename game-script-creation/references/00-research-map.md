@@ -26,3 +26,24 @@
 
 ## After research
 Synthesize → curate reference library → write SKILL.md (the adaptive full-loop workflow) → build worksheet templates + a filled 二游 worked example → self-review against write-new-skill criteria → symlink + commit.
+
+---
+
+## v2 复研究与整合（2026-05-28，Opus 4.8 第二轮）
+
+第一版（Opus 4.7）交付后，做了一次**全量复审 + 二轮深研究 + 整合三个外部 agent 产出**。
+
+**整合的外部产出**（用户提供的三份独立研究/草案）：
+1. compass artifact A —— Story-Bible-anchored 7-phase pipeline；character-first vs world-first 的"day-one declaration"；大量具名 dev 引用（Megill / Sasko / Cai Haoyu / Shaoji / Kim Ji-hoon）。
+2. compass artifact B —— theme-first controlling-idea gateway；8 框架对照；**主线/角色故事/活动剧情 tri-layer 跨 6 游戏对照表**；硬性篇幅基准；Swain scene-sequel 作原子单位；Emily Short 选择架构分类；10 项修订清单。
+3. v2.1 中文 skill 草案 —— 大量**生产/长线运营机制**（Canon 管理、Project State、角色价值栈、版本故事/卡池协同、玩家身份模型、skip-resilient、工作模式选择器、12 项交付）。
+
+**二轮深研究（全部 Tavily-backed，force web search，primary sources，⚠️ 诚实标注不确定）：**
+- **Wave 1（补盲案例 + 时效 + 核查）**：① 绝区零 ZZZ（TV 模式翻车→快速透明回应）；② 鸣潮 Wuthering Waves（90% 剧情重写→Rinascita 复盘→主角能动性教训）；③ 2025-26 二游格局（HSR 翁法罗斯伏笔节奏失控、无限暖暖/白荆回廊/重返1999、演出军备竞赛、AI 在叙事生产的边界）；④ **引述核查 + 概念纠正**（Cai Haoyu GDC 2021 部分付费/社区转录；Penacony 伏笔来自 Crunchyroll/Nasu 2024 而非 Kondo；Blue Archive "Vol F" 理由不可考；**character-first/world-first 轴正交于国别**——修正了 ref 06 旧的"中式=world-first"框架；工具时效 Twine 2.12/Yarn Spinner 3.1/articy:draft X/ink in Bloodlines 2）。
+- **Wave 2（四种情感工艺 + 两个结构缺口）**：刀（赚来的悲剧/牺牲，Up 蒙太奇 / catharsis / 卖惨·fridging·抽卡矛盾反模式）、笑（七个命名喜剧机制 / tsukkomi-boke / 语调缓冲 / 降智·OOC 反模式）、萌·恋（脆弱时刻 / 亲密要挣得 / 万人迷陷阱 / 角色塌房一致性）、谜（公平伏笔 / 谜题箱陷阱 / 重新语境化 / 长线伏笔节奏）；以及 Emily Short 选择架构、序章 onboarding craft。
+
+**整合产物**：
+- 新增 `references/10-emotional-craft.md`（刀/笑/萌·恋/谜 四种情感工艺）。
+- 新增 `references/11-production-liveops.md`（Canon/Project State、角色价值栈、卡池协同、玩家身份模型、skip-resilient、版本路线图、演出 scope、12 项交付、工作模式选择器、篇幅基准）。
+- 增补 `04`（Emily Short 选择架构 §4.7 + 序章 §5.4 + 4 类游戏速查 §6.11）、`05`（ZZZ §2.9 + 翁法罗斯伏笔节奏 + 鸣潮官方重写/复盘）、`06`（**修正 character-first/world-first 两轴框架**）、`09`（卖惨/fridging/万人迷/降智/抽卡矛盾/谜题箱）、`02`（价值栈 + OOC 一致性指引）、`03`（阵营先于角色的生成顺序）、`08`（2026 工具时效）。
+- SKILL.md 整合：工作模式选择器、Canon/Project State、character-first/world-first 表态、篇幅基准、四种情感工艺与选择架构/序章的工位指引、10 项修订清单、reference 索引与完成判据更新。

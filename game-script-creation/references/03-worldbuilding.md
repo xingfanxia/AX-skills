@@ -243,6 +243,8 @@ In a novel, the author controls reading sequence. In a game, the player controls
 
 **Core design principle:** Gacha games deliver lore across patches over *years*. The world must be designed so each fragment satisfies *and* creates demand for the next.
 
+**先建阵营，再建角色（gacha 世界观的生成顺序）：** 一个角色属于一个**阵营**，一个阵营属于一个**地区**，一个地区属于一个**母题/主题**。先把这条"主题 → 地区 → 阵营"的骨架搭好，再往里填角色，能让你批量产出几十个**既彼此区分又整体自洽**的角色（原神元素七国、明日方舟罗德岛/整合运动/萨卡兹/维多利亚、蔚蓝档案各学院都是这套）。反过来"先有一个酷角色再硬凑他属于哪"，到第 20 个角色时世界就散了。这也呼应 §1.2 米哈游"世界观/主题 → 角色 → 剧情"的生产顺序。**世界对 gacha 而言是一套"角色许可系统"：每个地区/阵营都在回答"为什么这种视觉/能力/性格的角色会存在于此"。**
+
 **Delivery channel map:**
 
 ```

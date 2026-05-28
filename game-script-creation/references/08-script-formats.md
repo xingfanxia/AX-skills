@@ -379,6 +379,8 @@ Huajing: 那封信，你看到了吗？
 
 **Pitfall:** Without strict naming conventions and access controls, the sheet becomes chaotic fast. Lock the `line_id` and `voice_file` columns after voice recording begins — changing them after the recording session means re-importing all audio.
 
+> **工具现状（截至 2026，给选型参考）**：上述工具均在活跃维护——**Twine** 2.12.0（2026-04）；**Yarn Spinner** 3.1（2025-12，新增异步对话、分支兜底防死锁）；**articy:draft X** 2025-08 大版本更新；**ink** 持续获 AAA 采用（2025《吸血鬼避世血族 2》即用 ink，并开源了 UE 运行时 Inkpot）；**Ren'Py** 仍是视觉小说引擎事实标准。结论不变：新手从 Twine / ink / Ren'Py 起步，团队规模化再上 articy。⚠️ 版本号会继续滚动，选型前查官网最新。
+
 ---
 
 ## 5. 二游 ADV 演出脚本 — The Staging Layer
