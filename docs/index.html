@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AX Skills · 路演 / Roadshow Decks</title>
+<meta name="description" content="从真实上线产品里抽取的 Agent Skills，及其路演 deck。瑞士国际主义风格，单文件 HTML。">
+<meta property="og:title" content="AX Skills · 路演 / Roadshow Decks">
+<meta property="og:description" content="把真实产品，折叠成 skill。每个 skill 配一份路演 deck。">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#fafaf8; --ink:#0a0a0a;
+    --grey-1:#f0f0ee; --grey-2:#d4d4d2; --grey-3:#737373;
+    --text-2:#525252; --border:#e0e0e0;
+    --ikb:#002FA7; --lemon:#FFD500;
+    --sans:"Inter","Helvetica Neue","Helvetica","Arial",system-ui,-apple-system,sans-serif;
+    --sans-zh:"PingFang SC","Hiragino Sans GB","Source Han Sans SC","Noto Sans SC","Microsoft YaHei UI",sans-serif;
+    --mono:"JetBrains Mono","SF Mono","Consolas",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:var(--sans),var(--sans-zh);
+    font-feature-settings:"ss01","cv11";
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    line-height:1.5;min-height:100dvh;
+    position:relative;overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--ikb);color:#fff}
+
+  /* dot-matrix decoration (Swiss) */
+  .dots{
+    position:fixed;right:-60px;top:8vh;width:280px;height:280px;z-index:0;pointer-events:none;
+    background-image:radial-gradient(var(--ink) 1.3px,transparent 1.6px);
+    background-size:20px 20px;opacity:.07;
+  }
+
+  .wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:clamp(28px,5vw,64px) clamp(22px,5vw,72px) clamp(40px,6vw,80px)}
+
+  /* header */
+  header{display:flex;justify-content:space-between;align-items:center;gap:1rem;
+    border-bottom:1px solid var(--border);padding-bottom:18px;
+    font-family:var(--mono);font-size:13px;font-weight:500;
+    letter-spacing:.18em;text-transform:uppercase;color:var(--text-2)}
+  header .r{color:var(--grey-3)}
+
+  /* hero */
+  .hero{padding:clamp(48px,9vw,120px) 0 clamp(36px,6vw,72px)}
+  .kicker{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--grey-3);display:inline-flex;align-items:center;gap:.7em;margin-bottom:clamp(20px,3vw,34px)}
+  .kicker::before{content:"";width:26px;height:1px;background:var(--grey-3)}
+  h1{font-weight:200;font-size:clamp(2.5rem,7.4vw,6.2rem);line-height:1.02;letter-spacing:-.035em;max-width:16ch}
+  h1 em{font-style:italic;font-weight:300;color:var(--ikb)}
+  .lead{margin-top:clamp(20px,3vw,32px);max-width:54ch;font-weight:300;
+    font-size:clamp(1rem,1.5vw,1.3rem);line-height:1.55;color:var(--text-2)}
+
+  /* grid of skill cards */
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(18px,2.4vw,30px);margin-top:clamp(20px,3vw,40px)}
+  @media (max-width:760px){.grid{grid-template-columns:1fr}}
+
+  .card{position:relative;display:flex;flex-direction:column;
+    background:var(--paper);border:1px solid var(--border);border-top:3px solid var(--c);
+    padding:clamp(26px,3vw,40px);min-height:clamp(300px,40vh,400px);
+    transition:background .25s cubic-bezier(.2,0,.38,.9),border-color .25s}
+  .card:hover{background:var(--grey-1);border-color:var(--grey-3);border-top-color:var(--c)}
+  .card:focus-within{border-color:var(--ink)}
+  .card .num{font-weight:300;font-size:clamp(1.6rem,3vw,2.4rem);line-height:1;
+    letter-spacing:-.02em;color:var(--grey-3);font-feature-settings:"tnum";margin-bottom:auto}
+  .card .role{font-family:var(--mono);font-size:12.5px;font-weight:500;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--grey-3);margin:clamp(28px,4vw,52px) 0 12px}
+  .card h2{font-weight:300;font-size:clamp(1.6rem,2.7vw,2.3rem);line-height:1.08;letter-spacing:-.025em}
+  .card h2 .id{font-family:var(--mono);font-size:.5em;font-weight:500;letter-spacing:0;color:var(--grey-3);
+    display:block;margin-top:.7em;text-transform:none}
+  .card p{margin-top:14px;font-weight:300;font-size:clamp(.95rem,1.1vw,1.05rem);line-height:1.55;color:var(--text-2);max-width:34ch}
+  .card .src{display:flex;align-items:center;gap:.6em;margin-top:20px;
+    font-family:var(--mono);font-size:12.5px;letter-spacing:.04em;color:var(--grey-3)}
+  .card .src .sq{width:9px;height:9px;background:var(--c);flex:0 0 auto}
+  .card .src a.ext{color:var(--text-2);border-bottom:1px solid var(--border);position:relative;z-index:2}
+  .card .src a.ext:hover{color:var(--ink);border-bottom-color:var(--grey-3)}
+
+  .card .cta{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;
+    margin-top:clamp(24px,3vw,38px);padding-top:18px;border-top:1px solid var(--border)}
+  .card .go{font-family:var(--sans),var(--sans-zh);font-weight:500;font-size:1.05rem;
+    display:inline-flex;align-items:center;gap:.5em}
+  .card .go .arr{display:inline-block;transition:transform .25s cubic-bezier(.2,0,.38,.9)}
+  .card:hover .go .arr{transform:translateX(5px)}
+  .card .go::after{content:"";position:absolute;inset:0}  /* stretched link */
+  .card .pdf{position:relative;z-index:2;font-family:var(--mono);font-size:12px;font-weight:500;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--grey-3);
+    border:1px solid var(--border);padding:7px 11px;transition:border-color .2s,color .2s}
+  .card .pdf:hover{color:var(--ink);border-color:var(--grey-3)}
+
+  a:focus-visible,.card:focus-within{outline:2px solid var(--ikb);outline-offset:3px}
+  .card .pdf:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+  /* note + footer */
+  .note{margin-top:clamp(36px,5vw,64px);display:flex;gap:.8em;align-items:baseline;
+    font-size:.92rem;font-weight:300;color:var(--grey-3);max-width:60ch}
+  .note .sq{width:8px;height:8px;background:var(--ink);flex:0 0 auto;transform:translateY(2px)}
+  footer{margin-top:clamp(40px,6vw,80px);border-top:1px solid var(--border);padding-top:18px;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;
+    font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--grey-3)}
+  footer a{border-bottom:1px solid var(--border)}
+  footer a:hover{color:var(--ink);border-bottom-color:var(--grey-3)}
+</style>
+</head>
+<body>
+<div class="dots" aria-hidden="true"></div>
+<div class="wrap">
+
+  <header>
+    <div class="l">AX · Agent Skills</div>
+    <div class="r">路演 / Roadshow</div>
+  </header>
+
+  <section class="hero">
+    <span class="kicker">Funskills · 真实产品 → Skill</span>
+    <h1>把真实产品，<br>折叠成 <em>skill</em>。</h1>
+    <p class="lead">每个 skill 都从一个真实上线的产品里抽出来 —— 算法、知识库、生产级 pipeline，压成任何 Agent 加载即用的能力。下面是它们的路演 deck（瑞士国际主义风，键盘 ← → 翻页）。</p>
+  </section>
+
+  <section class="grid">
+    <article class="card banxian" style="--c:var(--ikb)">
+      <span class="num">01</span>
+      <div class="role">三合一东方占卜 · 赛博半仙</div>
+      <h2>半仙<span class="id">banxian-skill</span></h2>
+      <p>一句话描述事情 → 智能起卦 + 真算法引擎（64 卦 / 26 单测）+ 守规矩的解读。</p>
+      <div class="src"><span class="sq"></span> 源自 <a class="ext" href="https://www.panpanmao.ai/" target="_blank" rel="noopener">盘盘猫 panpanmao.ai</a></div>
+      <div class="cta">
+        <a class="go" href="banxian/">查看路演 <span class="arr">→</span></a>
+        <a class="pdf" href="banxian/banxian-roadshow.pdf">PDF ↓</a>
+      </div>
+    </article>
+
+    <article class="card jewelry" style="--c:var(--lemon)">
+      <span class="num">02</span>
+      <div class="role">珠宝营销一键生成</div>
+      <h2>珠宝营销<span class="id">jewelry-marketing</span></h2>
+      <p>一张商品照 → 12 张小红书营销图 + 6 风格文案 + 商品分析，$0.48、约 5 分钟。</p>
+      <div class="src"><span class="sq"></span> 源自 <a class="ext" href="https://shichuan.ax0x.ai/" target="_blank" rel="noopener">识川 shichuan.ax0x.ai</a></div>
+      <div class="cta">
+        <a class="go" href="jewelry/">查看路演 <span class="arr">→</span></a>
+        <a class="pdf" href="jewelry/jewelry-roadshow.pdf">PDF ↓</a>
+      </div>
+    </article>
+  </section>
+
+  <p class="note"><span class="sq" aria-hidden="true"></span> 路演 deck 是带内联样式与脚本的单文件 HTML —— 在浏览器里打开效果最佳；GitHub 网页源码预览会过滤样式。打不开时可看每张卡片的 PDF。</p>
+
+  <footer>
+    <a href="https://github.com/xingfanxia/AX-skills" target="_blank" rel="noopener">github.com/xingfanxia/AX-skills</a>
+    <span>Swiss International · 2026</span>
+  </footer>
+
+</div>
+</body>
+</html>
