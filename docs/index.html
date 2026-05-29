@@ -3,110 +3,100 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AX Skills · 路演 / Roadshow Decks</title>
-<meta name="description" content="从真实上线产品里抽取的 Agent Skills，及其路演 deck。瑞士国际主义风格，单文件 HTML。">
-<meta property="og:title" content="AX Skills · 路演 / Roadshow Decks">
-<meta property="og:description" content="把真实产品，折叠成 skill。每个 skill 配一份路演 deck。">
+<title>AX Skills · 技能展示 / Showcase</title>
+<meta name="description" content="AX 的 Agent Skills 展示页 —— 从真实上线产品里抽出来的可复用能力，任何 Agent 装上即用。">
+<meta property="og:title" content="AX Skills · 技能展示 / Showcase">
+<meta property="og:description" content="把真实产品，折叠成 skill。每个 skill 装上即用，顺带配一份路演 deck。">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600&family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,500&family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+SC:wght@300;400;500;600;700;900&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#fafaf8; --ink:#0a0a0a;
-    --grey-1:#f0f0ee; --grey-2:#d4d4d2; --grey-3:#737373;
-    --text-2:#525252; --border:#e0e0e0;
-    --ikb:#002FA7; --lemon:#FFD500;
-    --sans:"Inter","Helvetica Neue","Helvetica","Arial",system-ui,-apple-system,sans-serif;
-    --sans-zh:"PingFang SC","Hiragino Sans GB","Source Han Sans SC","Noto Sans SC","Microsoft YaHei UI",sans-serif;
-    --mono:"JetBrains Mono","SF Mono","Consolas",ui-monospace,monospace;
+    --paper:#f0e6d2; --paper-rgb:240,230,210;
+    --paper-tint:#e6dabf; --paper-deep:#ddcfae;
+    --ink:#1f1a14; --ink-rgb:31,26,20; --ink-2:#5a4f3f; --ink-3:#8a7c66;
+    --line:#cdbf9f;
+    --serif-en:"Playfair Display","Source Serif 4",Georgia,serif;
+    --serif-zh:"Noto Serif SC",source-han-serif-sc,serif;
+    --sans-zh:"Noto Sans SC",source-han-sans-sc,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
   body{
     background:var(--paper);color:var(--ink);
-    font-family:var(--sans),var(--sans-zh);
-    font-feature-settings:"ss01","cv11";
+    font-family:var(--sans-zh);
     -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
-    line-height:1.5;min-height:100dvh;
-    position:relative;overflow-x:hidden;
+    line-height:1.5;min-height:100dvh;position:relative;overflow-x:hidden;
   }
   a{color:inherit;text-decoration:none}
-  ::selection{background:var(--ikb);color:#fff}
+  em{font-style:italic;font-family:var(--serif-en)}
+  ::selection{background:var(--ink);color:var(--paper)}
 
-  /* dot-matrix decoration (Swiss) */
-  .dots{
-    position:fixed;right:-60px;top:8vh;width:280px;height:280px;z-index:0;pointer-events:none;
-    background-image:radial-gradient(var(--ink) 1.3px,transparent 1.6px);
-    background-size:20px 20px;opacity:.07;
-  }
+  .dots{position:fixed;right:-50px;top:7vh;width:300px;height:300px;z-index:0;pointer-events:none;
+    background-image:radial-gradient(var(--ink) 1.2px,transparent 1.5px);background-size:22px 22px;opacity:.06}
 
   .wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:clamp(28px,5vw,64px) clamp(22px,5vw,72px) clamp(40px,6vw,80px)}
 
-  /* header */
   header{display:flex;justify-content:space-between;align-items:center;gap:1rem;
-    border-bottom:1px solid var(--border);padding-bottom:18px;
-    font-family:var(--mono);font-size:13px;font-weight:500;
-    letter-spacing:.18em;text-transform:uppercase;color:var(--text-2)}
-  header .r{color:var(--grey-3)}
+    border-bottom:1px solid var(--line);padding-bottom:18px;
+    font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-2)}
+  header .r{color:var(--ink-3)}
 
-  /* hero */
-  .hero{padding:clamp(48px,9vw,120px) 0 clamp(36px,6vw,72px)}
-  .kicker{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.24em;
-    text-transform:uppercase;color:var(--grey-3);display:inline-flex;align-items:center;gap:.7em;margin-bottom:clamp(20px,3vw,34px)}
-  .kicker::before{content:"";width:26px;height:1px;background:var(--grey-3)}
-  h1{font-weight:200;font-size:clamp(2.5rem,7.4vw,6.2rem);line-height:1.02;letter-spacing:-.035em;max-width:16ch}
-  h1 em{font-style:italic;font-weight:300;color:var(--ikb)}
-  .lead{margin-top:clamp(20px,3vw,32px);max-width:54ch;font-weight:300;
-    font-size:clamp(1rem,1.5vw,1.3rem);line-height:1.55;color:var(--text-2)}
+  .hero{padding:clamp(48px,9vw,118px) 0 clamp(34px,6vw,68px)}
+  .kicker{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;
+    color:var(--ink-3);display:inline-flex;align-items:center;gap:.7em;margin-bottom:clamp(20px,3vw,34px)}
+  .kicker::before{content:"";width:26px;height:1px;background:var(--ink-3)}
+  h1{font-family:var(--serif-zh);font-weight:700;font-size:clamp(2.6rem,7.6vw,6rem);line-height:1.04;letter-spacing:-.01em;max-width:17ch}
+  .lead{margin-top:clamp(20px,3vw,32px);max-width:52ch;font-family:var(--serif-zh);font-weight:400;
+    font-size:clamp(1.05rem,1.55vw,1.4rem);line-height:1.6;color:var(--ink-2)}
 
-  /* grid of skill cards */
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(18px,2.4vw,30px);margin-top:clamp(20px,3vw,40px)}
-
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));margin-top:clamp(24px,3.5vw,46px);
+    border-top:1px solid var(--line);border-left:1px solid var(--line)}
   .card{position:relative;display:flex;flex-direction:column;
-    background:var(--paper);border:1px solid var(--border);border-top:3px solid var(--c);
-    padding:clamp(26px,3vw,40px);min-height:clamp(300px,40vh,400px);
-    transition:background .25s cubic-bezier(.2,0,.38,.9),border-color .25s}
-  .card:hover{background:var(--grey-1);border-color:var(--grey-3);border-top-color:var(--c)}
-  .card:focus-within{border-color:var(--ink)}
-  .card .num{font-weight:300;font-size:clamp(1.6rem,3vw,2.4rem);line-height:1;
-    letter-spacing:-.02em;color:var(--grey-3);font-feature-settings:"tnum";margin-bottom:auto}
-  .card .role{font-family:var(--mono);font-size:12.5px;font-weight:500;letter-spacing:.16em;
-    text-transform:uppercase;color:var(--grey-3);margin:clamp(28px,4vw,52px) 0 12px}
-  .card h2{font-weight:300;font-size:clamp(1.6rem,2.7vw,2.3rem);line-height:1.08;letter-spacing:-.025em}
-  .card h2 .id{font-family:var(--mono);font-size:.5em;font-weight:500;letter-spacing:0;color:var(--grey-3);
-    display:block;margin-top:.7em;text-transform:none}
-  .card p{margin-top:14px;font-weight:300;font-size:clamp(.95rem,1.1vw,1.05rem);line-height:1.55;color:var(--text-2);max-width:34ch}
-  .card .src{display:flex;align-items:center;gap:.6em;margin-top:20px;
-    font-family:var(--mono);font-size:12.5px;letter-spacing:.04em;color:var(--grey-3)}
-  .card .src .sq{width:9px;height:9px;background:var(--c);flex:0 0 auto}
-  .card .src a.ext{color:var(--text-2);border-bottom:1px solid var(--border);position:relative;z-index:2}
-  .card .src a.ext:hover{color:var(--ink);border-bottom-color:var(--grey-3)}
+    padding:clamp(26px,2.6vw,40px) clamp(22px,2vw,34px);
+    border-bottom:1px solid var(--line);border-right:1px solid var(--line);
+    min-height:clamp(300px,38vh,380px);transition:background .25s ease}
+  .card:hover{background:var(--paper-tint)}
+  .card:focus-within{background:var(--paper-tint)}
 
-  .card .cta{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;
-    margin-top:clamp(24px,3vw,38px);padding-top:18px;border-top:1px solid var(--border)}
-  .card .go{font-family:var(--sans),var(--sans-zh);font-weight:500;font-size:1.05rem;
-    display:inline-flex;align-items:center;gap:.5em}
-  .card .go .arr{display:inline-block;transition:transform .25s cubic-bezier(.2,0,.38,.9)}
+  .card .num{font-family:var(--serif-en);font-style:italic;font-weight:500;
+    font-size:clamp(2.4rem,4vw,3.4rem);line-height:1;color:var(--ink);opacity:.3;
+    font-feature-settings:"tnum";margin-bottom:auto}
+  .card .role{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-3);margin:clamp(26px,3.5vw,46px) 0 10px}
+  .card h2{font-family:var(--serif-zh);font-weight:700;font-size:clamp(1.7rem,2.6vw,2.2rem);line-height:1.1;letter-spacing:0}
+  .card h2 .id{display:block;margin-top:.7em;font-family:var(--mono);font-size:.42em;font-weight:500;
+    letter-spacing:.02em;color:var(--ink-3)}
+  .card p{margin-top:14px;font-family:var(--sans-zh);font-weight:400;font-size:clamp(.95rem,1.05vw,1.02rem);
+    line-height:1.6;color:var(--ink-2);max-width:36ch}
+  .card .src{display:flex;align-items:center;gap:.6em;margin-top:18px;
+    font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--ink-3)}
+  .card .src .sq{width:8px;height:8px;background:var(--ink);opacity:.55;flex:0 0 auto}
+  .card .src a.ext{color:var(--ink-2);border-bottom:1px solid var(--line);position:relative;z-index:2}
+  .card .src a.ext:hover{color:var(--ink);border-bottom-color:var(--ink-3)}
+
+  .card .cta{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;
+    margin-top:clamp(22px,3vw,36px);padding-top:16px;border-top:1px solid var(--line)}
+  .card .go{font-family:var(--serif-zh);font-weight:600;font-size:1.05rem;display:inline-flex;align-items:center;gap:.5em}
+  .card .go .arr{font-family:var(--serif-en);display:inline-block;transition:transform .25s ease}
   .card:hover .go .arr{transform:translateX(5px)}
-  .card .go::after{content:"";position:absolute;inset:0}  /* stretched link */
-  .card .pdf{position:relative;z-index:2;font-family:var(--mono);font-size:12px;font-weight:500;
-    letter-spacing:.12em;text-transform:uppercase;color:var(--grey-3);
-    border:1px solid var(--border);padding:7px 11px;transition:border-color .2s,color .2s}
-  .card .pdf:hover{color:var(--ink);border-color:var(--grey-3)}
+  .card .go::after{content:"";position:absolute;inset:0}
+  .card .pdf{position:relative;z-index:2;font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--ink-3);border:1px solid var(--line);padding:7px 10px;transition:border-color .2s,color .2s}
+  .card .pdf:hover{color:var(--ink);border-color:var(--ink-3)}
 
-  a:focus-visible,.card:focus-within{outline:2px solid var(--ikb);outline-offset:3px}
-  .card .pdf:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 
-  /* note + footer */
-  .note{margin-top:clamp(36px,5vw,64px);display:flex;gap:.8em;align-items:baseline;
-    font-size:.92rem;font-weight:300;color:var(--grey-3);max-width:60ch}
-  .note .sq{width:8px;height:8px;background:var(--ink);flex:0 0 auto;transform:translateY(2px)}
-  footer{margin-top:clamp(40px,6vw,80px);border-top:1px solid var(--border);padding-top:18px;
+  .note{margin-top:clamp(34px,5vw,60px);display:flex;gap:.8em;align-items:baseline;
+    font-family:var(--sans-zh);font-size:.92rem;font-weight:400;color:var(--ink-3);max-width:64ch;line-height:1.6}
+  .note .sq{width:7px;height:7px;background:var(--ink);opacity:.5;flex:0 0 auto;transform:translateY(3px)}
+  footer{margin-top:clamp(40px,6vw,78px);border-top:1px solid var(--line);padding-top:18px;
     display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;
-    font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--grey-3)}
-  footer a{border-bottom:1px solid var(--border)}
-  footer a:hover{color:var(--ink);border-bottom-color:var(--grey-3)}
+    font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+  footer a{border-bottom:1px solid var(--line)}
+  footer a:hover{color:var(--ink);border-bottom-color:var(--ink-3)}
 </style>
 </head>
 <body>
@@ -125,7 +115,7 @@
   </section>
 
   <section class="grid">
-    <article class="card banxian" style="--c:var(--ikb)">
+    <article class="card banxian">
       <span class="num">01</span>
       <div class="role">三合一东方占卜 · 赛博半仙</div>
       <h2>半仙<span class="id">banxian-skill</span></h2>
@@ -140,7 +130,7 @@
       </div>
     </article>
 
-    <article class="card jewelry" style="--c:var(--lemon)">
+    <article class="card jewelry">
       <span class="num">02</span>
       <div class="role">珠宝营销一键生成</div>
       <h2>珠宝营销<span class="id">jewelry-marketing</span></h2>
@@ -155,7 +145,7 @@
       </div>
     </article>
 
-    <article class="card game" style="--c:#B45309">
+    <article class="card game">
       <span class="num">03</span>
       <div class="role">游戏剧本创作 · 全流程陪跑</div>
       <h2>游戏剧本<span class="id">game-script-creation</span></h2>
@@ -175,7 +165,7 @@
 
   <footer>
     <a href="https://github.com/xingfanxia/AX-skills" target="_blank" rel="noopener">github.com/xingfanxia/AX-skills</a>
-    <span>Swiss International · 2026</span>
+    <span>电子杂志 · 沙丘 / Dune · 2026</span>
   </footer>
 
 </div>
