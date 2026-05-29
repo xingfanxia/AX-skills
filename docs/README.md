@@ -16,25 +16,31 @@ docs/                       ← Pages 站点根
 │   ├── index.html          #   IKB 克莱因蓝 · 11 页
 │   ├── banxian-roadshow.pdf
 │   └── images/             #   真实古卷卦签截图
-└── jewelry/                # jewelry-marketing 路演 deck
-    ├── index.html          #   柠檬黄 · 11 页
-    ├── jewelry-roadshow.pdf
-    └── images/             #   真实 skill 输出图
+├── jewelry/                # jewelry-marketing 路演 deck
+│   ├── index.html          #   柠檬黄 · 11 页
+│   ├── jewelry-roadshow.pdf
+│   └── images/             #   真实 skill 输出图
+└── game/                   # game-script-creation 路演 deck
+    ├── index.html          #   沙丘 Dune · 18 页（Style A 电子杂志）
+    ├── game-roadshow.pdf
+    └── assets/             #   motion.min.js（本地兜底）
 ```
 
 URL 路由：
 - Landing：`/AX-skills/`
 - 半仙：`/AX-skills/banxian/`
 - 珠宝：`/AX-skills/jewelry/`
+- 游戏剧本：`/AX-skills/game/`
 
-## 两份 deck
+## Deck 一览
 
-| Deck | Skill | 来源产品 | 主题色 |
+| Deck | Skill | 来源 | 主题色 |
 |---|---|---|---|
-| `banxian/` | [banxian-skill](../banxian-skill)（赛博半仙 · 三合一东方占卜） | [盘盘猫 panpanmao.ai](https://www.panpanmao.ai/) | 🔵 克莱因蓝 IKB |
-| `jewelry/` | [jewelry-marketing](../jewelry-marketing)（珠宝营销一键生成） | [识川 shichuan.ax0x.ai](https://shichuan.ax0x.ai/) | 🟡 柠檬黄 |
+| `banxian/` | [banxian-skill](../banxian-skill)（赛博半仙 · 三合一东方占卜） | [盘盘猫 panpanmao.ai](https://www.panpanmao.ai/) | 🔵 克莱因蓝 IKB（瑞士风） |
+| `jewelry/` | [jewelry-marketing](../jewelry-marketing)（珠宝营销一键生成） | [识川 shichuan.ax0x.ai](https://shichuan.ax0x.ai/) | 🟡 柠檬黄（瑞士风） |
+| `game/` | [game-script-creation](../game-script-creation)（游戏剧本全流程创作） | 原创（非产品抽取） | 🟤 沙丘 Dune（电子杂志风） |
 
-用 [guizang-ppt-skill](https://github.com/op7418/guizang-ppt-skill) 瑞士国际主义风生成，每份 11 页全中文。键盘 `← →` 翻页 · `B` 静态 · `ESC` 索引。所有卦象 / 营销图均为真实素材。
+均用 [guizang-ppt-skill](https://github.com/op7418/guizang-ppt-skill) 生成，全中文。键盘 `← →` 翻页 · `B` 静态 · `ESC` 索引。所有卦象 / 营销图均为真实素材。`game/` 是另一位 agent 在 `game-script-creation/docs/ppt/` 做的，这里放了一份用于 Pages 托管。
 
 ## 加一个新 skill 的 deck
 

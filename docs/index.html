@@ -61,8 +61,7 @@
     font-size:clamp(1rem,1.5vw,1.3rem);line-height:1.55;color:var(--text-2)}
 
   /* grid of skill cards */
-  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(18px,2.4vw,30px);margin-top:clamp(20px,3vw,40px)}
-  @media (max-width:760px){.grid{grid-template-columns:1fr}}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(18px,2.4vw,30px);margin-top:clamp(20px,3vw,40px)}
 
   .card{position:relative;display:flex;flex-direction:column;
     background:var(--paper);border:1px solid var(--border);border-top:3px solid var(--c);
@@ -122,7 +121,7 @@
   <section class="hero">
     <span class="kicker">Funskills · 真实产品 → Skill</span>
     <h1>把真实产品，<br>折叠成 <em>skill</em>。</h1>
-    <p class="lead">每个 skill 都从一个真实上线的产品里抽出来 —— 算法、知识库、生产级 pipeline，压成任何 Agent 加载即用的能力。下面是它们的路演 deck（瑞士国际主义风，键盘 ← → 翻页）。</p>
+    <p class="lead">AX 的 Agent Skills 路演 deck —— 有的从真实上线产品里抽出来（半仙 ← 盘盘猫、珠宝 ← 识川），有的从零把创作流程做成 skill（游戏剧本）。瑞士国际主义风，键盘 ← → 翻页。</p>
   </section>
 
   <section class="grid">
@@ -147,6 +146,18 @@
       <div class="cta">
         <a class="go" href="jewelry/">查看路演 <span class="arr">→</span></a>
         <a class="pdf" href="jewelry/jewelry-roadshow.pdf">PDF ↓</a>
+      </div>
+    </article>
+
+    <article class="card game" style="--c:#B45309">
+      <span class="num">03</span>
+      <div class="role">游戏剧本创作 · 全流程陪跑</div>
+      <h2>游戏剧本<span class="id">game-script-creation</span></h2>
+      <p>从一个模糊灵感 → 世界观 / 主题 / 主线 / 人物 / 场景剧本，一步步陪非职业创作者写出来。</p>
+      <div class="src"><span class="sq"></span> 原创 · 适配所有游戏类型 · 中文为主</div>
+      <div class="cta">
+        <a class="go" href="game/">查看路演 <span class="arr">→</span></a>
+        <a class="pdf" href="game/game-roadshow.pdf">PDF ↓</a>
       </div>
     </article>
   </section>
