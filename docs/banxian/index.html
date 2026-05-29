@@ -442,6 +442,10 @@
     .pipeline{grid-template-columns:repeat(2,1fr)}
     .grid-2-7-5,.grid-2-6-6,.grid-2-8-4{grid-template-columns:1fr}
   }
+  /* 返回 listing */
+  #home-link{position:fixed;top:2.6vh;left:3vw;z-index:40;font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;color:#aaa;opacity:.5;mix-blend-mode:difference;transition:opacity .2s}
+  #home-link:hover{opacity:.92}
+  body.low-power #home-link{mix-blend-mode:normal;opacity:.72}
 </style>
 </head>
 <body>
@@ -474,6 +478,8 @@
 <canvas id="bg-dark" class="bg"></canvas>
 <canvas id="bg-light" class="bg"></canvas>
 <div id="hint">← → 翻页 · B 静态 · ESC 索引</div>
+
+<a id="home-link" href="../" aria-label="返回 AX Skills 列表">← AX Skills</a>
 
 <div id="deck">
 
