@@ -11,6 +11,10 @@
 
 <https://www.bilibili.com/video/BV19hdwBNEDy/> — Funskills 参赛 · 珠宝 skill 讲解（B 站，≤3 分钟）
 
+## 💎 关于识川
+
+本 skill 精炼自 AI 电商内容平台 **[识川 · shichuan.ax0x.ai](https://shichuan.ax0x.ai/)** 的核心营销模块 —— 这里只放了「珠宝品类」。识川支持全品类商品分析、图集 / 文案 / 视频生成、目录与批量上架。完整版 → **[shichuan.ax0x.ai](https://shichuan.ax0x.ai/)**。
+
 ## 它做什么
 
 把一张珠宝照片喂给它，它自动判断这是「成品」还是「散石」，然后跑对应 pipeline：

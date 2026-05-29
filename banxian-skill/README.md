@@ -6,6 +6,10 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Skill](https://img.shields.io/badge/Claude%20Code-Skill-purple)](https://docs.claude.com/en/docs/claude-code)
 
+## 🐱 关于盘盘猫
+
+本 skill 的算法与知识库，源自 AI 玄学平台 **[盘盘猫 · panpanmao.ai](https://www.panpanmao.ai/)** 的真实业务代码 —— 这里只放了「占卜引擎」这一小块。想要八字命盘 / 紫微斗数 / AI 解梦 / 星盘塔罗 / 人生 K 线 / MBTI 等 10+ 款完整 AI 玄学应用、三分钟大师级解读，去 **[panpanmao.ai](https://www.panpanmao.ai/)** 体验完整版。
+
 ## 它做什么
 
 打开任意 agent（Claude Code / Codex / OpenClaw），加载本 skill，跟半仙说一句你的事，半仙就给你算一卦：

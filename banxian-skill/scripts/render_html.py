@@ -787,7 +787,7 @@ def render(payload: dict) -> str:
         ascii_chart=html.escape(result.get("ascii_chart", "")),
         verse_block=build_verse_block(py_out),
         interp_blocks=build_interp_blocks(interp),
-        footnote=html.escape(f"banxian-skill · 算法引擎 panpanmao.com · 生成于 {timing.get('datetime_iso', '')}"),
+        footnote=html.escape(f"banxian-skill · 完整 AI 玄学 → 盘盘猫 panpanmao.ai · 生成于 {timing.get('datetime_iso', '')}"),
     )
 
 

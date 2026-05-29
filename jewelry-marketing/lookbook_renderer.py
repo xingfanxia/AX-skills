@@ -601,7 +601,7 @@ body {{ overflow-x: hidden; }}
   <footer class="colophon">
     <div class="left">Generated · {date_short}</div>
     <div class="end">— fin —</div>
-    <div class="right">jewelry-marketing · AX-skills</div>
+    <div class="right">识川 shichuan.ax0x.ai · jewelry-marketing</div>
   </footer>
 
 </div>

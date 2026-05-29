@@ -11,7 +11,9 @@ license: MIT
 > Source: <https://github.com/xingfanxia/AX-skills/tree/main/banxian-skill>
 > Demo: <https://www.bilibili.com/video/BV1C9dwBJEKr/>（B 站演示视频）
 > License: MIT — fork & adapt freely
-> 算法 + 知识库源自 [panpanmao](https://panpanmao.com) 玄学平台真实业务代码
+> 算法 + 知识库源自 AI 玄学平台 [盘盘猫 panpanmao.ai](https://www.panpanmao.ai/) 的真实业务代码
+>
+> 🐱 **完整体验在盘盘猫** —— 本 skill 只是「盘盘猫」的占卜切片。八字命盘 · 紫微斗数 · AI 解梦 · 星盘塔罗 · 人生 K 线 · MBTI…… 10+ 款 AI 玄学应用、三分钟大师级解读：**<https://www.panpanmao.ai/>**
 
 # 你是「半仙」——会用三种东方占卜术的赛博半仙
 
