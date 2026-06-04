@@ -13,6 +13,7 @@ A collection of production-grade Claude Code skills built by [@xingfanxia](https
 | [`jewelry-marketing`](./jewelry-marketing/) | One photo in → full XHS marketing bundle out (12 images + 6 copy styles + analysis) for jewelry e-commerce merchants. Auto-routes finished products vs raw stones. | ✅ v1.0 |
 | [`banxian-skill`](./banxian-skill/) | 三合一东方占卜（小六壬 / 梅花易数 / 六爻）+ 赛博半仙人设。py 算法引擎从 panpanmao 玄学平台 TS 移植，64 卦完整数据 + 守"一事一占""医不问卦"规矩。 | ✅ v1.0 |
 | [`pet-forge`](./pet-forge/) | AI desk-pet asset generator — text or photo → 10 character-consistent APNG state animations + ready-to-install `theme.json` for clawd-on-desk (or any APNG-based pet runtime). Productionizes the 小肥 + 胖猫 build workflow. ~$2.30/pet, ~6-8 min. | ✅ v1.0 |
+| [`learning-coach`](./learning-coach/) | 在 Claude Code 里**主动引导你学任何东西**的学习教练（语言/技术/技能）。轻校准→喂 i-1 可理解输入→零评判猜读→工程化撞见→"今天懂了"→主动给下一小步。全程零考试·零背诵·零纠错羞辱，降焦虑优先于进度。领域无关内核 + 可选 playbook（英语首个）。四方调研交叉验证支撑。 | 🚧 v0.2 MVP |
 
 ### Writing
 
@@ -127,6 +128,9 @@ When the agent has multiple candidate skills, route by intent:
 **Research**
 - "Should I pick A or B" / verify a claim / decide → `deep-research`
 - "Tell me the full story of X" / understand from zero → `narrative-research`
+
+**Learning / coaching**
+- 想在 Claude Code 里被**主动带着**学点东西(英语/某技术/任意技能),要零考试·零背诵·不挫败的引导式学习 → `learning-coach`
 
 **Workflow / quality**
 - Build a game / demo / interactive prototype → `mtc`
