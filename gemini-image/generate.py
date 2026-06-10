@@ -42,7 +42,7 @@ load_dotenv(_script_dir / ".env")
 DEFAULT_RESOLUTION = "2K"
 DEFAULT_ASPECT_RATIO = "16:9"
 DEFAULT_OUTPUT_DIR = str(Path.home() / "Downloads" / "gemini-image")
-MODEL = "gemini-3.1-flash-image-preview"
+MODEL = "gemini-3.1-flash-image"
 
 MIME_TO_EXT = {
     "image/png": ".png",

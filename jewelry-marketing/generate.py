@@ -105,7 +105,7 @@ def load_credentials() -> dict[str, Optional[str]]:
 # ─── Gemini analysis ────────────────────────────────────────────
 
 GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
-GEMINI_ANALYSIS_MODEL = "gemini-3-flash-preview"
+GEMINI_ANALYSIS_MODEL = "gemini-3.5-flash"
 
 
 def analyze_product(

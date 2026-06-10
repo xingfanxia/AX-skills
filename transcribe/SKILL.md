@@ -77,7 +77,7 @@ For interviews or multi-speaker content, consider asking if the user wants speak
 | Argument | Description | Default |
 |----------|-------------|---------|
 | `--provider` | `gemini` or `openai` | `gemini` |
-| `--model` | Gemini model (ignored for `--provider openai`) | `gemini-3-flash-preview` |
+| `--model` | Gemini model (ignored for `--provider openai`) | `gemini-3.5-flash` |
 | `--diarize` | Enable speaker identification (implied for OpenAI) | False |
 | `--language` | ISO-639-1 code (zh, en, ja, es) | Auto-detect |
 | `--out_txt` | Save transcript to text file | None |

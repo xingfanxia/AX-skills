@@ -760,7 +760,7 @@ Examples:
     )
     p.add_argument(
         "--model",
-        default="gemini-3-flash-preview",
+        default="gemini-3.5-flash",
         help="Gemini model (ignored for --provider openai)",
     )
     p.add_argument(
