@@ -41,6 +41,10 @@ echo 'GEMINI_API_KEY=your_key_here' > ~/AX-skills/gemini-image/.env
 # Character consistency across scenes
 ~/.claude/skills/gemini-image/generate.py "the same character now drinking coffee" \
   --reference scene1.png --reference scene2.png
+
+# Highest quality (Nano Banana Pro), or compare both tiers side-by-side
+~/.claude/skills/gemini-image/generate.py "editorial portrait" --model pro
+~/.claude/skills/gemini-image/generate.py "editorial portrait" --ab-test --name compare
 ```
 
 ## CLI
@@ -48,6 +52,8 @@ echo 'GEMINI_API_KEY=your_key_here' > ~/AX-skills/gemini-image/.env
 | Flag | Purpose | Default |
 |---|---|---|
 | `prompt` | Image prompt (positional, required) | — |
+| `--model` | `nb2` (Nano Banana 2, `gemini-3.1-flash-image`) or `pro` (Nano Banana Pro, `gemini-3-pro-image`) | `nb2` |
+| `--ab-test` | Generate with BOTH model tiers; filenames get `_nb2` / `_pro` suffix | off |
 | `--resolution` | `1K` / `2K` / `4K` | `2K` |
 | `--aspect` | Aspect ratio (`1:1`, `16:9`, `9:16`, etc.) | `16:9` |
 | `--output` | Output directory | `~/Downloads/gemini-image/` |
@@ -90,4 +96,4 @@ sips -s format jpeg -s formatOptions 85 in.png --out out.jpg
 
 ## Cost note
 
-Gemini 3.1 Flash Image is currently in preview (free tier available). Check current pricing at https://ai.google.dev/pricing.
+Both models are GA (previews shut down 2026-06-25). nb2 (`gemini-3.1-flash-image`) output: $0.067/1K, $0.101/2K, $0.151/4K per image; pro (`gemini-3-pro-image`) costs roughly 2x nb2. Check current pricing at https://ai.google.dev/gemini-api/docs/pricing.
