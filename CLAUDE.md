@@ -38,4 +38,6 @@ Every deck is **guizang-ppt-skill Style A (电子杂志) · 🌙 沙丘 / Dune**
 - **Pages CDN (Fastly) caches hard.** After a push the new path can 404 / serve stale for ~1–2 min; `?cb=` does NOT bust it — just retry. Build status: `gh api repos/xingfanxia/AX-skills/pages/builds`.
 
 ## Current decks
-`banxian-skill` · `jewelry-marketing` · `game-script-creation` · `proxy-node-setup` — all 沙丘 Dune Style A.
+`banxian-skill` · `jewelry-marketing` · `game-script-creation` · `proxy-node-setup` · `dr-sharp` · `trident` — all 沙丘 Dune Style A.
+
+> `dr-sharp` + `trident` (added 2026-06-14) are improved ports of 秒秒Guo (mmguo.dev) prompts — credit the source in the deck/card (`改进自 秒秒Guo`), not a real product link. They are content/persona skills (no infra), so the genericize rule is trivially satisfied.
