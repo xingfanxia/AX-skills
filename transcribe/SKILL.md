@@ -56,14 +56,14 @@ How 妙记 hosting works: the skill converts the audio to a small 16kHz-mono mp3
 
 ```bash
 # Default 妙记 — ask the user for speaker count first
-<skill-dir>/venv/bin/python <skill-dir>/transcribe_any.py meeting.m4a --speakers 2 --out_txt transcript.txt
+<skill-dir>/venv/bin/python <skill-dir>/transcribe_any.py meeting.m4a --speakers 2 --out_txt transcript.md
 
 # 妙记 auto speaker detection (count unknown)
-<skill-dir>/venv/bin/python <skill-dir>/transcribe_any.py interview.m4a --out_txt transcript.txt
+<skill-dir>/venv/bin/python <skill-dir>/transcribe_any.py interview.m4a --out_txt transcript.md
 
 # Fallback providers
-<skill-dir>/venv/bin/python <skill-dir>/transcribe_any.py audio.mp3 --provider gemini --diarize --out_txt transcript.txt
-<skill-dir>/venv/bin/python <skill-dir>/transcribe_any.py audio.mp3 --provider openai --out_txt transcript.txt
+<skill-dir>/venv/bin/python <skill-dir>/transcribe_any.py audio.mp3 --provider gemini --diarize --out_txt transcript.md
+<skill-dir>/venv/bin/python <skill-dir>/transcribe_any.py audio.mp3 --provider openai --out_txt transcript.md
 ```
 
 > Replace `<skill-dir>` with the absolute path where the skill is installed.
@@ -74,12 +74,12 @@ How 妙记 hosting works: the skill converts the audio to a small 16kHz-mono mp3
 If the speaker count isn't obvious, ask the user. Pass `--speakers N` (or omit / `0` for auto).
 
 ### 2. Determine output file path
-**ALWAYS save the transcript to a file.** Replace the audio extension with `_transcript.txt`:
-- `/path/to/meeting.m4a` → `/path/to/meeting_transcript.txt`
+**ALWAYS save the transcript to a file.** Replace the audio extension with `_transcript.md`:
+- `/path/to/meeting.m4a` → `/path/to/meeting_transcript.md`
 
 ### 3. Run transcription
 ```bash
-<skill-dir>/venv/bin/python <skill-dir>/transcribe_any.py "/path/audio.m4a" --speakers N --out_txt "/path/audio_transcript.txt"
+<skill-dir>/venv/bin/python <skill-dir>/transcribe_any.py "/path/audio.m4a" --speakers N --out_txt "/path/audio_transcript.md"
 ```
 
 ## CLI Arguments
@@ -91,8 +91,12 @@ If the speaker count isn't obvious, ask the user. Pass `--speakers N` (or omit /
 | `--model` | Gemini model (ignored for `lark`/`openai`) | `gemini-3.5-flash` |
 | `--diarize` | Speaker ID for `gemini` (implied for `lark`/`openai`) | False |
 | `--language` | ISO-639-1 code (zh, en, ja) for gemini/openai | Auto-detect |
-| `--out_txt` | Save transcript to text file | None |
+| `--out_txt` | Save the markdown transcript to a file (use a `.md` path) | None |
 | `--out_json` | Save full response to JSON | None |
+
+The skill prints (and `--out_txt` saves) a **markdown document**: a header with
+metadata + the diarized transcript inside a fenced code block, so it renders
+cleanly anywhere markdown is shown.
 
 ## Tunable Env Vars
 
@@ -107,10 +111,20 @@ If the speaker count isn't obvious, ask the user. Pass `--speakers N` (or omit /
 
 ## Output Example
 
+The output is a markdown document:
+
+````
+# meeting
+
+> provider: lark · model: volc.lark.minutes · speakers: 2
+
+## Transcript
+
 ```
 [00:00:20 - 00:00:45] SPEAKER_1: 欢迎收听本期节目。
 [00:00:45 - 00:01:05] SPEAKER_2: Thanks for having me.
 ```
+````
 
 ## Fallback Providers (gemini / openai)
 

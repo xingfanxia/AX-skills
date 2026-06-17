@@ -768,6 +768,20 @@ def transcribe_lark(audio_path: Path, num_speakers: int) -> Tuple[str, Dict[str,
 
 # ---------------------------------------------------------------------------
 
+def to_markdown(text: str, audio_path: Path, resp: Dict[str, Any]) -> str:
+    """Render the transcript as a markdown document: a header with metadata and
+    the diarized transcript inside a fenced code block (so each
+    `[ts] SPEAKER:` line keeps its own line when rendered as markdown)."""
+    speakers = sorted(set(re.findall(r"\bSPEAKER_\d+\b", text)))
+    meta = [f"provider: {resp.get('provider', '?')}"]
+    if resp.get("model"):
+        meta.append(f"model: {resp['model']}")
+    if speakers:
+        meta.append(f"speakers: {len(speakers)}")
+    header = f"# {audio_path.stem}\n\n> " + " · ".join(meta) + "\n"
+    return f"{header}\n## Transcript\n\n```\n{text.strip()}\n```\n"
+
+
 def main() -> None:
     p = argparse.ArgumentParser(
         description="Audio transcription with Gemini 3 Flash or OpenAI gpt-4o-transcribe-diarize. Auto-chunks long audio at silence boundaries; chunks run in parallel.",
@@ -846,12 +860,14 @@ Examples:
         out_json_path.write_text(json.dumps(resp, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         _info(f"Saved JSON to {out_json_path}")
 
+    markdown = to_markdown(text, audio_path, resp)
+
     if args.out_txt:
         out_txt_path = Path(args.out_txt).expanduser().resolve()
-        out_txt_path.write_text(text + "\n", encoding="utf-8")
-        _info(f"Saved transcript to {out_txt_path}")
+        out_txt_path.write_text(markdown, encoding="utf-8")
+        _info(f"Saved markdown transcript to {out_txt_path}")
 
-    print(text)
+    print(markdown)
 
 
 if __name__ == "__main__":
