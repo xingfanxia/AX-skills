@@ -1,85 +1,96 @@
 ---
 name: transcribe
-description: This skill should be used when the user wants to "transcribe audio", "transcribe video", "speech to text", "convert audio to text", "transcription", or needs to extract text from audio/video files. Supports files up to 500MB / ~8.4 hours with speaker diarization. Auto-chunks long audio at silence boundaries and runs chunks in parallel.
+description: This skill should be used when the user wants to "transcribe audio", "transcribe video", "speech to text", "convert audio to text", "transcription", or needs to extract text from audio/video files. Default engine is 妙记 (Volcano Lark Minutes ASR) for best speaker diarization; Gemini/OpenAI available as fallbacks. Supports files up to ~8.4 hours with speaker diarization.
 ---
 
-# Audio Transcription Skill (Gemini + OpenAI)
+# Audio Transcription Skill (妙记 / Gemini / OpenAI)
 
 ## Overview
 
-Transcribe audio and video files using **Gemini 3 Flash** (default — better quality + cost) or **OpenAI `gpt-4o-transcribe-diarize`** (alternative).
+Transcribe audio and video files. Three providers, default **妙记 (Volcano Lark Minutes ASR, `volc.lark.minutes`)**:
 
-**Why it's robust on long audio:** Gemini 3 Flash in a single call loops and fabricates timestamps on audio longer than ~15 minutes. This skill auto-splits long audio at silence boundaries (ffmpeg `silencedetect`) and transcribes chunks in parallel — each chunk stays in the model's coherent range and won't cut mid-sentence.
+| Provider | When | Diarization |
+|---|---|---|
+| **`lark`** (默认 妙记) | Default — best speaker accuracy, single call | Server-side, most accurate |
+| `gemini` | Fallback — no Volcano creds, or non-diarized notes | Chunk-stitched + Senko/pyannote |
+| `openai` | Fallback — granular turn detection | gpt-4o-transcribe-diarize |
+
+**Why 妙记 is the default:** verified across 5 real recordings (2026-06-17), 妙记 returned the exact speaker count on every 2-person conversation (2/2/2/2) while Gemini-chunk-stitch, OpenAI, and the raw Doubao auc models all over-counted (3–5 speakers). 妙记 does server-side diarization in a **single call** (no chunking, no cross-chunk speaker reconcile) and handled a 3.45-hour file in one pass.
+
+## ⚠️ Ask the user how many speakers (for `lark`)
+
+Before transcribing with 妙记, **ask the user how many speakers are in the audio** if it isn't obvious. Pass it via `--speakers N`. Use `--speakers 0` (auto-detect) only when the count is unknown — auto is good but a known count improves accuracy. Example prompt: *"How many people are speaking in this recording? (I'll auto-detect if you're not sure.)"*
 
 ## Capabilities
 
-- **File size**: Up to 500MB (Gemini); OpenAI is 25MB per request — auto-chunks under that
-- **Audio length**: Up to ~8.4 hours
-- **Speaker diarization**: Identifies different speakers (`SPEAKER_0`, `SPEAKER_1`, …)
-- **Auto language detection**: Works with any language
-- **Code-switching**: Preserves Chinese + English mixed audio correctly
-- **Long-audio coherence**: Silence-aware chunking + parallel transcription (default 8 concurrent)
-- **Formats**: MP3, WAV, M4A, MP4, OGG, FLAC, WebM, AAC
+- **Speaker diarization**: `SPEAKER_1`, `SPEAKER_2`, … (妙记 server-side; best accuracy)
+- **Audio length**: single-call up to several hours (妙记 handled 3.45h); Gemini/OpenAI auto-chunk
+- **Auto language detection** + **code-switching**: Chinese + English mixed handled cleanly
+- **Formats**: MP3, WAV, M4A, MP4, OGG, FLAC, WebM, AAC (auto-converted to 16kHz mono mp3 before upload)
 
 ## Setup (one-time)
 
 ```bash
-# Install in a venv next to the script
-cd <skill-dir>           # e.g. ~/.claude/skills/transcribe (a symlink to AX-skills/transcribe)
+cd <skill-dir>           # e.g. ~/.claude/plugins/transcribe
 python3 -m venv venv
-./venv/bin/pip install google-genai openai   # openai is optional, only needed for --provider openai
+./venv/bin/pip install tos requests          # 妙记 (default): TOS hosting + API
+./venv/bin/pip install google-genai openai   # optional, for --provider gemini/openai
+brew install ffmpeg                           # required (audio conversion + chunking)
 
-# Install ffmpeg for silence-aware chunking (required for audio > 15 min)
-brew install ffmpeg      # macOS
-# or: apt install ffmpeg
-
-# Set API keys (Google AI Studio → https://aistudio.google.com/apikey)
-echo 'GEMINI_API_KEY=your_key_here' > .env
-# Optional:
-echo 'OPENAI_API_KEY=your_openai_key' >> .env
+# Credentials in the skill's .env (gitignored):
+#   妙记 (default):
+echo 'VOLC_API_KEY=...'           >> .env     # 妙记 x-api-key
+echo 'VOLC_TOS_ACCESS_KEY=...'    >> .env     # Volcano TOS (hosts audio for 妙记 to fetch)
+echo 'VOLC_TOS_SECRET_KEY=...'    >> .env
+echo 'VOLC_TOS_BUCKET=...'        >> .env
+echo 'VOLC_TOS_REGION=...'        >> .env     # e.g. cn-shanghai
+echo 'VOLC_TOS_ENDPOINT=...'      >> .env     # e.g. tos-cn-shanghai.volces.com
+#   fallbacks (optional):
+echo 'GEMINI_API_KEY=...'         >> .env
+echo 'OPENAI_API_KEY=...'         >> .env
 ```
+
+How 妙记 hosting works: the skill converts the audio to a small 16kHz-mono mp3, uploads it to Volcano TOS, hands 妙记 a presigned URL, then deletes the object after transcription. 妙记 fetches from TOS intra-China (fast); the only cross-border leg is the upload, minimized by compression + parallel multipart.
 
 ## Quick Start
 
 ```bash
-# Basic transcription (always save to file)
-<skill-dir>/venv/bin/python <skill-dir>/transcribe_any.py audio.mp3 --out_txt transcript.txt
+# Default 妙记 — ask the user for speaker count first
+<skill-dir>/venv/bin/python <skill-dir>/transcribe_any.py meeting.m4a --speakers 2 --out_txt transcript.txt
 
-# With speaker diarization (recommended for interviews/podcasts)
-<skill-dir>/venv/bin/python <skill-dir>/transcribe_any.py meeting.m4a --diarize --out_txt transcript.txt
+# 妙记 auto speaker detection (count unknown)
+<skill-dir>/venv/bin/python <skill-dir>/transcribe_any.py interview.m4a --out_txt transcript.txt
 
-# Use OpenAI (auto-uses gpt-4o-transcribe-diarize — speaker labels always on)
-<skill-dir>/venv/bin/python <skill-dir>/transcribe_any.py meeting.m4a --provider openai --out_txt transcript.txt
+# Fallback providers
+<skill-dir>/venv/bin/python <skill-dir>/transcribe_any.py audio.mp3 --provider gemini --diarize --out_txt transcript.txt
+<skill-dir>/venv/bin/python <skill-dir>/transcribe_any.py audio.mp3 --provider openai --out_txt transcript.txt
 ```
 
-> Replace `<skill-dir>` with the absolute path where you installed the skill.
+> Replace `<skill-dir>` with the absolute path where the skill is installed.
 
 ## Workflow
 
-### 1. Determine Output File Path
+### 1. Ask about speaker count (for default 妙记)
+If the speaker count isn't obvious, ask the user. Pass `--speakers N` (or omit / `0` for auto).
 
-**ALWAYS save the transcript to a file.** Generate the output path by replacing the audio file extension with `_transcript.txt`:
-- Input: `/path/to/audio.mp3` → Output: `/path/to/audio_transcript.txt`
-- Input: `/path/to/meeting.m4a` → Output: `/path/to/meeting_transcript.txt`
+### 2. Determine output file path
+**ALWAYS save the transcript to a file.** Replace the audio extension with `_transcript.txt`:
+- `/path/to/meeting.m4a` → `/path/to/meeting_transcript.txt`
 
-### 2. Run Transcription
-
+### 3. Run transcription
 ```bash
-<skill-dir>/venv/bin/python <skill-dir>/transcribe_any.py "/path/to/audio.mp3" --out_txt "/path/to/audio_transcript.txt"
+<skill-dir>/venv/bin/python <skill-dir>/transcribe_any.py "/path/audio.m4a" --speakers N --out_txt "/path/audio_transcript.txt"
 ```
-
-### 3. Optional: Ask About Diarization
-
-For interviews or multi-speaker content, consider asking if the user wants speaker identification (`--diarize`).
 
 ## CLI Arguments
 
 | Argument | Description | Default |
 |----------|-------------|---------|
-| `--provider` | `gemini` or `openai` | `gemini` |
-| `--model` | Gemini model (ignored for `--provider openai`) | `gemini-3.5-flash` |
-| `--diarize` | Enable speaker identification (implied for OpenAI) | False |
-| `--language` | ISO-639-1 code (zh, en, ja, es) | Auto-detect |
+| `--provider` | `lark` (妙记), `gemini`, or `openai` | `lark` |
+| `--speakers` | Expected speaker count for `lark` (0 = auto) | `0` |
+| `--model` | Gemini model (ignored for `lark`/`openai`) | `gemini-3.5-flash` |
+| `--diarize` | Speaker ID for `gemini` (implied for `lark`/`openai`) | False |
+| `--language` | ISO-639-1 code (zh, en, ja) for gemini/openai | Auto-detect |
 | `--out_txt` | Save transcript to text file | None |
 | `--out_json` | Save full response to JSON | None |
 
@@ -87,54 +98,35 @@ For interviews or multi-speaker content, consider asking if the user wants speak
 
 | Env Var | Description | Default |
 |---|---|---|
-| `CHUNK_THRESHOLD_SEC` | Only chunk if audio > this many sec | `900` (15 min) |
-| `CHUNK_TARGET_SEC` | Aim for chunks of this length | `480` (8 min) |
-| `CHUNK_MIN_SEC` | Min chunk size when picking silence boundary | `300` (5 min) |
-| `CHUNK_MAX_SEC` | Max chunk size when picking silence boundary | `720` (12 min) |
-| `CHUNK_PARALLELISM` | Concurrent API calls per file | `8` |
-| `GEMINI_API_KEY` | Required for `--provider gemini` | — |
-| `OPENAI_API_KEY` | Required for `--provider openai` | — |
+| `VOLC_API_KEY`, `VOLC_TOS_*` | 妙记 + TOS credentials (required for `lark`) | — |
+| `LARK_MP3_BITRATE` | mp3 bitrate for upload (lower = faster upload) | `32k` |
+| `LARK_SOURCE_LANG` | 妙记 source language | `zh_cn` |
+| `LARK_UPLOAD_TASKS` | Parallel multipart upload connections | `8` |
+| `CHUNK_*`, `CHUNK_PARALLELISM` | Gemini/OpenAI chunking knobs | see code |
+| `GEMINI_API_KEY` / `OPENAI_API_KEY` | Fallback providers | — |
 
-## Output Examples
+## Output Example
 
-**With diarization:**
 ```
-[00:00:20 - 00:00:45] SPEAKER_0: Welcome to today's episode...
-[00:00:45 - 00:01:05] SPEAKER_1: Thanks for having me...
+[00:00:20 - 00:00:45] SPEAKER_1: 欢迎收听本期节目。
+[00:00:45 - 00:01:05] SPEAKER_2: Thanks for having me.
 ```
 
-**Without diarization:**
-```
-Welcome to today's episode. We have a special guest...
-Thanks for having me. I'm excited to be here...
-```
+## Fallback Providers (gemini / openai)
 
-## Provider Choice
+Both auto-split long audio at silence boundaries (ffmpeg `silencedetect`) and transcribe chunks in parallel, then reconcile speaker labels across chunks. This was the original engine before 妙记; use it when Volcano creds aren't available.
 
-**Default to `gemini`.** Side-by-side testing on a 2-hour Chinese+English conversation showed Gemini produces:
-- Proper punctuation (OpenAI runs sentences together)
-- Correct code-switching (`ROI` stays as `ROI`; OpenAI mis-transcribed it as `RY`)
-- Cleaner diarization (OpenAI sometimes attributes both sides of a Q&A to the same speaker)
-- No hallucinated English from Chinese filler particles (OpenAI emitted `"She is she."` from a Chinese 嗯/是)
-
-OpenAI's main advantage: more granular turn detection (catches every interjection). Useful for podcast-style transcripts where every "yeah/嗯" matters; less useful for note-taking.
+- **gemini** (default fallback): Gemini 3 Flash loops/fabricates timestamps on single-call audio > ~15 min, so chunking is what makes it usable. Good punctuation + code-switching; diarization is chunk-stitched (less accurate than 妙记).
+- **openai** `gpt-4o-transcribe-diarize`: always diarized, granular turn detection; sometimes runs sentences together and mis-handles Chinese fillers.
 
 ## Troubleshooting
 
-**Unicode filename error:**
-```bash
-cp "中文文件名.m4a" /tmp/audio.m4a
-# Then transcribe /tmp/audio.m4a
-```
-
-**Missing API key:**
-Set `GEMINI_API_KEY` in the skill's `.env` file (or `OPENAI_API_KEY` for `--provider openai`).
-
-**ffmpeg not found:**
-Long-audio chunking requires `ffmpeg`. Install via `brew install ffmpeg`. Without it, the skill falls back to a single transcription call — which may loop on Gemini for audio > 15 min.
+- **`妙记 provider unavailable` / missing creds:** ensure `tos requests` are installed in the venv and `VOLC_API_KEY` + `VOLC_TOS_*` are in `.env`. Fall back with `--provider gemini`.
+- **Slow upload:** cross-border upload to a China TOS region can throttle; the skill compresses + uses parallel multipart. Lower `LARK_MP3_BITRATE` (e.g. `16k`) to shrink the upload further.
+- **Unicode filename error:** `cp "中文名.m4a" /tmp/audio.m4a` then transcribe the copy.
+- **ffmpeg not found:** required for audio conversion. `brew install ffmpeg`.
 
 ## Notes
 
-- Gemini API cost: ~$0.50/M input tokens (~$0.20 for a 2-hour file)
-- OpenAI gpt-4o-transcribe-diarize: $0.0075/min (~$0.90 for a 2-hour file)
-- Wall time on a 2-hour file: ~37 sec with Gemini (8 parallel chunks) vs ~3 min with OpenAI
+- 妙记 wall time: ~100–150s for a 30–60 min file (single call); the 3.45h test ran in one pass.
+- Gemini API cost: ~$0.20 for a 2-hour file. OpenAI: ~$0.90 for a 2-hour file.

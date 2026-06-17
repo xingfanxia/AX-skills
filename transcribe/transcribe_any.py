@@ -736,6 +736,37 @@ def transcribe_openai(
 
 
 # ---------------------------------------------------------------------------
+# Provider: 妙记 (Volcano Lark Minutes ASR) — best diarization, single call
+# ---------------------------------------------------------------------------
+
+def transcribe_lark(audio_path: Path, num_speakers: int) -> Tuple[str, Dict[str, Any]]:
+    """Transcribe via 妙记 (volc.lark.minutes). Server-side diarization in a
+    single call — no chunking / cross-chunk speaker reconcile. Best speaker
+    accuracy of all providers (verified across 5 real recordings 2026-06-17).
+
+    Hosts the audio in Volcano TOS so 妙记 can fetch it via FileURL. Needs
+    VOLC_API_KEY + VOLC_TOS_* in the skill's .env. See volc_lark.py.
+
+    num_speakers: 0 = auto-detect; N = hint the expected speaker count.
+    """
+    try:
+        import volc_lark
+    except ImportError as e:
+        _die(f"妙记 provider unavailable: {e}. Run `pip install tos requests` in the skill venv, or use --provider gemini.")
+    try:
+        text = volc_lark.lark_transcribe(audio_path, num_speakers)
+    except volc_lark.LarkError as e:
+        _die(f"妙记 transcription failed: {e}\n"
+             f"Check VOLC_API_KEY + VOLC_TOS_* in the skill .env, or fall back with --provider gemini.")
+    return text, {
+        "provider": "lark",
+        "model": "volc.lark.minutes",
+        "num_speakers": num_speakers or "auto",
+        "text": text,
+    }
+
+
+# ---------------------------------------------------------------------------
 
 def main() -> None:
     p = argparse.ArgumentParser(
@@ -754,19 +785,26 @@ Examples:
     p.add_argument("audio", type=str, help="Path to audio file")
     p.add_argument(
         "--provider",
-        choices=["gemini", "openai"],
-        default="gemini",
-        help="STT provider (default: gemini — recommended for quality + cost)",
+        choices=["lark", "gemini", "openai"],
+        default="lark",
+        help="STT provider (default: lark — 妙记, best diarization, single call)",
     )
     p.add_argument(
         "--model",
         default="gemini-3.5-flash",
-        help="Gemini model (ignored for --provider openai)",
+        help="Gemini model (ignored for --provider lark/openai)",
     )
     p.add_argument(
         "--diarize",
         action="store_true",
-        help="Enable speaker diarization (implied for --provider openai)",
+        help="Enable speaker diarization (implied for --provider lark/openai)",
+    )
+    p.add_argument(
+        "--speakers",
+        type=int,
+        default=0,
+        help="Expected speaker count for --provider lark (0 = auto-detect). "
+             "Ask the user how many speakers when known — improves accuracy.",
     )
     p.add_argument(
         "--language",
@@ -793,7 +831,9 @@ Examples:
 
     start_time = time.time()
 
-    if args.provider == "openai":
+    if args.provider == "lark":
+        text, resp = transcribe_lark(audio_path, args.speakers)
+    elif args.provider == "openai":
         text, resp = transcribe_openai(audio_path, args.language, args.diarize)
     else:
         text, resp = transcribe_gemini(audio_path, args.model, args.language, args.diarize)

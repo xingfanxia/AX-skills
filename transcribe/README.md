@@ -1,10 +1,10 @@
 # transcribe
 
-> Audio / video transcription via Google Gemini 3 Flash (default) or OpenAI gpt-4o-transcribe-diarize. Speaker diarization, auto language detection, files up to 500MB / ~8.4 hours. **Silence-aware chunking + parallel transcription** for long audio.
+> Audio / video transcription. Default engine **妙记 (Volcano Lark Minutes ASR)** for best speaker diarization (single-call, server-side); **Gemini 3.5 Flash** / **OpenAI gpt-4o-transcribe-diarize** as fallbacks. Auto language detection, code-switching, files up to ~8.4 hours.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Single-file CLI wrapper for transcription. Handles long-form audio (interviews, podcasts, meetings) by auto-chunking at silence boundaries with `ffmpeg` and transcribing chunks in parallel — sidesteps Gemini 3 Flash's loop-on-long-audio failure mode.
+Single-file CLI wrapper for transcription. The default 妙记 provider does server-side diarization in one call — verified across 5 real recordings (2026-06-17) to return the exact speaker count on every 2-person conversation, where chunk-stitched Gemini/OpenAI and the raw Doubao auc models all over-counted. Gemini/OpenAI fallbacks auto-chunk long audio at silence boundaries and transcribe in parallel.
 
 ## When to use
 
@@ -18,34 +18,36 @@ Single-file CLI wrapper for transcription. Handles long-form audio (interviews, 
 git clone https://github.com/xingfanxia/AX-skills.git ~/AX-skills
 ln -sf ~/AX-skills/transcribe ~/.claude/skills/transcribe
 
-# System dep — required for silence-aware chunking of long audio
-brew install ffmpeg                   # macOS
-# or: apt install ffmpeg              # Debian/Ubuntu
+# System dep — required for audio conversion + chunking
+brew install ffmpeg                   # macOS  (or: apt install ffmpeg)
 
-# Set up venv + API key
+# venv + deps
 cd ~/AX-skills/transcribe
 python3 -m venv venv
-./venv/bin/pip install google-genai openai   # openai is optional, only for --provider openai
-echo 'GEMINI_API_KEY=your_key_here' > .env   # get key at https://aistudio.google.com/apikey
-# Optional for --provider openai:
-# echo 'OPENAI_API_KEY=sk-...' >> .env
+./venv/bin/pip install tos requests          # 妙记 (default)
+./venv/bin/pip install google-genai openai   # optional — Gemini/OpenAI fallbacks
+
+# Credentials in .env (gitignored, never committed):
+#   妙记 (default): VOLC_API_KEY + VOLC_TOS_ACCESS_KEY/SECRET_KEY/BUCKET/REGION/ENDPOINT
+#   fallbacks:      GEMINI_API_KEY, OPENAI_API_KEY
 ```
 
-`.env` is gitignored — never committed.
+`.env` is gitignored — never committed. 妙记 hosts the audio in Volcano TOS (a small 16kHz-mono mp3, deleted after) so the API can fetch it via a presigned URL.
 
 ## Usage
 
 ```bash
-# Basic — Gemini, no speaker labels
-~/AX-skills/transcribe/venv/bin/python ~/AX-skills/transcribe/transcribe_any.py audio.mp3 --out_txt transcript.txt
+# Default 妙记 — pass the speaker count if known (0 = auto-detect)
+~/AX-skills/transcribe/venv/bin/python ~/AX-skills/transcribe/transcribe_any.py meeting.m4a --speakers 2 --out_txt transcript.txt
 
-# With speaker labels
-~/AX-skills/transcribe/venv/bin/python ~/AX-skills/transcribe/transcribe_any.py meeting.m4a --diarize --out_txt transcript.txt
+# 妙记 auto speaker detection
+~/AX-skills/transcribe/venv/bin/python ~/AX-skills/transcribe/transcribe_any.py interview.m4a --out_txt transcript.txt
 
-# Use OpenAI (gpt-4o-transcribe-diarize — speaker labels always on)
-~/AX-skills/transcribe/venv/bin/python ~/AX-skills/transcribe/transcribe_any.py meeting.m4a --provider openai --out_txt transcript.txt
+# Fallbacks
+... transcribe_any.py audio.mp3 --provider gemini --diarize --out_txt transcript.txt
+... transcribe_any.py audio.mp3 --provider openai --out_txt transcript.txt
 ```
 
-Long files (>15 min) are auto-chunked at silence boundaries with `ffmpeg silencedetect` and transcribed in parallel (default 8 concurrent). 2-hour file → ~37 sec on Gemini.
+妙记 transcribes in one call (~100–150s for a 30–60 min file; handled a 3.45h file in one pass). Gemini/OpenAI fallbacks auto-chunk files >15 min at silence boundaries and run chunks in parallel.
 
 See [SKILL.md](./SKILL.md) for full CLI options, env var tunables, and provider-choice rationale.
