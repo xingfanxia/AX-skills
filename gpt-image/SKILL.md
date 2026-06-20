@@ -2,7 +2,7 @@
 name: gpt-image
 description: |
   Generate images via OpenAI's GPT Image family (Azure deployment
-  gpt-image-2-1, OpenAI direct fallback on rate-limit). PREFER this skill
+  gpt-image-2, OpenAI direct fallback on rate-limit). PREFER this skill
   for: photorealistic scenes, product shots, editorial/brand imagery, UI
   mockups, and any image where embedded text MUST render correctly
   (posters with titles, infographics with labels, logos with wordmark).
@@ -17,7 +17,7 @@ description: |
 # /gpt-image — Azure-first, OpenAI-fallback image generation
 
 Generate images using GPT Image via Azure (preferred — user has contracted
-compute at 10 RPM on deployment `gpt-image-2-1`), with automatic fallback
+compute at 10 RPM on deployment `gpt-image-2`), with automatic fallback
 to OpenAI direct if Azure rate-limits.
 
 ## When to use this skill vs nanobanana
@@ -104,9 +104,10 @@ Add to `~/.zshrc`:
 
 ```bash
 export AZURE_OPENAI_API_KEY="<azure-key>"
-export AZURE_OPENAI_ENDPOINT="https://xingf-mnqrf4mc-eastus2.openai.azure.com"
-export AZURE_OPENAI_DEPLOYMENT="gpt-image-2-1"    # deployment name (URL path)
+export AZURE_OPENAI_ENDPOINT="https://xingf-mnqrf4mc-eastus2.cognitiveservices.azure.com"
+export AZURE_OPENAI_DEPLOYMENT="gpt-image-2"      # deployment name (URL path)
 export AZURE_OPENAI_MODEL="gpt-image-2"           # underlying model (body)
+export AZURE_OPENAI_API_VERSION="2025-04-01-preview"
 export OPENAI_API_KEY="<openai-direct-key>"       # for fallback
 ```
 
@@ -115,9 +116,10 @@ export OPENAI_API_KEY="<openai-direct-key>"       # for fallback
 ```bash
 mkdir -p ~/.config/gpt-image
 cat > ~/.config/gpt-image/credentials <<'EOF'
-AZURE_OPENAI_ENDPOINT=https://xingf-mnqrf4mc-eastus2.openai.azure.com
-AZURE_OPENAI_DEPLOYMENT=gpt-image-2-1
+AZURE_OPENAI_ENDPOINT=https://xingf-mnqrf4mc-eastus2.cognitiveservices.azure.com
+AZURE_OPENAI_DEPLOYMENT=gpt-image-2
 AZURE_OPENAI_MODEL=gpt-image-2
+AZURE_OPENAI_API_VERSION=2025-04-01-preview
 AZURE_OPENAI_API_KEY=<azure-key>
 OPENAI_API_KEY=<openai-direct-key>
 EOF

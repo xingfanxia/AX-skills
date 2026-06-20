@@ -40,3 +40,7 @@ dist/
 # Big binaries (we keep examples small via low-res JPEG; Git LFS not needed)
 *.mp4
 *.mov
+
+# build/scratch (never commit to the public repo)
+node_modules/
+tmp/

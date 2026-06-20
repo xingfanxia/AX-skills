@@ -1,6 +1,6 @@
 # gpt-image
 
-> OpenAI gpt-image-2 / gpt-image-2-1 image generation — handles both Azure-routed and direct OpenAI API calls, with auto rate-limit fallback.
+> OpenAI gpt-image-2 image generation — handles both Azure-routed and direct OpenAI API calls, with auto rate-limit fallback.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 

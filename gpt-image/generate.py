@@ -47,7 +47,7 @@ CRED_KEYS = (
 
 # Azure's quirk: the deployment name (URL path) and the underlying model name
 # (request body) are different. For the user's setup:
-#   deployment = "gpt-image-2-1"   # what the user named it in Azure
+#   deployment = "gpt-image-2"     # what the user named it in Azure
 #   model      = "gpt-image-2"     # what Azure calls the actual model
 # When calling images.edit on the classic deployment path, Azure requires the
 # REAL model name in the request body — passing the deployment name there
@@ -56,7 +56,7 @@ CRED_KEYS = (
 DEFAULT_AZURE_MODEL = "gpt-image-2"
 
 # Default Azure API version — 2025-04-01-preview is what the user's
-# gpt-image-2-1 deployment accepts for both generations and edits (classic
+# gpt-image-2 deployment accepts for both generations and edits (classic
 # deployment path). The unified /openai/v1 endpoint supports generations
 # but NOT edits as of 2026-04, so we use AzureOpenAI which routes to
 # /openai/deployments/{deployment}/images/{op}?api-version=X natively.
@@ -72,9 +72,20 @@ def load_credentials() -> dict[str, str]:
                 continue
             k, v = line.split("=", 1)
             creds[k.strip()] = v.strip().strip('"').strip("'")
+    env_has_azure_image_identity = bool(
+        os.environ.get("AZURE_OPENAI_ENDPOINT") or os.environ.get("AZURE_OPENAI_API_KEY")
+    )
     for k in CRED_KEYS:
         v = os.environ.get(k)
         if v:
+            if (
+                k == "AZURE_OPENAI_API_VERSION"
+                and not env_has_azure_image_identity
+                and creds.get("AZURE_OPENAI_API_VERSION")
+            ):
+                # Avoid a global Foundry v1 API version overriding the image skill's
+                # classic Azure image API version when endpoint/key come from file.
+                continue
             creds[k] = v  # env wins over file
     return creds
 
@@ -83,7 +94,7 @@ def build_azure_client(creds: dict[str, str]) -> tuple[AzureOpenAI | None, str |
     """Return (AzureOpenAI client, model_name) or (None, None).
 
     Two Azure concepts that confusingly share names:
-      * Deployment name — e.g. `gpt-image-2-1`; used in the URL path
+      * Deployment name — e.g. `gpt-image-2`; used in the URL path
       * Model name       — e.g. `gpt-image-2`;   sent in the request body
 
     The AzureOpenAI client routes to
@@ -104,7 +115,7 @@ def build_azure_client(creds: dict[str, str]) -> tuple[AzureOpenAI | None, str |
         if base.endswith(suffix):
             base = base[: -len(suffix)]
             break
-    deployment = creds.get("AZURE_OPENAI_DEPLOYMENT", "gpt-image-2-1")
+    deployment = creds.get("AZURE_OPENAI_DEPLOYMENT", "gpt-image-2")
     model = creds.get("AZURE_OPENAI_MODEL", DEFAULT_AZURE_MODEL)
     api_version = creds.get("AZURE_OPENAI_API_VERSION", DEFAULT_AZURE_API_VERSION)
     client = AzureOpenAI(
