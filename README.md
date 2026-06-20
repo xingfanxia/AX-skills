@@ -43,6 +43,12 @@ A collection of production-grade Claude Code skills built by [@xingfanxia](https
 |---|---|---|
 | [`apple-pdf`](./apple-pdf/) | Markdown / notes / reports → professionally formatted PDFs with SF typography. Default PDF generator. | ✅ |
 
+### DevOps / Infrastructure
+
+| Skill | Purpose | Status |
+|---|---|---|
+| [`cloudflare-r2-setup`](./cloudflare-r2-setup/) | Wire a Vercel / Next.js app's object storage to **Cloudflare R2** (zero egress, China-reachable), or migrate off Vercel Blob — the de-risked way. Proven write-toggle + host-routed-reads architecture (no data migration, instant rollback) + the full pitfall list (wrangler can't mint S3 keys, Vercel CLI env corruption, `next/image`/CSP blocking R2 images, custom-domain CDN 404-caching, private-bucket PII reads). | ✅ |
+
 ### Workflow / quality
 
 | Skill | Purpose | Status |
