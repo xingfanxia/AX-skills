@@ -28,6 +28,7 @@ A collection of production-grade Claude Code skills built by [@xingfanxia](https
 |---|---|---|
 | [`deep-research`](./deep-research/) | Verification-style research — multi-agent parallel investigation, Tier 1-4 source authority cross-validation, traceable decision memo output. **Use when judging claims to make a decision.** | ✅ |
 | [`narrative-research`](./narrative-research/) | 横纵分析法（Horizontal-Vertical Analysis）by 卡兹克 — 双轴叙事型调研。纵轴追溯生命历程，横轴对比共时竞品，交叉出洞察 + PDF 报告。**Use for understanding a thing from zero.** Narrative counterpart to `deep-research`. | ✅ |
+| [`serenity-bottleneck-research`](./serenity-bottleneck-research/) | Turn a secular tech/industry trend, supply chain, or public investment thesis into concrete constraints, an evidence ladder (L0–L4), disconfirmation tests, and a reflexivity / attention-risk filter. Distills the *research process*, not trades — output is hypotheses to verify, never buy/sell advice. | ✅ |
 
 ### Media generation
 
