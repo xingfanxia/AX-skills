@@ -96,7 +96,7 @@ For OpenAI Codex / OpenClaw, follow your platform's skill installation conventio
 
 ## Why these skills
 
-- **Distilled from real production**: Each skill is extracted from a working product, not a toy demo. `jewelry-marketing` comes from [shichuan (识川)](https://github.com/xingfanxia/shichuan) — research-backed by 千瓜 / 数英 case studies on 周大福 / HEFANG / 樱桃珠宝 / 翡翠平安环 etc.
+- **Earned, not toy-grade**: Each skill comes from real use — distilled from a shipped product, sharpened over repeated builds, or ported and improved from a strong prompt. `jewelry-marketing` comes from [shichuan (识川)](https://github.com/xingfanxia/shichuan) — research-backed by 千瓜 / 数英 case studies on 周大福 / HEFANG / 樱桃珠宝 / 翡翠平安环 etc.; `dr-sharp` / `trident` are improved ports of 秒秒Guo prompts; `serenity-bottleneck-research` distills a research method into a reusable skill.
 - **Niche depth over generic breadth**: Better to nail one merchant vertical than be average at everything.
 - **Tool-grade, not toy-grade**: Single command, sensible defaults, real output bundle, error recovery.
 
