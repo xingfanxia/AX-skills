@@ -59,6 +59,7 @@ A collection of production-grade Claude Code skills built by [@xingfanxia](https
 | [`codebase-sweep`](./codebase-sweep/) | Full-codebase audit + cleanup loop (parallel reviewers + iterative fix + docs cleanup + architecture documentation + orphan-script archiving). One-shot comprehensive review of the whole project. | ✅ |
 | [`audit-fix-loop`](./audit-fix-loop/) | Multi-round code-quality pass scoped to recent changes. Loops until no high-confidence issues remain (max 5 rounds). Each round adds tests for fixed code + incremental doc updates. | ✅ |
 | [`pr-fix-loop`](./pr-fix-loop/) | Autonomously respond to GitHub PR review feedback until all comments resolved + CI green. Polls **all four** comment surfaces — `@claude` posts to issue thread, not formal reviews, so single-surface polls miss it. Max 5 rounds. | ✅ |
+| [`agentic-repo-scaffold`](./agentic-repo-scaffold/) | Make a repo agent-maintainable: drops an `AGENTS.md` architecture contract + a one-command verification harness (runnable boundary / giant-file / generated-clean checks) + `.agent/` refactor ledgers + optional Cursor/CI gates. Stack-aware (frontend / backend / general). Ships the full blueprint + dependency-free check scripts bundled. | ✅ v1.0 |
 
 ### Meta / knowledge
 

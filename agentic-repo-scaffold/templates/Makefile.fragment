@@ -1,0 +1,30 @@
+# Canonical verification surface. One command runs the full gate set; CI runs the same.
+# Adapt each target to the repo's real tools (Go/Python/Rust/...). Delete checks that don't apply.
+
+.PHONY: verify check-static check-contracts test-unit test-integration test-architecture check-security check-generated check-giant-files
+
+verify: check-static check-contracts test-unit test-integration test-architecture check-security check-generated check-giant-files
+
+check-static:        ## type-check + lint
+	@echo ">> static"   # e.g. go vet ./... && golangci-lint run   |   ruff check . && mypy .   |   tsc --noEmit && eslint .
+
+check-contracts:     ## API/proto/event spec lint + breaking-change diff
+	@echo ">> contracts"   # e.g. spectral lint api/openapi.yaml ; buf lint && buf breaking ; asyncapi validate ...
+
+test-unit:
+	@echo ">> unit"        # e.g. go test ./... | pytest tests/unit | vitest run
+
+test-integration:
+	@echo ">> integration" # real deps via containers/fakes; skip if none
+
+test-architecture:
+	@echo ">> architecture" && node tools/verify/check-boundaries.mjs
+
+check-security:
+	@echo ">> security"     # negative authz/limit tests; secret scan
+
+check-generated:
+	@echo ">> generated" && bash tools/verify/check-generated-clean.sh
+
+check-giant-files:
+	@echo ">> giant-files" && node tools/verify/check-giant-files.mjs   # or: python3 tools/verify/check_giant_files.py

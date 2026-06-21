@@ -1,0 +1,15 @@
+{
+  "//": "Merge these into package.json scripts. Drop lines for checks the repo doesn't have. 'verify' is the single canonical command CI also runs.",
+  "scripts": {
+    "verify": "pnpm check:static && pnpm check:contracts && pnpm test:unit && pnpm test:integration && pnpm check:architecture && pnpm check:security",
+    "check:static": "tsc --noEmit && eslint .",
+    "check:contracts": "echo 'spectral lint / buf / asyncapi validate as applicable'",
+    "test:unit": "vitest run",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:e2e": "playwright test --project=chromium",
+    "test:visual": "playwright test --project=chromium --grep @visual",
+    "check:architecture": "node tools/verify/check-boundaries.mjs && node tools/verify/check-giant-files.mjs",
+    "check:generated": "bash tools/verify/check-generated-clean.sh",
+    "check:security": "node tools/verify/check-forbidden-patterns.mjs"
+  }
+}

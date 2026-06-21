@@ -1,0 +1,20 @@
+# GitHub Actions: run the SAME canonical verify command CI and local use.
+# Drop into .github/workflows/verify.yml. Adapt runtime setup to the repo.
+name: verify
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }   # full history so breaking-change diffs work
+      # --- pick the repo's runtime ---
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      # - uses: actions/setup-go@v5    with: { go-version: '1.23' }
+      # - uses: actions/setup-python@v5 with: { python-version: '3.12' }
+      - run: corepack enable && pnpm install --frozen-lockfile
+      - run: pnpm verify          # or: make verify
