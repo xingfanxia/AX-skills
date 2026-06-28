@@ -139,7 +139,22 @@ def main():
     if summ.get("previous_tail"):
         P.append(f"  <previous_tail>{summ.get('previous_tail','')}</previous_tail>")
     if ch.get("forbidden_reveals"):
-        P.append(f"  <forbidden_reveals>本章禁止提前透露（只告诉你不要写到，不解释内容）：{ '；'.join(ch['forbidden_reveals']) }</forbidden_reveals>")
+        # 剧透-入闸：forbidden_reveals 只应放【伏笔/反转的 id 或话题标签】，绝不放答案原文
+        # （答案放 contract.locked_reveals，compile 永不注入它）。这里再做一道防御性红action：
+        # 万一作者把答案写进 forbidden_reveals，用 locked_reveals 的答案词面交叉隐去，
+        # 绝不把最终反转喂给写手——否则等于一个脚本注入剧透、另一个脚本(output_check)再去抓它。
+        _locked = [str(lr.get("reveal", "") if isinstance(lr, dict) else lr)
+                   for lr in (contract.get("locked_reveals") or [])]
+        _locked = [x for x in _locked if len(x) >= 4]
+
+        def _redact(item):
+            s = str(item)
+            for ans in _locked:
+                if ans and ans in s:
+                    return "［已隐去的剧透话题·只以编号/话题示意］"
+            return s
+        _labels = "；".join(_redact(x) for x in ch["forbidden_reveals"])
+        P.append(f"  <forbidden_reveals>本章【绝不能揭示或暗示】下列话题的真相，只给话题/编号、不解释内容、更不要自己猜：{_labels}</forbidden_reveals>")
     if ch.get("due_foreshadows"):
         P.append(f"  <due_foreshadows>本章该埋/回收的伏笔：{ '；'.join(ch['due_foreshadows']) }</due_foreshadows>")
     style = contract.get("style", {}) or {}
@@ -168,6 +183,9 @@ def main():
         P.append(f"  本章爽点：{sao.get('type')}（{sao.get('level','')}）— 链条：{sao.get('setup_chain','')}")
     P.append(f"  情绪曲线：{emo.get('start','')}→{emo.get('middle','')}→{emo.get('end','')}")
     P.append(f"  结尾钩子：{hook.get('text','')}")
+    nxt = ch.get("next_chapter_sketch") or {}
+    if nxt.get("must_setup_for_next"):  # 双合约：为下一章铺垫（降断裂/伏笔失衔，AI_NovelGenerator）
+        P.append(f"  为下一章铺垫（本章要埋好、别收尾太死）：{nxt.get('must_setup_for_next')}")
     P.append("</chapter_outline>\n")
 
     P.append(f"<task>只写第 {cur_ch} 章正文。</task>\n")

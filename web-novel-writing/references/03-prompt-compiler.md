@@ -148,7 +148,7 @@ writer 产出后**不直接入库**，先过确定性清洗（对照模板末尾
 
 每角色注入由 `fmt_char()` 渲染：name/identity + behavior_anchors + current_state{location,level,injury,emotion,goal_now} + voice_notes +（有则）cognition{knows,does_not_know,misbeliefs}。
 
-> **cross-file 待对齐**：模板 `single-chapter-prompt.txt` 的 `<reference>` 区列了 `<style_anchors>`（对标文风样例 + 感官配额），但 `compile_prompt.py` 当前**未输出** `style_anchors`（章纲 JSON 也无该字段）。要启用文风锚注入，需同时在 `chapter-outline-template.json` 加字段 + 在脚本 `fmt`/注入段补 emit，否则模板与脚本不一致。
+> **文风锚注入（已落地）**：`compile_prompt.py` 从 **`contract.style.anchors` + `contract.style.sensory_quota`** 读取并 emit `<style_anchors>` 区（对标文风样例 + 感官配额）——数据源在**顶层契约**（全书一致），不在逐章的章纲 JSON。要启用，在 `contract.yaml` 的 `style:` 块填样例即可。
 
 ---
 

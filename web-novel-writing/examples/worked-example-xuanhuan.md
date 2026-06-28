@@ -113,14 +113,20 @@ mainline_beats:
 {
   "chapter_id": 12, "volume": 1, "pov": "莫北", "word_budget": {"min":2000,"max":3200},
   "chapter_purpose": "大比首战，莫北扮猪吃虎打脸陈烈，兑现 D1 情绪债",
-  "scenes": [{"scene_id":"S1","goal":"赢首战","conflict":"陈烈羞辱","turning_point":"亮出隐藏实力","exit_hook":"宗主注视"}],
-  "must_happen": ["莫北赢首战", "陈烈当众出丑"],
-  "must_not_happen": ["不能透露父亲死因", "不能直接突破筑基"],
+  "scenes": [{"scene_id":"S1","goal":"赢首战","conflict":"陈烈羞辱","turning_point":"亮出隐藏实力","choice":"莫北故意先挨一招再反打","exit_hook":"宗主注视"}],
+  "must_happen": [
+    {"text":"莫北赢首战", "keywords":["莫北"]},
+    {"text":"陈烈当众出丑", "keywords":["陈烈"]}
+  ],
+  "must_not_happen": [
+    {"text":"不能透露父亲死因", "forbidden_keywords":["父亲死因"]},
+    {"text":"不能直接突破筑基", "forbidden_keywords":["突破筑基","当场破境"]}
+  ],
   "sao_payoff": {"type":"打脸","level":"中爽","setup_chain":"被压制→隐忍→碾压"},
   "reader_emotion_curve": {"start":"压抑","middle":"紧张","end":"解气"},
-  "ending_hook": {"type":"悬念式","text":"宗主的目光在莫北身上停留了一瞬。"},
+  "ending_hook": {"type":"悬念式","text":"宗主的目光在莫北身上停留了一瞬。","keywords":["宗主"]},
   "on_stage_characters": ["CHR_001"], "relevant_canon_ids": ["W001"],
-  "forbidden_reveals": ["W002"],                 // 只放不透明指针，不写秘密内容本身
+  "forbidden_reveals": ["W002", "莫北父亲身世之谜"],   // 只放 id/话题标签，不写秘密内容本身（答案在 contract.locked_reveals）
   "due_foreshadows": ["F001"],
   "next_chapter_sketch": {"purpose":"内门复试，引出神秘老者(F002)", "must_setup_for_next":"留意看台上一道苍老目光"}
 }
@@ -186,7 +192,7 @@ mainline_beats:
 【只输出正文。不要输出大纲、设定、解释、标题、思考过程或任何非正文内容。】
 ```
 
-（以上为 `compile_prompt.py` 对本节 fixture 的**逐字真实输出**——含从 contract 注入的 `<style_anchors>`、自动过滤掉的 W002/W003、以及 `sao_payoff` 触发的"直给"后缀。）
+（以上是 `compile_prompt.py` 对本节 fixture 的**编译产物示意**——含从 contract 注入的 `<style_anchors>`、自动过滤掉的 W002/W003、`sao_payoff` 触发的"直给"后缀、以及对 `forbidden_reveals` 的剧透-入红action。⚠️ **脚本是唯一真相源**：上面的命令一跑就出最新版，脚本升级后这段可能略有出入——以**实跑输出为准**，别手抄。）
 
 **这就是防泄漏的关键**：约束在结构化分区里、设定在 strict 分隔块里声明"仅供参考"、末尾硬拼"只输出正文"——writer 拿到的是窄窗口，没机会把约束写进正文，也看不到 W002 剧透。
 
@@ -196,17 +202,28 @@ mainline_beats:
 
 writer 出正文后（草稿阶段**只读** state、不回写）：
 
-1. **机械门并行跑脚本**（纯 code，零 LLM）：`output_check.py` 过正文硬门（字数 2480 在区间 ✓、无残留指令符号/元叙述 ✓、无 POV 上帝插嘴 ✓、无毒点词面 ✓）；`state_check.py` 体检状态文件。
+1. **机械门并行跑脚本**（纯 code，零 LLM）：`output_check.py` 过正文硬门（字数 2480 在区间 ✓、无残留指令符号/工程词 ✓、标点纪律(无破折号) ✓、must_not 禁现词不出现 ✓、剧透-出无泄漏 ✓、无毒点词面 ✓）；`degeneration_check.py` 无退化指纹 ✓；`state_check.py` 体检状态文件。
 2. **continuity-checker（独立子 agent，只给正文+canon 切片）**：核对莫北境界仍是练气（没偷偷突破，符合 must_not_happen）、玉佩 F001 已按计划在本章呼应、陈烈实力不超过设定、无 W002 剧透泄漏——4 个语义硬门无违规。
 3. **reviewer（另一个独立子 agent，只给正文+章纲+rubric，最好异模型）+ `antislop_lint.py`（penalty）**：
    - 加权分：爽点 18/20（打脸链条完整、压释到位）、钩子 13/15、节奏 8/10、AI味 8/10、情绪 13/15、文笔 12/15、对白 13/15 → `weighted_total = 85`
    - `antislop_lint.py --json` 输出 `penalty = 3`（命中 2 处"仿佛"+段落略匀速；已封顶 0-20）→ **`final = 85 − 3 = 82 ≥ 80` 且 7 硬门全清 → `VERDICT:PASS`**（数值为示意：实跑以脚本+reviewer 真实输出为准）
 4. 若 < 80 或任一硬门 false：把具体 violations 定向回灌 writer 改稿（≤3 轮，净改善才采纳，第 3 轮转人工）。
-5. **state-updater（定稿后才回写 delta，Canon 晋升需人确认）**：
-   - `emotion-debt.yaml`：D1 → `released: true`（release_intensity 8 ≥ intensity 8，解气）
-   - `foreshadow-ledger.yaml`：F001 → `status: 微回应`
-   - `rolling-summary.yaml`：追加第 12 章一句话 + 更新 previous_tail 为本章末段
-   - `state-characters.yaml`：莫北 current_state.emotion → "扬眉"；relations 增"陈烈=结仇"
+5. **定稿回写（抽 delta → `state_apply.py` 确定性合并；Canon 晋升仍需人确认）**：先按 `state-delta-template.yaml` 把本章的增量改动抽成 `chapters/ch0012/delta.yaml`：
+   ```yaml
+   chapter_id: 12
+   chapter_summary: 大比首战，莫北扮猪吃虎碾压陈烈，玉佩微微发烫
+   sao_realized: 打脸·中爽（D1 还清）
+   hook_for_next: 宗主的目光在莫北身上停留了一瞬
+   character_changes:
+     - {id: CHR_001, current_state: {emotion: 扬眉}, relations: [{with: CHR_002, stage: 结仇}]}
+   foreshadow_changes:
+     advance: [{id: F001, note: 大比上玉佩发烫呼应}]
+   emotion_changes:
+     release: [{debt_id: D1, release_intensity: 8}]
+   ```
+   再跑：`python3 scripts/state_apply.py mybook chapters/ch0012/delta.yaml --final chapters/ch0012/final.txt --audit-passed`
+   → 输出 `✅ 第 12 章 delta 已合并 · state_revision=12`，脚本自动：`emotion-debt` D1→`released:true`（校验 release_intensity 8 ≥ intensity 8）、`foreshadow-ledger` F001→`status:微回应`、`rolling-summary` 追加第 12 章一句话 + previous_tail 取 final 尾段、`state-characters` 莫北 emotion/relations 更新。审校没过它会**拒绝提交**；同一章重跑是 no-op（章级幂等）。
+   〔零脚本的 agent 驱动 mode：让 agent 照 `references/02` 亲自把上面这些增量写回各 yaml。〕
 
 ---
 

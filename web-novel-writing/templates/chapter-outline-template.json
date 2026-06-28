@@ -49,12 +49,24 @@
   "on_stage_characters": ["CHR_001"],
   "_relevant_canon_note": "只放 world_facts 的 W00x id（compile_prompt 按 id 注入的是 world_facts；势力 FAC_/伏笔 F00x 不走这里，伏笔走 due_foreshadows）",
   "relevant_canon_ids": ["W001", "W003"],
-  "forbidden_reveals": ["本章禁止提前透露的伏笔/反转 id 或描述（喂给 compiler 排除）"],
+  "_forbidden_reveals_note": "只放伏笔/反转的【id 或话题标签】（如 F003 / 韩执事身世之谜），【绝不放答案原文】——答案原文放 contract.locked_reveals（compile_prompt 永不注入它，只供 output_check 剧透-出闸扫正文）。compile 会把这里当'禁止揭示的话题'注入，并对照 locked_reveals 防御性隐去任何漏写的答案。",
+  "forbidden_reveals": ["F003", "韩执事身世之谜"],
   "due_foreshadows": ["本章该埋/该回收的伏笔 id（来自 foreshadow-ledger）"],
 
-  "_next_chapter_note": "带上下一章的粗合约能显著降低断裂/伏笔失衔（来自 AI_NovelGenerator 双合约）。",
+  "_next_chapter_note": "带上下一章的粗合约能显著降低断裂/伏笔失衔（来自 AI_NovelGenerator 双合约）。compile_prompt 会把 must_setup_for_next 注入写手 prompt。",
   "next_chapter_sketch": {
     "purpose": "下一章大致要干什么（让本章末钩子有处可落）",
     "must_setup_for_next": "本章需要为下一章铺垫什么"
-  }
+  },
+
+  "_optional_craft_fields_note": "★以下全是【可选·进阶】字段，新手可全部忽略，不填不影响跑通。它们让 references 07/08/12 的进阶 craft 在章纲里有落点（不再是悬空引用）。这些字段【脚本不强制、不机检】——由 reviewer 半机检 + 人定，别当成 output_check 的硬门。",
+  "opening_hook": "（可选·见 ref07）黄金三章/卷首章用：章首钩子类型（悬念对话/闪前碎片/倒计时/神秘独白/反差场景/未完成动作/意象预示）。注意与 scene.entry_hook（场级）区分：opening_hook 是章级开篇策略。",
+  "reversal": {
+    "_note": "（可选·见 ref08 反转工具箱）本章若有反转才填；reviewer 验'回看≥3处铺垫/不靠独白解释/反转后情绪>反转前'。",
+    "type": "身份|视角|动机|时间线|信息|认知|无反转",
+    "setup_clues_count": 0,
+    "reveal_window": "本卷/本 arc 的相对位置（不是全书%）",
+    "linked_foreshadows": ["关联的伏笔 id"]
+  },
+  "power_holder": "（可选·见 ref12 对话长度=权力）本章对话场里谁是上位者——reviewer 半机检'上位者台词更短、被压制方更长'。⚠️脚本暂未实现对话均长统计，归 reviewer/人判，不是机检硬门。"
 }

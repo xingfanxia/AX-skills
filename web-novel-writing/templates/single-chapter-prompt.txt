@@ -1,6 +1,11 @@
 ===============================================================
 单章 prompt 骨架 (single-chapter-prompt.txt)
 ===============================================================
+⚠️ 这是【三区结构示意骨架】，仅供人肉眼理解分区逻辑。**精确的 prompt 文本以
+`scripts/compile_prompt.py` 的实际输出为唯一真相源——别照抄本文件手拼 prompt。**
+（本骨架可能落后于脚本：hard_rules 的具体条目、防编造 rule、style_anchors 注入等以脚本为准。）
+agent 驱动 mode 下没装脚本，就照 `references/03-prompt-compiler.md` 的规则现编，也别抄这里的死文本。
+
 由 prompt-compiler 用确定性流程填充。三大分区严格分离，专治"约束/context 被写进正文"。
 - {占位符} 由 compiler 从 state + 章纲 注入。
 - 注入前先按 visible_from_volume 过滤：> 当前卷 的事实一律不进。

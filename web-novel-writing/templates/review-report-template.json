@@ -4,14 +4,17 @@
   "chapter_id": 0,
 
   "hard_gates": {
-    "_note": "任一 false → 直接 REVISE。continuity-checker 吃 canon/时间线/人物，只判'对不对'。",
+    "_note": "任一 false → 直接 REVISE。语义门（character/world/timeline）由 continuity-checker(吃 canon/时间线/人物)判；下面 6 个机械门由 output_check.py 产出、名字一一对应（no_forbidden_reveal_leak ⟺ output_check 的 no_future_spoiler_out 剧透-出闸）。no_benchmark_copy 仅在用了 references/14 拆对标书时启用。",
     "character_consistent": true,
     "world_canon_consistent": true,
     "timeline_logic_consistent": true,
     "wordcount_pov_format_ok": true,
     "no_poison_points": true,
     "no_forbidden_reveal_leak": true,
-    "no_prompt_leak": true
+    "no_prompt_leak": true,
+    "punctuation_discipline": true,
+    "must_not_absent": true,
+    "no_benchmark_copy": true
   },
 
   "weighted_scores": {

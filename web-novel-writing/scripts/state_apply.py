@@ -307,7 +307,9 @@ def post_validate(book_dir, ch):
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
         from state_check import check as state_check
         _, issues = state_check(book_dir, ch)
-        return [m for lvl, m in issues if lvl == "error"]
+        # 把"未决连续性冲突"剔出去——那是本脚本主动 queue 的【软信号·待人三选项】，
+        # 不是代码破了硬不变量。它走独立 status(applied_with_pending_review)，不算 invariants_broken。
+        return [m for lvl, m in issues if lvl == "error" and not m.startswith("未决连续性冲突")]
     except Exception as e:  # noqa: BLE001 — 校验器本身出错也要可见
         return [f"state_check 运行失败: {e}"]
 
@@ -329,7 +331,9 @@ def run(book_dir, delta_path, final_path, audit_passed, allow_failed, human_appr
         _emit({"status": "refused", "reason": str(e)}, as_json)
         return 1
 
-    if changed is None:  # 幂等 no-op
+    if changed is None:  # 幂等 no-op：重跑也要把仍 open 的未决冲突回读出来，别静默吞掉
+        cursor = (load_yaml(os.path.join(book_dir, "state-plotline.yaml")).get("cursor") or {})
+        result["conflicts"] = [c for c in (cursor.get("pending_conflicts") or []) if c.get("status", "open") == "open"]
         _emit(result, as_json)
         return 0
 
@@ -359,7 +363,12 @@ def run(book_dir, delta_path, final_path, audit_passed, allow_failed, human_appr
     if errors:
         result["status"] = "applied_but_invariants_broken"
         _emit(result, as_json)
-        return 1  # 破不变量 = 非零退出，不算干净成功
+        return 1  # 真·破硬不变量 = 非零退出，不算干净成功
+    if result.get("conflicts"):
+        # 已干净合并、但本章 queue 了待人裁决的疑似冲突——独立 status，exit 0（不是失败）
+        result["status"] = "applied_with_pending_review"
+        _emit(result, as_json)
+        return 0
     _emit(result, as_json)
     return 0
 

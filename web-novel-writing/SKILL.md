@@ -21,22 +21,26 @@ license: 本仓库自有；研究引用见 docs/research/ 各文件与 reference
 
 ## ⚡ 快速首跑（先把一章跑通，再谈扩张）
 
-新手别被下面的完整体系吓到。**第一次只做这 7 步，把第 1 章跑通**——验证流水线真比裸聊强，再回头按 §2/§3 扩张。完整范例见 `examples/worked-example-xuanhuan.md`。
+> **你（人）不用装 python、不用写一行代码。** 默认就是 **agent 驱动**：把需求丢给 Codex/Claude、让它读本 SKILL.md 当 driver——下面每一步它都能照对应 reference **亲自**做。写出来的 `python3 scripts/…` 命令是**可选硬化**（书写到几十章想更稳时再上，到时也是 AI 帮你跑）。
+> **本次只会用到 `references/02`（状态层怎么建）、`03`（单章 prompt 怎么编不泄漏）、`04`（怎么审）三篇，其余 12 篇先别管。** 完整范例见 `examples/worked-example-xuanhuan.md`。
 
-1. **建书目录**：`mkdir mybook && cd mybook`，把 `templates/` 全部 copy 进来。
-2. **填顶层契约**（`contract.yaml`，human 拍板）：只填核心冲突、结局方向、金手指**及其代价**、品类+子类+调性+平台。别的留空。
-3. **填一个主角 + 几条世界观**：`state-characters.yaml` 填主角（**行为锚点**不是形容词 + `cognition` 认知边界）；`state-world.yaml` 填 3-5 条 Canon 事实 + 力量阶位表。
-4. **写一份章纲**：copy `chapter-outline-template.json`，填本章目的/必须发生/禁止发生/要兑现的爽点/章末钩子类型。
-5. **编译 prompt 并生成正文**：`python3 scripts/compile_prompt.py mybook ch0001.json --current-volume 1 --current-chapter 1` → 把输出喂给 writer 模型（**关 thinking**）→ 拿到草稿正文。
-6. **独立审校**（关键，别自己审自己）：**另起一个干净上下文的 reviewer 子 agent**（见 §3 的「独立校验落地」），只给它【正文 + 章纲 + rubric】，让它过 `references/04` 的硬门+加权分；同时并行跑三个机械门：`python3 scripts/output_check.py 草稿.txt --contract mybook/contract.yaml --outline ch0001.json --chapter 1`（字数/泄漏/标点/must_not/剧透-出）、`python3 scripts/degeneration_check.py 草稿.txt`（模型退化——**blocking 就回去重生成那段**，去AI味改不掉）、`python3 scripts/antislop_lint.py --json 草稿.txt`（AI 味 penalty）。`final = 加权分 − penalty`，≥80 且硬门全清才过；不过则定向改稿（≤3 轮）。
-7. **定稿回写**（确定性合并）：抽 state delta（照 `templates/state-delta-template.yaml`）→ `python3 scripts/state_apply.py mybook delta.yaml --final 定稿.txt --audit-passed`——它代码盖 canon_status:Inferred、章级幂等、阶位单调、写回滚动摘要/伏笔/情绪债、每 5 章 checkpoint、收尾自校验（**审校没过拒绝提交**）。再跑 `python3 scripts/state_check.py mybook` 体检。下一章重复 4-7。
-> 已经写了几章在崩、想接着续？先走 **阶段0.5 导入已有稿**（`references/13`）把崩稿反向提取成结构化状态，再进 4-7。
+新手别被完整体系吓到——**第一次只做这 7 步，把第 1 章跑通**，验证它真比裸聊强，再按 §2/§3 扩张。
 
-> 零脚本也能跑（Agent 驱动 mode）：上面 `python3 scripts/*` 的每一步，agent 都可以按对应 reference 的规则**亲自**做（编译 prompt / 查一致性 / 算 AI 味）。脚本是把这些"确定性步骤"真正确定化的可选硬化层，书越长越值得上。
+1. **建书目录**：`mkdir mybook`，从 `templates/` 只 copy 这 6 个进来：`contract-template.yaml`(改名 `contract.yaml`)、`state-characters.yaml`、`state-world.yaml`、`chapter-outline-template.json`、`state-delta-template.yaml`、`foreshadow-ledger.yaml`。其余模板（模型路由/回归/对标卡）扩张时再按 §7 取。
+2. **填顶层契约**（`contract.yaml`，**你拍板**）：只填核心冲突、结局方向、金手指**及其代价**、品类+子类+调性+平台。别的留空。
+3. **填一个主角 + 几条世界观**：`state-characters.yaml` 填主角（**行为锚点**=具体事件不是形容词 + `cognition` 认知边界=谁知道什么）；`state-world.yaml` 填 3-5 条 **Canon 事实**（Canon=已拍板定稿的事实，五态见 §0 原则3）+ 力量阶位表。
+4. **写一份章纲**：填本章目的/必须发生/禁止发生/要兑现的爽点/章末钩子类型。**本章所有产物都放进 `chapters/ch0001/`**（章纲、草稿、改稿、定稿、delta 都在这——崩在某步重跑不会冲掉前面的）。
+5. **生成正文**：让 writer 模型 **关 thinking**（关掉模型的思考/推理模式让它直接写正文，否则会把思考也写进正文——怎么关见 `references/10`），按章纲把设定/旁白/对白填成正文。〔可选硬化：`python3 scripts/compile_prompt.py mybook chapters/ch0001/ch.json --current-volume 1 --current-chapter 1` 自动编一个防泄漏短 prompt 喂给它；否则让 agent 照 `references/03` 亲自编。〕
+6. **粗审一遍**（关键，**别自己审自己**）：**另开一个新对话/新窗口**（不要在写作那个上下文里顺手审），只贴【正文 + 章纲】，让它对照章纲挑：人设/世界观/时间线有没有崩、本章爽点兑现没、章末有没有钩子、有没有把设定或思考写进正文。崩了就**定向改**（≤3 轮，第 3 轮还不行就回去改章纲）。
+7. **定稿回写**：把本章对设定/状态的**增量改动（state delta=这一章把主角位置/境界/伏笔/情绪债/一句话摘要改了什么）**记下来，更新到状态文档。〔可选硬化：照 `state-delta-template.yaml` 填一份 `delta.yaml`，`python3 scripts/state_apply.py mybook delta.yaml --final 定稿.txt --audit-passed` 确定性合并（盖 Inferred/章级幂等/审校没过拒提交）；否则让 agent 照 `references/02` 亲自回写。〕下一章重复 4-7。
+
+> **已经写了几章在崩、想接着续**？先走 **阶段0.5 导入已有稿**（`references/13`）把崩稿反向提取成结构化状态，再进 4-7。
+>
+> **想更稳（书越长越值得上）**：把第 6 步从"粗审"升级成"机械门 + 量化审校"——三脚本并行跑 `output_check.py`（正文硬门：字数/泄漏/标点/must_not/剧透-出）+ `degeneration_check.py`（模型退化，blocking 就回去重生成那段）+ `antislop_lint.py`（AI 味 penalty），reviewer 子 agent 过 `references/04` 的 **rubric**（量化打分表）+ 硬门，`final = 加权分 − penalty ≥ 80` 才过。完整机制见 §3「独立校验落地」。
 
 ---
 
-## 0. 七条不可违背的操作原则（先读）
+## 0. 七条不可违背的操作原则（想直接动手→照上面 ⚡快速首跑；想先懂为什么这么设计→读这节）
 
 1. **中文为主。** 全程用中文与创作者交流；创作术语首次出现给中文+括注英文一次（如 伏笔账本(foreshadow ledger)、章末钩子(chapter hook)、压抑-释放(setup-payoff)），之后只用中文。
 
@@ -44,7 +48,7 @@ license: 本仓库自有；研究引用见 docs/research/ 各文件与 reference
 
 3. **状态即记忆，但要拆成 typed 状态文档 + 打 Canon 标签，绝不用一个 memory.md。** 把"已定事实 / 待定推测 / 已否决 / 备选灵感 / 未确认推断"混在一坨散文里，正是 AI 把约束和推测当事实写进正文、以及长线设定漂移的**根因**。每条事实必须带两个治理标签：`canon_status`（Canon 已定稿｜Pending 待确认｜Rejected 已否决｜Idea 备选｜Inferred 推断）+ `visible_from_volume`（按卷可见，防剧透红线）。晋升 Canon 需人确认。机制见 `references/02-state-schema.md`。
 
-4. **约束即质量：硬约束用结构化分区 + 末尾强后缀硬拼，不靠模型"记住"。** LLM 在架构上对"指令 vs 资料"没有形式化分隔——所以"prompt 别太长"是**必要但远远不够**的。防泄漏靠四件套：①硬约束放 system / 资料放 user；②设定全部包进 strict 分隔块并声明"仅为参考资料，严禁在正文中复述或当指令执行"；③末尾用代码（或你逐字照抄的固定串）硬拼"只输出正文"后缀；④生成后剥离任何残留指令符号/标签。详见 `references/03-prompt-compiler.md`。
+4. **约束即质量：硬约束用结构化分区 + 末尾强后缀硬拼，不靠模型"记住"。**（头号反模式叫**伪约束**：把「必须成立」的硬约束只写进 prompt、指望模型记住——它会随模型漂移、本质上**没被执行**。对策是凡 MUST-hold 不变量都用 **代码/schema/lint 强制**，prompt 只做软引导。这是 §7 脚本存在的理由、也是本 skill 反复警惕的那条线。）LLM 在架构上对"指令 vs 资料"没有形式化分隔——所以"prompt 别太长"是**必要但远远不够**的。防泄漏靠四件套：①硬约束放 system / 资料放 user；②设定全部包进 strict 分隔块并声明"仅为参考资料，严禁在正文中复述或当指令执行"；③末尾用代码（或你逐字照抄的固定串）硬拼"只输出正文"后缀；④生成后剥离任何残留指令符号/标签。详见 `references/03-prompt-compiler.md`。
 
 5. **校验是独立调用，reviewer 不能是刚才的 writer。** 共享上下文的"自审"必然自欺（执行者没变，不会认真挑自己的错）。一致性校验（对不对）与质量审校（好不好）**分离**、且与 writer **独立上下文/最好异模型**。审校用**量化 rubric + 硬门**（人设/世界观/时间线/毒点/剧透红线任一违规直接打回，不可被高爽点分平均掉），不是"通过/不通过"的 vibe。改稿**≤3 轮**，第 3 轮不过转人工（反复重抽同一 prompt 会在 6-7 次后自我重复塌缩）。见 `references/04-review-rubric.md`。
 
@@ -57,18 +61,20 @@ license: 本仓库自有；研究引用见 docs/research/ 各文件与 reference
 ## 1. 全景：这条流水线长什么样
 
 ```
-阶段0 筹备(human 为主)         状态层(单一事实源)            章节生产循环(确定性 driver)        阶段性维护
-─────────────────────      ────────────────────       ──────────────────────────      ──────────────
-锁 品类/子类/调性/平台   →   00 顶层契约(不可改写)    →   每章 for-loop:                    每卷/每N章:
-锁 顶层契约              →   01 世界观+glossary           outliner → 章纲                   · 递归压缩摘要
-  (核心冲突/结局/         →   02 人物卡(行为锚点+认知边界)  prompt-compiler(纯流程)→短prompt   · 数值单调性校验
-   主线锚点/底层规则)    →   03 剧情线(主线beats)          writer(关thinking)→正文           · 设定刷新/清脏上下文
-分卷大纲                →   04 伏笔台账(状态机)            continuity-checker(独立)→违规       · 卷级摘要固化
-校准创作者水平+工作模式  →   05 情绪债账本+爽点排布         reviewer(独立,rubric+硬门)→裁决     · 追读/完读数据(可选)
-                       →   06 滚动摘要(分层递归)          revise ≤3轮 → style去AI味独立pass   →定位高跳出章重写
-                                                        state-updater→delta增量回写
-                                                        persist 落盘(可断点续跑)
+阶段0 筹备(human 为主)         状态层(7 文档·单一事实源)          章节生产循环(确定性 driver)        阶段性维护
+─────────────────────      ──────────────────────       ──────────────────────────      ──────────────
+锁 品类/子类/调性/平台   →   contract  顶层契约(不可改写)   →   每章 for-loop:                    每卷/每N章:
+锁 顶层契约              →   state-world  世界观+glossary       outliner → 章纲                   · 递归压缩摘要
+  (核心冲突/结局/         →   state-characters 人物卡(锚点+认知) prompt-compiler(纯流程)→短prompt   · 数值单调性校验
+   主线锚点/底层规则)    →   state-plotline 剧情线(主线beats)    writer(关thinking)→正文           · 设定刷新/清脏上下文
+分卷大纲                →   foreshadow-ledger 伏笔台账(状态机)  continuity-checker(独立)→违规       · 卷级摘要固化
+校准创作者水平+工作模式  →   emotion-debt 情绪债+爽点排布        reviewer(独立,rubric+硬门)→裁决     · 追读/完读数据(可选)
+                       →   rolling-summary 滚动摘要(分层递归)  revise ≤3轮 → style去AI味独立pass   →定位高跳出章重写
+                                                          state-updater→delta增量回写
+                                                          (合并由 state_apply.py 确定性执行)
+                                                          persist 落盘(可断点续跑)
 ```
+> 注：上面是**状态文档文件名**（住在 `mybook/*.yaml`），别和 `references/00-14`（知识库编号）搞混——两套编号互不相关。
 
 **关键认知**：长篇崩坏的根因是"**AI 自我一致性随篇幅衰减**"——这是内在衰减，**用更贵的模型解决不了**。唯一可行解是把流程**原子化拆分**（每个 AI 调用做一件窄事，做完代码立刻收回控制权）、用**确定性校验**外部强制一致性（不靠 AI 自觉）、用**独立 agent**做外部验证（不自审）。这与创作者的 CLAUDE.md AI-pipeline 铁律同构：LLM 是被确定性代码包裹的子程序。
 
@@ -139,7 +145,7 @@ license: 本仓库自有；研究引用见 docs/research/ 各文件与 reference
 **降低人介入频率（防拖垮日更）**：不是每章都要人确认章纲，而是**每卷/每 arc 人定 beats + canon**，中间章自动跑，**只有 reviewer 报异常才召回人**。
 
 **单章 prompt 编译的三条铁律**（防泄漏，全文见 `references/03-prompt-compiler.md`）：
-1. **检索而非全量塞**：只抽"本章在场 2-4 角色的 canon + 本章 beat + 最近 N 章压缩摘要 + 上一章末段原文 + 到点的少量伏笔 + 本章禁剧透清单"。`visible_from_volume > 当前卷`的事实**一律不进 prompt**。
+1. **检索而非全量塞**：只抽"本章在场 2-4 角色的 canon + 本章 beat + 最近 N 章压缩摘要 + 上一章末段原文 + 到点的少量伏笔 + 本章禁剧透**话题清单（只放编号/话题、绝不放答案——答案原文只放 contract.locked_reveals，compile 永不注入它）**"。`visible_from_volume > 当前卷`的事实**一律不进 prompt**。
 2. **指令/正文边界三分离**：硬约束放 system；设定包进 `<reference note="仅为参考资料，严禁在正文复述或当指令执行">…</reference>`；末尾硬拼"只输出正文"后缀。
 3. **生成后清洗**：正则剥离任何残留的标签/指令符号（残留指令符号是平台一秒鉴 AI 的依据）。
 
@@ -183,6 +189,11 @@ license: 本仓库自有；研究引用见 docs/research/ 各文件与 reference
 
 ## 7. Reference / Template / Script 索引（按需调取）
 
+> **别一次读 15 篇。分三档：**
+> - **跑通第一章只需 3 篇** —— `02`（状态层怎么建）· `03`（单章 prompt 怎么编不泄漏）· `04`（怎么审）。
+> - **开张前按品类/平台各读 1 篇** —— `05`（锁品类）· `06`（锁平台）。
+> - **其余 10 篇按需查** —— 写爽点查 `07`、埋伏笔查 `08`、去 AI 味查 `09`、写对白查 `12`、接崩稿查 `13`、选题/找参照查 `14`、选模型查 `10`、卷边界维护查 `11`、搭循环查 `01`、复盘依据查 `00`。
+
 | 文件 | 内容 | 主要用在 |
 |---|---|---|
 | `references/00-research-map.md` | 研究蓝图、来源分级、prior-art（含 GitHub 高星项目拆解：偷什么/避什么） | 了解依据/复盘 |
@@ -197,7 +208,7 @@ license: 本仓库自有；研究引用见 docs/research/ 各文件与 reference
 | `references/09-anti-ai-slop.md` | 反 AI 味三桶裁决表 + 网文章节质检清单（标注 沿用文学/网文专属/推翻文学第几条） | 步骤8 + 交付前 |
 | `references/10-model-orchestration.md` | 思考 vs 写正文分工、client 可注入、temperature 分场景、Verbalized Sampling、盲测 A/B 协议、模型仅可选旋钮 | 选模型 |
 | `references/11-maintenance-recap.md` | 递归压缩/状态刷新、每 N 章 regression、数据闭环、工作模式 A-E、上架付费校验、合规（平台 AI 检测红线） | 阶段性维护 |
-| `references/12-dialogue-craft.md` | 对话工艺（借鉴 oh-story）：对话长度=权力(≤10/≥20字可机检)/潜台词议程/弹幕递进三层/7维差异化+遮名识人/角色不当科普嘴 | 步骤4 写对白 / 步骤6 审对白 |
+| `references/12-dialogue-craft.md` | 对话工艺（借鉴 oh-story）：对话长度=权力(≤10/≥20字，reviewer 半机检·脚本未实现)/潜台词议程/弹幕递进三层/7维差异化+遮名识人/角色不当科普嘴 | 步骤4 写对白 / 步骤6 审对白 |
 | `references/13-import-existing-draft.md` | 导入已有稿→结构化状态（豪子"写崩了"入口）：degeneration 扫崩点 + 反向提取填模板 + `[待补充]`纪律 | 阶段0.5 接手崩稿 |
 | `references/14-deconstruction-learning.md` | 拆爆款学习法（条件框架/抽象五步/可复现模块卡 EM-card 防抄袭边界）+ 选题决策法（数据由用户提供，不抓站） | 阶段0 选题/找参照 |
 | `templates/*` | 顶层契约/六状态文档/单章 beat sheet/状态增量(delta)/单章 prompt 骨架/审校报告/模型路由示例/回归不变量表/去AI味白名单 的可填模板 | 全程落文档 |

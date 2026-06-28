@@ -20,6 +20,7 @@ state_check.py 校验【状态文件】的不变量；antislop_lint.py 算【词
 退出码：0 = 全部硬门通过；1 = 有硬门 false（必须改稿/人工）。
 """
 import sys
+import os
 import re
 import json
 import argparse
@@ -28,6 +29,9 @@ try:
     import yaml
 except ImportError:
     yaml = None
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _lexicons import ENGINEERING_LEAK_TIER1  # 工程词黑名单单一真相源（与 degeneration_check 共享）
 
 # 残留指令符号 / 标签 / 元叙述 / 工程词（正文里绝不该出现）—— meta_terms 借鉴 oh-story
 LEAK_PATTERNS = [
@@ -38,7 +42,7 @@ LEAK_PATTERNS = [
     (r"(本章将|本章会|接下来.{0,4}将|根据设定|根据大纲|作为(一个)?AI|作为(一名)?写手|字数已达|以上就是|总结一下)", "元叙述/作者旁白"),
     (r"(VERDICT[:：]|must_happen|must_not_happen|sao_payoff|ending_hook)", "混入的字段名/指令"),
     # 工程词泄漏（degeneration_check 也查；这里抓 prompt 上下文术语漏进正文，硬门）
-    (r"(context_pack|chapter_contract|本章任务|读者爽点|细纲|卷纲|功能标签|目标情绪|字数目标)", "混入的工程/上下文术语"),
+    (r"(" + ENGINEERING_LEAK_TIER1 + r")", "混入的工程/上下文术语"),
 ]
 # POV 上帝插嘴 / 解释腔 / 安排感（启发式，借鉴 oh-story Gate G / 模式8——最难察觉最像 AI 的一类）
 POV_INTRUSION = ["殊不知", "却不知", "此时此刻，在", "与此同时，在", "另一边，", "镜头一转",

@@ -104,10 +104,11 @@ def check(d, current_chapter):
     if open_n > 0 and open_n >= 3 * (closed_n + 1):
         issues.append(("warning", f"伏笔密度告警：open={open_n} 远多于 closed={closed_n}（伏笔密度超过闭合速度，崩铁翁法罗斯式翻车风险）"))
 
-    # 5 情绪债
+    # 5 情绪债（duration 按当前章实时推算，单一真相在 incurred_ch；不读 state_apply 恒写 0 的死字段）
     for db in (emo.get("emotion_debts") or []):
         if not db.get("released", False):
-            dur = db.get("duration_chapters", 0) or 0
+            inc = db.get("incurred_ch") or 0
+            dur = (current_chapter - inc) if (inc and current_chapter) else (db.get("duration_chapters", 0) or 0)
             if dur >= 5:
                 issues.append(("warning", f"情绪债 {db.get('debt_id')} 已压抑 {dur} 章未释放（虐点久未补偿）"))
         inten = db.get("intensity", 0) or 0

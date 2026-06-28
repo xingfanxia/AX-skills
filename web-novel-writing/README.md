@@ -4,6 +4,18 @@
 >
 > 姊妹 skill：[`game-script-creation`](../game-script-creation)（那个是二游剧本陪写，这个是网文长篇连载）。
 
+## 📖 先搞清楚：这些文档谁看？
+
+- **这份 README 给你（创作者）看** —— 30 秒搞懂这是什么、怎么开张。
+- **`SKILL.md` 是给你的 agent（Codex / Claude Code）读的操作手册** —— **你不用读它**，触发 skill 时 agent 会自动读、自己照着干。
+- **你不用装 python、不用写一行代码。** 默认就是"agent 驱动"：AI 读 SKILL.md 当导演助理，你只在关键处拍板。`scripts/` 里的脚本是**可选硬化**（书写到几十章想更稳时再上），到时也是 AI 帮你跑。
+
+**你的第一步只有一句话** —— 对 Codex / Claude 说：
+
+> 「用 web-novel-writing skill 陪我写网文，先做阶段0。」
+
+它就会带你锁品类/平台/核心冲突，建好状态文档，再逐章生成→审校→回写。**已经写了几章在崩**？换一句：「用 web-novel-writing 接手我这几章崩了的稿，先走阶段0.5 导入。」
+
 ## 它解决什么
 
 真实痛点（来自一线作者实测，不是假设）：
@@ -39,7 +51,7 @@
 ## 文件地图
 
 ```
-SKILL.md                     # 编排器主轴（先读这个）
+SKILL.md                     # agent 的操作主轴（给 AI 读的，你不必读）
 references/00-14             # 深度知识库 15 篇（架构/状态schema/防泄漏编译器/审校rubric/品类/平台/爽点/伏笔/反AI味三桶+Gate A-G/模型/维护/对话工艺/导入崩稿/拆爆款学习）
 templates/                   # 顶层契约 + 6 状态文档 + 状态增量(delta) + 章纲 + prompt骨架 + 审校报告 + 模型路由 + 回归不变量表 + 去AI味白名单 + 对标模块卡
 scripts/                     # 可选硬化层 6 脚本 + 1 回归测试：compile_prompt / output_check（正文硬门含 must_not/剧透-出/标点）/ degeneration_check（模型退化）/ antislop_lint（词句层+鲁棒不是A而是B）/ state_check / state_apply（确定性合并delta）/ test_lint_fixtures.sh（python3 + PyYAML）

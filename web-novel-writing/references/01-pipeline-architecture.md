@@ -62,10 +62,12 @@
 | 闸 | 在哪一步前后 | 谁做 | 判什么 |
 |---|---|---|---|
 | 可见性/时效过滤 | 步骤 3 内 | `compile_prompt.py` `visible()` | `visible_from_volume > 当前卷`、`valid_until_chapter < 当前章`、`Rejected/Idea` 一律不进 prompt |
-| 字数/POV/格式 + 残留指令符号 + 开篇阈值 | 步骤 5 前（调 LLM 前） | `output_check.py`（正文输出侧·纯正则） | `wordcount_pov_format_ok` / `no_prompt_leak` / `opening_ok` |
+| 字数/POV/格式 + 残留指令符号·工程词 + 标点 + must_not + 剧透-出 | 步骤 5 前（调 LLM 前） | `output_check.py`（正文输出侧·纯正则） | `wordcount_pov_format_ok` / `no_prompt_leak` / `punctuation_discipline` / `must_not_absent` / `no_future_spoiler_out` + 启发式 advisory |
 | 毒点黑名单词面扫 | 步骤 5/6 | `output_check.py` 扫词面，语义残留交 reviewer | `no_poison_points` |
+| **模型退化** | 步骤 5 前 | `degeneration_check.py`（复读/截断/占位符/工程词/字节地板） | blocking=**回去重新生成那段（不走 patch 改稿）**；对话/弹幕豁免防误伤 |
 | 机械 AI 味扣分 | 步骤 6 后 | `antislop_lint.py` | `penalty`(0-20) → `mechanical_penalty` |
-| 状态不变式体检 | 每卷边界（阶段性维护） | `state_check.py` | Canon 枚举/境界单调/伏笔逾期/情绪债/glossary 别名冲突 |
+| 状态不变式体检 | 每卷边界（阶段性维护） | `state_check.py` | Canon 枚举/境界单调/伏笔逾期/情绪债/未决冲突/glossary 别名冲突 |
+| **delta 合并进 canon** | 步骤 9（定稿后） | `state_apply.py`（canon_status 盖戳/章级幂等/只失效不删/阶位单调/audit-pass 提交闸/人类门/checkpoint/收尾自校验） | 审校没过拒提交；破硬不变量非零退出 |
 
 > **降低人介入频率（防拖垮日更）**：不是每章都召人。**每卷/每 arc 人定 beats + canon**，中间章自动跑，**只有 reviewer 报异常（第 3 轮仍 REVISE）才召回人**。每章都让人确认章纲会拖垮日更。
 
@@ -73,7 +75,7 @@
 
 ## 3. 循环伪代码 —— 确定性 for-loop 当 driver
 
-下面是 driver 的规格。**默认 agent 驱动 mode 下，agent（Codex/Claude Code）亲自当这个 for-loop**；硬化 mode 也**只硬化确定性步骤**（`compile_prompt.py` / `state_check.py` / `output_check.py` / `antislop_lint.py` 已落盘），**不硬编 LLM 调用**。⚠️ 注意：顶层"循环 driver"与"state-updater"在本 skill 中**按设计是 agent 驱动的角色、不提供脚本**（反 overengineering——把 for-loop 编排和 delta 抽取焊成脚本会把 LLM 调用硬编死，违背"LLM 是被代码包裹的窄子程序"原则；与 SKILL §7 一致）。要点：**每个 LLM 调用是窄子程序，return 后代码立刻夺回方向盘**；草稿阶段**只读 state 绝不 mutate**；只有显式定稿才回写 delta。
+下面是 driver 的规格。**默认 agent 驱动 mode 下，agent（Codex/Claude Code）亲自当这个 for-loop**；硬化 mode **只硬化确定性步骤**——已落盘 6 脚本：`compile_prompt.py` / `output_check.py` / `degeneration_check.py` / `antislop_lint.py` / `state_check.py` / `state_apply.py`，**不硬编 LLM 调用**。⚠️ 注意：顶层"循环 driver"与"delta 抽取"**按设计是 agent 驱动的角色**（反 overengineering——把 for-loop 编排和 delta 抽取焊成脚本会把 LLM 调用硬编死，违背"LLM 是被代码包裹的窄子程序"原则）；但 **delta 的【合并进 canon】这一步由 `state_apply.py` 确定性执行**（这步最会漂移、纯机械，交给代码=关掉伪约束；与 SKILL §7 一致）。要点：**每个 LLM 调用是窄子程序，return 后代码立刻夺回方向盘**；草稿阶段**只读 state 绝不 mutate**；只有显式定稿才由 state_apply 回写 delta。
 
 ```python
 patterns_to_avoid = load_patterns_to_avoid(book_dir)   # §5 审校→生成闭环：跨章累积的"已知 AI 味"
@@ -98,8 +100,12 @@ for n in range(resume_from(book_dir), last_chapter + 1):   # 断点续跑：从 
 
     # ---- 步骤5/6 独立校验（与 writer 不同上下文/最好异模型）----
     for attempt in range(0, 3 + 1):                         # 改稿 ≤3 轮
-        cont = continuity_checker(draft, canon_facts_only) # hard_gates 4 门 + violations
-        gate_code = output_check(draft, outline)            # output_check.py: 字数/POV/格式/prompt_leak/毒点词面/开篇(纯code)
+        degen = degeneration_check(draft)                  # 模型退化（复读/截断/占位符/工程词/字节地板）
+        if degen.has_blocking:                              # 退化≠AI味，patch 改不掉
+            draft = regenerate_affected_span(draft, degen) # ★回去重新生成那段，不进 patch/净改善循环
+            continue
+        cont = continuity_checker(draft, canon_facts_only) # hard_gates 语义门 + violations
+        gate_code = output_check(draft, outline)            # output_check.py: 字数/POV/格式/泄漏·工程词/标点/must_not/剧透-出(纯code)
         review = reviewer(draft, outline, RUBRIC)           # weighted_scores + 末行 VERDICT
         penalty = antislop_lint(draft)["penalty"]           # 机械扣分 0-20(纯 code，已封顶/量纲对齐)
 

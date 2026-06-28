@@ -30,5 +30,27 @@ PYEOF
 )
 [ "$hits" = "0" ] && ok "find_not_is 不误伤 either-or/是吗/连词尾(0 命中)" || no "find_not_is 误伤 negative-clean($hits 命中)"
 
+# 把另外 4 个脚本也纳入护栏（之前只覆盖 antislop+degeneration 2/6）
+$PY scripts/state_apply.py --self-test >/dev/null 2>&1 && ok "state_apply --self-test 全过" || no "state_apply self-test 回归"
+
+# output_check --whitelist 冒烟（专抓 import os 这类崩——非工程师的反误伤命脉路径）
+TMP=$(mktemp -d)
+printf 'config: {chapter_length: {min: 5, max: 9000}}\n' > "$TMP/c.yaml"
+printf '缓缓\n' > "$TMP/wl.txt"
+printf '林照缓缓抬头，转身走了。\n' > "$TMP/body.txt"
+$PY scripts/output_check.py "$TMP/body.txt" --contract "$TMP/c.yaml" --whitelist "$TMP/wl.txt" >/dev/null 2>&1 \
+  && ok "output_check --whitelist 不崩(import os)" || no "output_check --whitelist 崩了"
+
+# compile_prompt 冒烟 + 钉死 F2：forbidden_reveals 的答案原文【绝不】出现在 prompt
+printf 'config: {chapter_length: {target: 2500, min: 2000, max: 3200}}\nlocked_reveals:\n  - {reveal: "韩执事其实是主角生父", reveal_at_volume: 5}\n' > "$TMP/contract.yaml"
+printf 'world_facts: []\npower_system: {ladder: []}\n' > "$TMP/state-world.yaml"
+printf 'characters: []\n' > "$TMP/state-characters.yaml"
+printf 'per_chapter: []\n' > "$TMP/rolling-summary.yaml"
+printf '{"chapter_id":12,"pov":"x","word_budget":{"min":2000,"max":3200},"chapter_purpose":"x","scenes":[],"must_happen":[],"must_not_happen":[],"ending_hook":{"type":"悬念式"},"on_stage_characters":[],"relevant_canon_ids":[],"forbidden_reveals":["韩执事其实是主角生父"],"due_foreshadows":[]}\n' > "$TMP/ch.json"
+out=$($PY scripts/compile_prompt.py "$TMP" "$TMP/ch.json" --current-volume 1 --current-chapter 12 2>/dev/null)
+if [ $? -eq 0 ] && ! printf '%s' "$out" | grep -q "韩执事其实是主角生父"; then
+  ok "compile_prompt 不泄漏 forbidden_reveals 答案(剧透-入闸)"; else no "compile_prompt 泄漏了剧透答案"; fi
+rm -rf "$TMP"
+
 echo "  ── fixtures: PASS=$pass FAIL=$fail ──"
 [ "$fail" -eq 0 ]
