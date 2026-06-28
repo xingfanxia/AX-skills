@@ -29,7 +29,7 @@ URL 路由：`/AX-skills/` · `/AX-skills/banxian/` · `/AX-skills/jewelry/` · 
 
 ## Deck 一览
 
-全部统一 **Style A 电子杂志 · 🌙 沙丘 Dune**（Playfair + Noto Serif SC，`--ink:#1f1a14` / `--paper:#f0e6d2`），均用 [guizang-ppt-skill](https://github.com/op7418/guizang-ppt-skill) 生成，全中文。键盘 `← →` 翻页 · `B` 静态 · `ESC` 索引。
+全部统一 **Style A 电子杂志 · 🌙 沙丘 / Dune**（Playfair + Noto Serif SC，`--ink:#1f1a14` / `--paper:#f0e6d2`），均用 [guizang-ppt-skill](https://github.com/op7418/guizang-ppt-skill) 生成，全中文。键盘 `← →` 翻页 · `B` 静态 · `ESC` 索引。
 
 | Deck | Skill | 来源 |
 |---|---|---|
@@ -41,15 +41,15 @@ URL 路由：`/AX-skills/` · `/AX-skills/banxian/` · `/AX-skills/jewelry/` · 
 | `trident/` | [trident](../trident)（深度阅读 · 三重视角） | 改进自 [秒秒Guo · 三重心智](https://mmguo.dev/prompts/trident/) |
 | `serenity-bottleneck-research/` | [serenity-bottleneck-research](../serenity-bottleneck-research)（投资研究 · 瓶颈拆解） | 配套 [blog.ax0x.ai](https://blog.ax0x.ai/distilling-serenity-zh) |
 
-> 历史备注：banxian/jewelry 曾是瑞士风（IKB / 柠檬黄），后统一迁到沙丘 Dune Style A —— 以当前文件为准。
+> 历史备注：banxian/jewelry 曾是瑞士风（IKB / 柠檬黄），后统一迁到沙丘 / Dune Style A —— 以当前文件为准。
 
 ## 宣传片（Remotion → R2）
 
-每个 deck 配一支 ~20s 1920×1080 的动画宣传片，与 deck 同款沙丘 Style A。源码在仓库根 [`remotion/`](../remotion)（`src/skills.ts` 是文案唯一真源，与 landing 卡片文案对齐）。渲染 + 托管：`cd remotion && node scripts/render-all.mjs && node scripts/upload-r2.mjs`，上传到 R2 桶 `ax-blog-media` 的 `ax-skills/` 前缀，经 `https://media.ax0x.ai/ax-skills/<slug>.mp4` 提供（支持 range 请求 → 可拖动）。composition id === deck slug === R2 文件名，全程一致。mp4 不进仓库。
+每个 deck 配一支 ~20s 1920×1080 的动画宣传片，与 deck 同款沙丘 / Dune Style A。源码在仓库根 [`remotion/`](../remotion)（`src/skills.ts` 是文案唯一真源，与 landing 卡片文案对齐）。渲染 + 托管：`cd remotion && node scripts/render-all.mjs && node scripts/upload-r2.mjs`，上传到 R2 桶 `ax-blog-media` 的 `ax-skills/` 前缀，经 `https://media.ax0x.ai/ax-skills/<slug>.mp4` 提供（支持 range 请求 → 可拖动）。composition id === deck slug === R2 文件名，全程一致。mp4 不进仓库。
 
 ## 加一个新 skill 的 deck（流程）
 
-1. `docs/<skill>/index.html` 放一份 deck —— **照抄一份现有 deck（如 `jewelry/`）当参考做同款**（Style A 沙丘 Dune，别另起风格）；同级 `assets/motion.min.js`。
+1. `docs/<skill>/index.html` 放一份 deck —— **照抄一份现有 deck（如 `jewelry/`）当参考做同款**（Style A 沙丘 / Dune，别另起风格）；同级 `assets/motion.min.js`。
 2. 在 `docs/index.html` 的 `.grid` 里复制一张 `<article class="card">`，填 `num` / `role` / `h2`+`.id` / 一句话 / `源自`或`配套`链接 / `查看 →` + `源码 ↗`。「▶ 影片」按钮由 landing 的脚本按 slug 自动注入，无需手写。
 3. （宣传片，可选）把 skill 追加到 `remotion/src/skills.ts` 和 `remotion/scripts/*.mjs` 的 id 列表，跑 `node scripts/render-all.mjs <slug> && node scripts/upload-r2.mjs <slug>`。新 deck 复制现有 deck 时已带 `#promo-link` 片段，会自动播放对应视频。
 4. commit + push，Pages 自动重发布（CDN 有缓存，新路径可能 404 / 旧内容 1–2 分钟，`?cb=` 不顶用，重试即可）。

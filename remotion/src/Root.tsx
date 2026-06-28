@@ -1,27 +1,27 @@
 import React from 'react';
 import {Composition} from 'remotion';
-import {SKILLS} from './skills';
-import {SkillPromo, PROMO_DURATION} from './SkillPromo';
-import {FPS} from './theme';
+import {SESSIONS} from './terminal/sessions';
+import {TerminalPromo, promoDuration} from './terminal/TerminalPromo';
+import {FPS} from './terminal/types';
 
 /**
- * One composition per deck'd skill — id === showcase slug, so
- * `remotion render <slug>` maps 1:1 to docs/<slug>/ and the R2 key
- * ax-skills/<slug>.mp4.
+ * One composition per deck'd skill — id === showcase slug === R2 filename.
+ * Each promo is a scripted terminal session showing the skill in use.
+ * Duration is derived from the session's events.
  */
 export const RemotionRoot: React.FC = () => {
   return (
     <>
-      {SKILLS.map((skill) => (
+      {SESSIONS.map((session) => (
         <Composition
-          key={skill.id}
-          id={skill.id}
-          component={SkillPromo}
-          durationInFrames={PROMO_DURATION}
+          key={session.id}
+          id={session.id}
+          component={TerminalPromo}
+          durationInFrames={promoDuration(session)}
           fps={FPS}
           width={1920}
           height={1080}
-          defaultProps={{skill}}
+          defaultProps={{session}}
         />
       ))}
     </>
