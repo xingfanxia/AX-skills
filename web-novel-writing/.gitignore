@@ -1,0 +1,9 @@
+# 外部交付物的【原始拷贝】只在本地留作调研复用，不republish进公开 repo——
+# 借鉴裁决与分析见 docs/research/05-integration-decision-webnovelops.md / 06-integration-decision-ohstory.md，
+# 它们引用了源 repo（WebNovelOps 由另一 agent 交付；oh-story-claudecode MIT, github.com/worldwonderer/oh-story-claudecode）。
+docs/research/external-webnovelops-deliverable/
+docs/research/external-ohstory-deslop/
+
+__pycache__/
+*.pyc
+.deslop-whitelist

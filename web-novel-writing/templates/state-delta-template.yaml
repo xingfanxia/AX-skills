@@ -1,0 +1,64 @@
+# ============================================================
+# 章节状态增量 (state-delta-template.yaml)
+# ============================================================
+# 这是【定稿后回写状态】的唯一合法载体（借鉴 WebNovelOps apply_state_delta：
+# 「LLM 出 delta、代码夺回方向盘」）。抽取由 agent（state-updater 角色）做，
+# 但【合并进 canon 由 scripts/state_apply.py 确定性执行】——不让 LLM 重写整个状态文件。
+#
+# 铁律（state_apply.py 代码强制，不靠这份模板自觉）：
+#  - state_apply 写进账本的每条新事实/伏笔，由【代码盖 canon_status: Inferred】；
+#    Pending→Canon 晋升只走独立人确认，绝不在 apply 路径发生。
+#  - 章级幂等：同一 chapter_id 只结算一次（cursor.applied_chapters 记账），重跑整体 no-op。
+#  - 「只失效不删」：world_fact 用 invalidate（写 valid_until_chapter）而非删除。
+#  - 字段白名单：脚本只写 current_state.* / cognition / 伏笔 status / 摘要；
+#    canon_status / behavior_anchors / identity / role / visible_from_volume 一律人类门。
+#  - possible_conflicts 不静默入库：脚本返回给 driver 以「改新/降级旧/变剧情」三选项呈人。
+# ============================================================
+
+chapter_id: 0
+chapter_summary: ""            # → rolling-summary.per_chapter[].one_line（一句话发生了什么）
+sao_realized: ""              # → rolling-summary.per_chapter[].sao（本章兑现的爽点，可空）
+hook_for_next: ""            # → rolling-summary.per_chapter[].hook（章末钩子，供下一章承接）
+
+# 是否触发人类门（命中 contract.human_gate.requires_approval_for 时必填）。
+# 非空且未传 --human-approved → state_apply 拒绝提交。
+requires_human: []            # 例: ["character_death", "power_system_change"]
+
+# ---- 世界事实（慢变 · 双时态 · 只失效不删）----
+world_fact_changes:
+  add: []                     # [{id: W00x, fact, visible_from_volume, affects}]
+                              #   脚本盖 canon_status: Inferred + valid_from_chapter=chapter_id
+  invalidate: []              # [{id: W00x}] 给现存事实写 valid_until_chapter=chapter_id（永不删原条）
+
+# ---- 人物快变（current_state.* 可 set 覆盖；历史靠 rolling-summary 兜底）----
+character_changes:
+  - id: ""                    # 必须是 bible 里已存在的角色 id；未知 id → 脚本报错（连续性 bug）
+    current_state: {}         # 任意子集: {location, level, injury, emotion, goal_now}
+                              #   level 写入前查 power_system.ladder 单调性（不可倒退）
+    resources_items_add: []   # 法宝/技能/债务（add 到 current_state.resources.items）
+    resources_items_remove: []
+    resources_balances: {}    # 数值增量: {spirit_stones: -50}（delta 累加，受章级幂等保护）
+    relations: []             # [{with: CHR_id, stage}] 按 with upsert
+
+# ---- 认知边界（防剧透 + 信息差；按桶写，不是扁平 knowledge）----
+cognition_changes:
+  - id: ""
+    bucket: ""                # knows | does_not_know | misbeliefs | reader_knows_char_doesnt
+    add: []
+    remove: []
+
+# ---- 伏笔台账（只收【长程轻埋伏笔】；章末短钩子走上面 hook_for_next，不进台账）----
+foreshadow_changes:
+  open: []                    # [{id: F00x, type(六类:身份|语言|场景|数字|主题|物件), text,
+                              #    planted_ch, planned_payoff_ch(必填,无计划拒收), visible_payoff_volume}]
+  advance: []                 # [{id: F00x, note}] → status 翻成「微回应」
+  close: []                   # [{id: F00x, note}] → status 翻成「closed」
+
+# ---- 情绪债 + 爽点排布（本该硬化、最会漂移的一层）----
+emotion_changes:
+  incur: []                   # [{debt_id: Dx, text, intensity, incurred_ch, release_ch}]
+  release: []                 # [{debt_id: Dx, release_intensity}] → released=true（脚本校验 release_intensity>=intensity）
+sao_logged: []                # [{chapter, type, level}] → emotion-debt.sao_schedule
+
+# ---- 疑似连续性冲突（不静默入库，脚本返回给人三选项）----
+possible_conflicts: []        # [{description, involves: [W001, CHR_002]}]

@@ -1,0 +1,69 @@
+# ============================================================
+# 00 · 顶层契约 (contract.yaml)
+# ============================================================
+# 阶段0 由【人类拍板】锁定。这是全书不可变的最高契约。
+# 铁律：AI 在任何后续步骤都【无权改写】本文件；正文/章纲只能在契约约束下填充。
+# 方法：先有结局/核心冲突，再倒推大事件串（不要先有酷设定再硬凑）。
+# 每条事实可带 canon_status（这里默认全是 Canon，因为契约就是定稿）。
+# ============================================================
+
+meta:
+  title: ""              # 书名 / 暂定名
+  author_role: ""        # 创作者定位（业余/兼职冲榜/职业签约…）
+  created: ""            # 起始日期
+  current_volume: 1      # 当前写到第几卷（驱动 visible_from_volume 可见性）
+  current_chapter: 0     # 当前写到第几章
+
+# ---- 配置层：品类 → 平台（决定挂载哪套约束模板/参数）----
+config:
+  genre: ""              # 大品类：玄幻/仙侠/都市/无限流/科幻/悬疑/历史/种田/女频…
+  subgenre: ""           # 子类：凡人流/系统流/赘婿/规则怪谈/古言宅斗…
+  tone: ""               # 调性：冷峻苟道 / 热血中二 / 诙谐爽快 / 古气文青 / 暗黑致郁…
+  platform: ""           # 目标平台：番茄/起点/晋江/飞卢/七猫（决定开篇阈值与毒点容忍）
+  category_template: ""  # 挂载的品类模板名（见 references/05-category-templates.md）
+  skeleton_type: ""      # 骨架类型：升级阶梯 / 单元剧+长线暗线 / 慢热长线经营
+  # 平台参数从 references/06 拉取并固化到这里，供 compiler/reviewer 机检：
+  opening_rules:
+    conflict_before_chars: 500     # 冲突必须在第几字前出现（番茄严/起点松，⚠️经验值）
+    goldfinger_before_chapter: 3   # 金手指必须在第几章前亮相
+  chapter_length: { target: 2500, min: 2000, max: 3200 }
+  update_cadence: ""     # 日更节拍（如 日更 6000 / 存稿 N 章）
+  checkpoint_interval: 5 # state_apply.py 每 N 章把状态快照进 checkpoints/（0=关）
+
+# ---- 人类门：哪些 delta 操作必须人类签字才能提交（把 §5 human-only 列做成可机检触发器）----
+# state_apply.py 见 delta.requires_human 命中其中之一且无 --human-approved 时，拒绝自动提交。
+human_gate:
+  requires_approval_for: [canon_override, major_reversal, character_death, power_system_change]
+
+# ---- 顶层契约：人类拍板的不可变锚点 ----
+contract:
+  core_conflict: ""      # 核心冲突一句话（整本书在对抗什么）
+  ending_anchor: ""      # 结局方向（主角最终到达哪、证明了什么）
+  protagonist_want: ""   # 主角外部渴望（驱动行动）
+  protagonist_need: ""   # 主角内部需要（成长弧；爽文可弱化但别没有）
+  goldfinger: ""         # 金手指是什么 + 【代价/规则】（无代价升级=毒点）
+  mainline_anchors: []   # 30万字处的长期主线锚点（飞升之约/灭族之仇/夺嫡），绑定读者期待
+  power_floor_ceiling:   # 力量/战力天花板，开局锁死防战力崩坏
+    floor: ""            # 开局境界/实力
+    ceiling: ""          # 全书最高上限
+    progression_rule: "" # 升级规则一句话（防"境界倒退/越级无代价"）
+  sao_engine: ""         # 品类爽点引擎单句锚（注入每章 prompt），如"凡人苟道步步谋算后碾压打脸"
+  reader_promise: []     # 给读者的核心承诺（如：每3章一次明确进展；每卷兑现一个大爽点）
+  forbidden: []          # 全书禁区（不无代价升级/不让配角无脑降智/不绿帽/不开篇灌设定…）
+
+# ---- 书级文风锚（few-shot 注入 writer，降句子层 AI 味）----
+# 放 1-3 段【对标文风样例】（同品类同 POV，最好是作者认可的范文或自己写的标杆段）
+# + 感官配额提示。compile_prompt.py 会把它注入每章 prompt 的 <style_anchors> 块。
+# 这是"用风格样本压低翻译腔/华美空洞"的落地（工程能救的词句层 AI 味）。
+style:
+  anchors: []            # 1-3 段对标文风样例（字符串列表）
+  sensory_quota: ""      # 感官配额提示（如"每章≥3 处嗅觉/触觉，少视觉堆砌"）
+
+# ---- 防剧透红线：哪些是全书最终揭晓、绝不能让 writer 提前写漏 ----
+# 双闸：① 剧透-入——这些【不进 writer 的 prompt】（compile_prompt 防泄漏）；
+#      ② 剧透-出——output_check.py 的 no_future_spoiler_out 硬门【扫正文是否泄漏 reveal 词面】
+#         （模型会编造没被告知的反转，入闸抓不到）。所以 reveal 要写成【可词面扫描的中文短语】，
+#         不要只写 id；含中文且 >=4 字才会被出闸扫描。
+locked_reveals:
+  - reveal: ""           # 最终反转/幕后黑手/隐藏身世（写成可扫描的具体短语，如"韩执事是主角生父"）
+    reveal_at_volume: 0  # 计划在第几卷揭晓

@@ -1,0 +1,39 @@
+# ============================================================
+# 03 · 剧情线状态 (state-plotline.yaml)
+# ============================================================
+# 人主导的层。存【主线 beats（分卷/分 arc）+ 支线】。
+# 注意：伏笔不放这里（放 04 独立台账）；情绪债/爽点排布不放这里（放 05）。
+# 这层是"要讲什么"的骨架，由人类拍板，AI 只在 arc 内填章纲。
+# ============================================================
+
+# ---- 主线 beats（分卷 → 分 arc → 章范围）----
+mainline_beats:
+  - volume: 1
+    arc: ""                  # 这个 arc 的名字/目标
+    ch_range: "1-30"         # 覆盖章节范围
+    beat: ""                 # 这个 arc 要发生的核心事件（人定）
+    sao_target: ""           # 这个 arc 要兑现的大爽点（对照契约 sao_engine）
+    volume_double_ending:    # 卷尾双重收尾：解决一个旧问题 + 打开一个更大问题
+      resolve: ""            # 给闭合感
+      open: ""               # 给追更动力
+    canon_status: Pending
+
+# ---- 支线 ----
+sidelines:
+  - id: SUB_001
+    name: ""
+    status: ""               # active / paused / resolved
+    serves_mainline: ""      # 这条支线如何服务主线（否则=注水水文）
+    canon_status: Pending
+
+# ---- 当前推进指针（state-updater / state_apply.py 维护，driver 据此判断"该写到哪")----
+cursor:
+  current_arc: ""
+  last_chapter_done: 0
+  next_beat: ""              # 下一章/下一个节拍要推进什么
+  # 以下三项由 state_apply.py 代码维护（不是人填）：
+  state_revision: 0          # 状态修订号（每 apply 一章 +1，单调；漂移哨兵。
+                             #   ⚠️ 与每条事实的 canon_status 是不同维度——这是版本号，那是确信度）
+  applied_chapters: []       # 已结算章 id（章级幂等：同 id 重跑整体 no-op，护住数值 delta/版本号）
+  pending_conflicts: []      # 疑似连续性冲突队列（state_apply 不静默入事实账本，挂这里等人三选项裁决）
+                             #   每条 {chapter, description, involves:[...], status: open}

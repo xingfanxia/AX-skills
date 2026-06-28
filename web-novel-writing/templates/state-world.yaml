@@ -1,0 +1,55 @@
+# ============================================================
+# 01 · 世界观状态 (state-world.yaml)
+# ============================================================
+# 慢变状态。每条事实强制带两个治理标签：
+#   canon_status: Canon(已定稿,必须遵守) | Pending(待确认,可探索) |
+#                 Rejected(已否决,别再提) | Idea(备选灵感) | Inferred(AI推断,未经人确认)
+#   visible_from_volume: N  —— 这条设定从第 N 卷起才可进入 writer 的 prompt（防剧透）
+# 铁律：晋升 Canon 需人确认；writer 只能消费 (canon_status=Canon 且 visible_from_volume<=当前卷) 的事实。
+# 反"世界观自嗨"：每条设定必须能影响某个角色的决定/制造剧情障碍/解释看得见的后果，否则先别建。
+# ============================================================
+
+# ---- 世界事实（地理/历史/势力关系/规则后果…）----
+world_facts:
+  - id: W001
+    fact: ""                  # 一条具体世界事实
+    canon_status: Pending
+    visible_from_volume: 1    # 防【剧透】：从第 N 卷起才可进 writer 的 prompt
+    affects: ""               # 它影响哪个角色决定/制造什么障碍（防自嗨，必填）
+    # 双时态可选字段（防【时效矛盾】，借鉴 graphiti/inkos"只失效不删"）：
+    # 一条会随剧情变假/被推翻的事实，不要删，而是登记失效章——
+    # 生成第 N 章时只喂"截至第 N 章仍为真"的事实（valid_until_chapter 为空=至今有效）。
+    valid_from_chapter: 1     #（可选）这条事实从第几章起成立
+    valid_until_chapter: null #（可选）这条事实到第几章失效（被推翻/过时），之后不得当真喂给 writer
+
+# ---- 力量/规则体系（玄幻/仙侠/系统流必填；数值由脚本校验单调性）----
+power_system:
+  ladder: []                  # 阶位表（从低到高，如 练气→筑基→金丹→…），顺序即单调约束
+  cross_tier_rule: ""         # 跨阶规则（越级挑战的边界，防战力崩坏）
+  cost_rule: ""               # 升级代价（无代价=毒点）
+  monotonic: true             # 是否强制境界单调不倒退（脚本校验依据）
+  canon_status: Pending
+
+# ---- 势力 / 阵营 ----（用 FAC_ 前缀，避免与伏笔 F00x 撞名）
+factions:
+  - id: FAC_001
+    name: ""
+    goal: ""                  # 这个势力要什么
+    relation: ""              # 与主角/其他势力的关系
+    canon_status: Pending
+    visible_from_volume: 1
+
+# ---- 地点 / 地图 ----
+locations:
+  - id: L001
+    name: ""
+    note: ""                  # 空间关系/出场限制
+    canon_status: Pending
+    visible_from_volume: 1
+
+# ---- 专名表 glossary（钉死唯一写法，低成本防同名漂移）----
+glossary:
+  - term: ""                  # 概念（功法/法宝/种族/称谓…）
+    canon_name: ""            # 唯一正确写法（中文主名）
+    en: ""                    # 英文（如需）
+    aliases: []               # 已知别名（防同义混用）

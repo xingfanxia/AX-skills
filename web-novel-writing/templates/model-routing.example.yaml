@@ -1,0 +1,37 @@
+# ============================================================
+# 模型分阶段路由（可选 · model-routing.example.yaml）
+# ============================================================
+# 把"模型是可选优化旋钮、确定性审校是硬闸"做成数据（借鉴 WebNovelOps models.json）。
+# 默认【所有生成型角色都指向同一个占位模型】——镜像零搭建：一个模型全跑就能用。
+# 拆分到不同模型是【可选优化】，不是"必须配 6 个模型"。不写死任何真实 model ID。
+#
+# 铁律：auditor / state_check / output_check / antislop / degeneration 这些【确定性审校】
+#       永远是脚本（deterministic），不路由给模型——审校是硬闸，不靠模型自觉。
+# ============================================================
+
+default_model: "<你的默认模型>"     # 例: 本地 GLM / Codex / 任意 OpenAI-compatible；env 注入，不写死
+
+# 生成型角色路由（默认全指 default_model；想优化再分别覆盖）
+routing:
+  planner:    "${default_model}"   # 卷纲/章纲（强推理时可换更强模型）
+  outliner:   "${default_model}"
+  writer:     "${default_model}"   # 正文（想要中文文学性可单独换 GLM 等）
+  reviewer:   "${default_model}"   # LLM 审校（最好与 writer 异模型，减同源盲点）
+  extractor:  "${default_model}"   # state delta 抽取（便宜模型即可）
+
+# 确定性审校 = 脚本，永不路由给模型（这是硬闸）
+deterministic_gates:
+  - scripts/output_check.py        # 字数/泄漏/POV/标点/must_not/剧透-出 硬门
+  - scripts/state_check.py         # 状态层不变式
+  - scripts/state_apply.py         # delta 合并 + 章级幂等 + 收尾自校验
+  - scripts/antislop_lint.py       # 反 AI 味词句层 penalty
+  - scripts/degeneration_check.py  # 模型退化 + 工程词泄漏
+
+# OpenAI-compatible 端点用 env 注入（不写进文件，不进 git）
+endpoint:
+  base_url_env: "WNW_BASE_URL"
+  api_key_env:  "WNW_API_KEY"
+  model_env:    "WNW_MODEL"
+
+# 选型纪律：任何模型口碑（"GLM>GPT、DeepSeek 语言怪"）都是单一实测——
+# 按 references/04 的 rubric 在你自己的对标章上【盲测】，不信任何榜。见 references/10。

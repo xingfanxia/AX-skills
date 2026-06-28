@@ -1,0 +1,60 @@
+{
+  "_comment": "单章 beat sheet（outliner 输出 / prompt-compiler 输入）。这是'给 AI 的约束'与'正文'分离的关键载体——约束放在结构化字段里，writer 只消费字段、不自由发挥。所有字段由人/半自动定，writer 无权改 must_happen/must_not_happen。",
+
+  "chapter_id": 0,
+  "volume": 1,
+  "arc": "",
+  "pov": "",
+  "time_position": "",
+  "word_budget": { "min": 2000, "max": 3200 },
+
+  "chapter_purpose": "本章的唯一目的（一句话，对照 arc beat）",
+
+  "scenes": [
+    {
+      "scene_id": "S1",
+      "entry_hook": "用动作/异常/冲突开场（不是环境描写）",
+      "goal": "POV 角色本场具体目标",
+      "conflict": "遇到的阻碍（是挣扎不是愿望）",
+      "turning_point": "本场转折/揭示",
+      "choice": "POV 角色本场做的【主动选择】（反'工具人主角/降智'；choice=动因，value_shift=结果）",
+      "value_shift": "情绪/处境的变化（如 被动疑惑→主动试探）",
+      "exit_hook": "本场出口悬念"
+    }
+  ],
+
+  "_acceptance_note": "must_happen/must_not 升级为对象，把'验收标准'变成 output_check.py 的确定性判分器（借鉴 WebNovelOps acceptance_criteria）。keywords/forbidden_keywords 【只用稳定具名实体：人名/物名/地名】，严禁用动作/情绪/状态动词（'堵/紧张/突破'同义改写会误伤）。must_happen 关键词全 present 是【必要非充分】——只证'没漏写'，证不了'写对了'，写对仍归 LLM reviewer。缺 keywords 时 output_check 出 WARN（让伪约束-by-omission 可见，不静默放过）。",
+  "must_happen": [
+    { "text": "本章必须发生的事（人定，writer 不得省略）", "keywords": ["具名实体1", "具名实体2"] }
+  ],
+  "must_not_happen": [
+    { "text": "本章禁止发生的事（如：不能透露师父真实身份、主角不能直接突破）", "forbidden_keywords": ["禁现的具名词1"] }
+  ],
+
+  "sao_payoff": {
+    "type": "打脸|装逼|升级|扮猪吃虎|真相|情感兑现",
+    "level": "小爽|中爽|大爽",
+    "setup_chain": "需求建立→压抑→释放 链条（对照 emotion-debt 账本）"
+  },
+
+  "reader_emotion_curve": { "start": "", "middle": "", "end": "" },
+
+  "ending_hook": {
+    "type": "悬念式|反转式|情绪炸弹式|信息投放式",
+    "text": "章末最后三行要留的钩子（承接到下一章）",
+    "_keywords_note": "可选。output_check 的 ending_hook_in_tail 是【⚠️启发式 warning 不是 blocker】——它只认这里的【具名实体】关键词查尾段是否出现，绝不从 text 整句自动切词（WebNovelOps demo 证明 derive_keywords 会切出残块误判好钩子、逼出 on-the-nose 粘贴）。钩子是否落到位属语义判断，归 reviewer。",
+    "keywords": ["钩子里的具名物件/人名（如 挑战帖、母亲旧名）"]
+  },
+
+  "on_stage_characters": ["CHR_001"],
+  "_relevant_canon_note": "只放 world_facts 的 W00x id（compile_prompt 按 id 注入的是 world_facts；势力 FAC_/伏笔 F00x 不走这里，伏笔走 due_foreshadows）",
+  "relevant_canon_ids": ["W001", "W003"],
+  "forbidden_reveals": ["本章禁止提前透露的伏笔/反转 id 或描述（喂给 compiler 排除）"],
+  "due_foreshadows": ["本章该埋/该回收的伏笔 id（来自 foreshadow-ledger）"],
+
+  "_next_chapter_note": "带上下一章的粗合约能显著降低断裂/伏笔失衔（来自 AI_NovelGenerator 双合约）。",
+  "next_chapter_sketch": {
+    "purpose": "下一章大致要干什么（让本章末钩子有处可落）",
+    "must_setup_for_next": "本章需要为下一章铺垫什么"
+  }
+}

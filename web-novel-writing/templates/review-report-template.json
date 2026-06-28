@@ -1,0 +1,43 @@
+{
+  "_comment": "审校报告（reviewer + continuity-checker 输出）。铁律：① reviewer 必须与 writer 独立调用（共享上下文=自欺）；② reviewer 只返本 JSON、不持 Write、不替改情节（审校是'找问题'不是'验证正确'）；③ 硬门任一违规直接 REVISE，不可被加权分平均掉；④ 末行必须是裸 sentinel 供 driver 用 .strip().upper() 容错解析后 branch。",
+
+  "chapter_id": 0,
+
+  "hard_gates": {
+    "_note": "任一 false → 直接 REVISE。continuity-checker 吃 canon/时间线/人物，只判'对不对'。",
+    "character_consistent": true,
+    "world_canon_consistent": true,
+    "timeline_logic_consistent": true,
+    "wordcount_pov_format_ok": true,
+    "no_poison_points": true,
+    "no_forbidden_reveal_leak": true,
+    "no_prompt_leak": true
+  },
+
+  "weighted_scores": {
+    "_note": "总 100，括号是该项最低线；任一低于最低线也 REVISE。quality-reviewer 吃 rubric，判'好不好'。",
+    "sao_payoff": { "score": 0, "max": 20, "min": 14, "note": "对照章纲 sao_payoff 字段（及 arc 的 sao_target），验需求建立→压抑→释放链" },
+    "ending_hook": { "score": 0, "max": 15, "min": 10, "note": "4型钩子是否成立、章节名是否被兑现" },
+    "pacing_density": { "score": 0, "max": 10, "min": 6, "note": "无注水，主线在推进" },
+    "ai_taste": { "score": 0, "max": 10, "min": 7, "note": "看 AI 味指纹密度，越低分越高（翻译腔/华美空洞/匀速）" },
+    "emotion_immersion": { "score": 0, "max": 15, "min": 9 },
+    "prose_imagery": { "score": 0, "max": 15, "min": 9 },
+    "dialogue_natural": { "score": 0, "max": 15, "min": 9 }
+  },
+  "weighted_total": 0,
+
+  "_dual_immune_note": "双免疫系统（来自 autonovel）：终分 = LLM 加权分 − 机械确定性扣分。机械扣分=antislop_lint.py --json 输出的 penalty 字段（已封顶到 0-20，量纲对齐 0-100 加权分），judge 管不到，必须代码减——防 LLM judge 给 AI 味文本打高分。",
+  "mechanical_penalty": 0,
+  "final_score": 0,
+
+  "violations": [
+    { "type": "hard_gate|score", "where": "第几段/哪句", "issue": "", "fix": "定向改稿指令（给 writer 的具体修法）" }
+  ],
+  "ai_taste_hits": ["命中的具体 AI 味句子/指纹"],
+
+  "revise_round": 0,
+  "_pass_condition": "final_score >= 80 且 所有 hard_gates=true 且 各加权项不低于 min",
+  "_revision_accept_rule": "改稿采纳门槛：新稿 final_score 必须 > 旧稿（净改善≥ε），否则回滚到旧稿别白改（来自 inkos/autonovel keep-discard）。≤3 轮，第3轮仍不过转人工。",
+
+  "verdict_line": "VERDICT:PASS"
+}

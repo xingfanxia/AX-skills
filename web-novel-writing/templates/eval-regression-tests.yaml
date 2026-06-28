@@ -1,0 +1,65 @@
+# ============================================================
+# 回归不变量登记表（声明式 · eval-regression-tests.yaml）
+# ============================================================
+# 借鉴 WebNovelOps regression_tests.json 的"知识棘轮"：把【每章/每卷必须守住的不变量】
+# 显式登记成一份 typed 契约——每条不变量映射到【强制它的那个确定性 gate】，
+# 让新接手的 agent 一眼看清"什么必须过、谁来强制"，而不是埋在散文里。
+#
+# 用法：这是【声明式登记表，不是运行器】。每卷边界（或发布前）人/driver 照表逐条跑对应 gate。
+# 反 overengineering：不建跑测框架，就是一张"不变量→gate"对照表。
+# ============================================================
+
+regression_tests:
+  - id: REG_001
+    name: "未来剧透不得泄漏（入/出双闸）"
+    invariant: "正文不得出现 contract.locked_reveals / forbidden_reveals 的词面"
+    enforced_by: "compile_prompt.py（剧透-入过滤）+ output_check.py no_future_spoiler_out（剧透-出扫描）"
+    severity: blocking
+
+  - id: REG_002
+    name: "每章必须有状态变化"
+    invariant: "定稿章必须产出非空 state_delta 并经 state_apply 结算"
+    enforced_by: "state_apply.py（无 delta=空结算，driver 应警觉）"
+    severity: blocking
+
+  - id: REG_003
+    name: "只提交 delta，不覆盖 canon"
+    invariant: "状态只能经 state_apply 合并 delta；新事实由代码盖 Inferred，Canon 晋升需人确认"
+    enforced_by: "state_apply.py（canon_status 代码盖戳 + 字段白名单）"
+    severity: blocking
+
+  - id: REG_004
+    name: "境界单调不倒退"
+    invariant: "角色 current_state.level 不得跌出 power_system.ladder 顺序"
+    enforced_by: "state_apply.py（写入前查 ladder）+ state_check.py"
+    severity: blocking
+
+  - id: REG_005
+    name: "伏笔不烂尾"
+    invariant: "open/微回应 伏笔不得逾期未回收；埋设必带 planned_payoff_ch"
+    enforced_by: "state_apply.py（无计划拒收）+ state_check.py（逾期 error / 临近 warning）"
+    severity: advisory
+
+  - id: REG_006
+    name: "正文无残留指令/工程词/破折号"
+    invariant: "正文不含 XML 标签/占位符/工程术语/——/—"
+    enforced_by: "output_check.py no_prompt_leak + punctuation_discipline; degeneration_check.py meta-leak"
+    severity: blocking
+
+  - id: REG_007
+    name: "无模型退化"
+    invariant: "正文无逐字复读/打转、无中途截断、无占位符/拒绝语"
+    enforced_by: "degeneration_check.py（blocking=回去重新生成那段）"
+    severity: blocking
+
+  - id: REG_008
+    name: "must_not 不违规"
+    invariant: "本章 must_not_happen 的 forbidden_keywords 不得出现在正文"
+    enforced_by: "output_check.py must_not_absent"
+    severity: blocking
+
+  - id: REG_009
+    name: "AI 味词句层达标"
+    invariant: "antislop_lint penalty 不超阈值；final = 加权分 − penalty"
+    enforced_by: "antislop_lint.py（penalty 0-20）+ reviewer rubric"
+    severity: advisory

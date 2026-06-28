@@ -4,6 +4,14 @@ A collection of production-grade Claude Code skills built by [@xingfanxia](https
 
 > **What's a Skill?** A reusable slash-command-style capability for AI coding agents — bundles a `SKILL.md` (how to use), Python entrypoints, prompt templates, and reference docs. The agent invokes it like `/jewelry-marketing` and the skill takes over.
 
+## Showcase (live)
+
+Several skills ship with a one-page **路演 deck** plus a ~20s animated **promo video**, all in one unified 电子杂志 · 🌙 沙丘 / Dune style:
+
+**🔗 https://xingfanxia.github.io/AX-skills/**
+
+Decked + filmed: `banxian-skill` · `jewelry-marketing` · `game-script-creation` · `proxy-node-setup` · `dr-sharp` · `trident` · `serenity-bottleneck-research`. The landing grid has a **▶ 影片** button on every card (opens a lightbox); each deck carries a matching **▶ 宣传片** link. Decks are single-file HTML in [`docs/`](./docs); the promo videos are authored with [Remotion](https://www.remotion.dev/) in [`remotion/`](./remotion) and streamed from R2 (`media.ax0x.ai` — mp4s are not committed). Details: [docs/README.md](./docs/README.md).
+
 ## Skills in this repo
 
 ### Vertical / domain skills
@@ -21,6 +29,8 @@ A collection of production-grade Claude Code skills built by [@xingfanxia](https
 |---|---|---|
 | [`khazix-writer`](./khazix-writer/) | 卡兹克风格中文公众号长文 — 强口语化、叙事驱动、四层自检（L1 硬性规则 → L2 风格 → L3 内容 → L4 活人感）。Personal-experience / methodology long-form. | ✅ |
 | [`wandian-writer`](./wandian-writer/) | 晚点 LatePost 风格中文深度长文 — 冷静判断、数据先行、判断式 header、段尾落点、对立面陈述。Industry analysis / company breakdown. Includes 6-范文 in-context reference. | ✅ |
+| [`game-script-creation`](./game-script-creation/) | 二游剧本陪写全流程 — 校准创作者水平 → 世界观/主题/主线/人物/场景脚本，Canon 状态管理 + 反 AI 味，二游覆盖最深。 | ✅ v2 |
+| [`web-novel-writing`](./web-novel-writing/) | 约束 AI 写好中文网文长篇连载的工业化流水线 — 人类当导演/AI 当受约束子程序：Canon 五态+按卷可见性的 typed 状态层、确定性防泄漏单章 prompt 编译、量化 rubric 审校闭环、反 AI 味三桶、4 个极小确定性脚本。专治"放手写 4-5 章就崩 / prompt 泄漏到正文 / AI 味"。 | ✅ v1 |
 
 ### Research
 
@@ -29,6 +39,13 @@ A collection of production-grade Claude Code skills built by [@xingfanxia](https
 | [`deep-research`](./deep-research/) | Verification-style research — multi-agent parallel investigation, Tier 1-4 source authority cross-validation, traceable decision memo output. **Use when judging claims to make a decision.** | ✅ |
 | [`narrative-research`](./narrative-research/) | 横纵分析法（Horizontal-Vertical Analysis）by 卡兹克 — 双轴叙事型调研。纵轴追溯生命历程，横轴对比共时竞品，交叉出洞察 + PDF 报告。**Use for understanding a thing from zero.** Narrative counterpart to `deep-research`. | ✅ |
 | [`serenity-bottleneck-research`](./serenity-bottleneck-research/) | Turn a secular tech/industry trend, supply chain, or public investment thesis into concrete constraints, an evidence ladder (L0–L4), disconfirmation tests, and a reflexivity / attention-risk filter. Distills the *research process*, not trades — output is hypotheses to verify, never buy/sell advice. | ✅ |
+
+### Reading / reflection
+
+| Skill | Purpose | Status |
+|---|---|---|
+| [`trident`](./trident/) | 三重心智 — 深度阅读 prompt。同一篇材料同时占据三个不重叠视角：建构者（抽框架）/ 挑战者（找最强反驳）/ 实践者（落到自己的行动），每个视角有明确产出契约，不发散成空话。改进自 [秒秒Guo](https://mmguo.dev/prompts/trident/)。 | ✅ |
+| [`dr-sharp`](./dr-sharp/) | 犀利博士 — 诚实高于善意的深度自审 prompt。把 LLM 变成心理手术刀：揭示隐藏叙事 / 根本矛盾 / 毒性循环 + 荣格镜像，对模式锋利、对人不残忍，内建危机安全底线。改进自 [秒秒Guo](https://mmguo.dev/prompts/dr-sharp/)。 | ✅ |
 
 ### Media generation
 
@@ -49,6 +66,7 @@ A collection of production-grade Claude Code skills built by [@xingfanxia](https
 | Skill | Purpose | Status |
 |---|---|---|
 | [`cloudflare-r2-setup`](./cloudflare-r2-setup/) | Wire a Vercel / Next.js app's object storage to **Cloudflare R2** (zero egress, China-reachable), or migrate off Vercel Blob — the de-risked way. Proven write-toggle + host-routed-reads architecture (no data migration, instant rollback) + the full pitfall list (wrangler can't mint S3 keys, Vercel CLI env corruption, `next/image`/CSP blocking R2 images, custom-domain CDN 404-caching, private-bucket PII reads). | ✅ |
+| [`proxy-node-setup`](./proxy-node-setup/) | 从零自建翻墙服务，或克隆一台节点 — sing-box 五协议 + Reality 伪装 + nginx 订阅分发，端到端可复现的搭建流程。节点 IP / 域名 / token 全脱敏。配套 [blog.ax0x.ai runbook](https://blog.ax0x.ai/proxy-runbook-zh)。 | ✅ |
 
 ### Workflow / quality
 
