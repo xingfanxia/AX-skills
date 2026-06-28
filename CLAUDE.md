@@ -49,6 +49,6 @@ Each deck'd skill gets a ~20s 1920×1080 promo, authored in `remotion/` and host
 - **Pages CDN (Fastly) caches hard.** After a push the new path can 404 / serve stale for ~1–2 min; `?cb=` does NOT bust it — just retry. Build status: `gh api repos/xingfanxia/AX-skills/pages/builds`.
 
 ## Current decks
-`banxian-skill` · `jewelry-marketing` · `game-script-creation` · `proxy-node-setup` · `dr-sharp` · `trident` · `serenity-bottleneck-research` — all 沙丘 Dune Style A, each with an R2-hosted promo video.
+`banxian-skill` · `jewelry-marketing` · `game-script-creation` · `proxy-node-setup` · `dr-sharp` · `trident` · `serenity-bottleneck-research` · `web-novel-writing` — all 沙丘 Dune Style A, each with an R2-hosted promo video.
 
 > `dr-sharp` + `trident` (added 2026-06-14) are improved ports of 秒秒Guo (mmguo.dev) prompts — credit the source in the deck/card (`改进自 秒秒Guo`), not a real product link. They are content/persona skills (no infra), so the genericize rule is trivially satisfied.
