@@ -464,11 +464,15 @@
 <a id="home-link" href="../" aria-label="返回 AX Skills 列表">← AX Skills</a>
 <!-- promo video (shared snippet; slug derived from path; streamed from R2) -->
 <a id="promo-link" href="#" role="button" aria-label="播放宣传片">▶ 宣传片</a>
+<a id="source-link" href="https://github.com/xingfanxia/AX-skills/tree/main/dr-sharp" target="_blank" rel="noopener" aria-label="查看 skill 源码">源码 ↗</a>
 <div id="promo-lb" aria-hidden="true"><figure><span id="promo-x" role="button" tabindex="0">✕ ESC</span><video id="promo-v" controls playsinline preload="none"></video></figure></div>
 <style>
   #promo-link{position:fixed;top:2.6vh;left:3vw;transform:translateX(120px);z-index:40;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;color:#aaa;opacity:.5;mix-blend-mode:difference;transition:opacity .2s}
   #promo-link:hover{opacity:.92}
   body.low-power #promo-link{mix-blend-mode:normal;opacity:.72}
+  #source-link{position:fixed;top:2.6vh;left:3vw;transform:translateX(240px);z-index:40;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;color:#aaa;opacity:.5;mix-blend-mode:difference;transition:opacity .2s}
+  #source-link:hover{opacity:.92}
+  body.low-power #source-link{mix-blend-mode:normal;opacity:.72}
   #promo-lb{position:fixed;inset:0;z-index:120;display:none;place-items:center;padding:clamp(16px,4vw,56px);background:rgba(31,26,20,.82);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
   #promo-lb.on{display:grid}
   #promo-lb figure{position:relative;width:min(1100px,94vw);margin:0;border:1px solid #cdbf9f;box-shadow:0 30px 90px rgba(0,0,0,.5);background:#1f1a14}

@@ -7,7 +7,6 @@ import type {Session} from './types';
  * lines (the window height) so no scroll is needed, and to font-safe glyphs
  * only (IBM Plex Mono + Noto Sans SC — no Yijing hexagram chars / emoji, which
  * render as tofu). Genericized per repo rules. id === deck slug === R2 filename.
- * web-novel-writing is intentionally omitted (managed separately).
  */
 export const SESSIONS: Session[] = [
   {
@@ -187,6 +186,33 @@ export const SESSIONS: Session[] = [
         '评级 B · 架构清晰但缺 L4 财务转化 → 深挖 primary sources',
       ]},
       {k: 'done', text: '蒸馏流程不蒸馏持仓 · 输出可验证假设 + 证伪清单 · 非买卖建议'},
+    ],
+  },
+  {
+    id: 'web-novel-writing',
+    title: 'web-novel-writing',
+    caption: '网文流水线 · 人类当导演，AI 当受约束子程序',
+    events: [
+      {k: 'sys', text: '~/mybook · claude code'},
+      {k: 'in', text: '我用 AI 写玄幻，写到第 5 章人设就漂、伏笔忘填，怎么救？'},
+      {k: 'run', text: 'degeneration_check.py 扫崩点 · 划「可信前缀 / 崩坏起点」', sec: 1.0},
+      {k: 'out', lines: ['崩坏起点：第 5 章（复读 + 战力越级）· 可信前缀 1-4 章']},
+      {k: 'run', text: '反向提取 → typed 状态层（Canon 五态 + 按卷可见）', sec: 1.3},
+      {k: 'out', lines: [
+        'state-world.yaml        力量阶位表 · 设定打 Inferred 待确认',
+        'state-characters.yaml   主角行为锚点 + 认知边界',
+        'foreshadow-ledger.yaml  伏笔 3 处 + 补 planned_payoff_ch',
+      ]},
+      {k: 'run', text: 'compile_prompt.py · 指令/正文分离 + 末尾硬后缀防泄漏', sec: 1.2},
+      {k: 'out', lines: ['第 5 章短 prompt：最小 context · 设定包进 strict 块「仅供参考」']},
+      {k: 'run', text: 'writer 生成（关 thinking）→ 独立子 agent 审校', sec: 1.5},
+      {k: 'out', lines: [
+        'continuity-checker  时间线 / 人设 / canon → 0 违规',
+        'reviewer  rubric 加权 84 - AI味 penalty 5 = 79（差一点）',
+      ]},
+      {k: 'run', text: '定向改稿 1 轮 → 去 AI 味独立 pass → state_apply 回写', sec: 1.3},
+      {k: 'out', lines: ['final 82 ≥ 80 · 硬门全清 · 第 5 章定稿，状态增量回写']},
+      {k: 'done', text: '人类定结构 / AI 填细节 · 一致性靠架构强制，不靠 AI 自觉'},
     ],
   },
 ];
