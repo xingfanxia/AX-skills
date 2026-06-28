@@ -158,6 +158,10 @@ When the agent has multiple candidate skills, route by intent:
 **Learning / coaching**
 - 想在 Claude Code 里被**主动带着**学点东西(英语/某技术/任意技能),要零考试·零背诵·不挫败的引导式学习 → `learning-coach`
 
+**Reading / reflection**
+- 一篇长文/材料想"读透"、多视角批判性分析（不是要摘要） → `trident`
+- 想被狠狠点醒、做深度自我剖析、看清反复犯的模式（别安慰我） → `dr-sharp`
+
 **Workflow / quality**
 - Build a game / demo / interactive prototype → `mtc`
 - Reviewing a `PLAN.md` / spec → `plan-design-review`
