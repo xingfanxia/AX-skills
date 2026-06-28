@@ -113,6 +113,19 @@ export const SKILLS: Skill[] = [
     ],
     source: '配套 blog.ax0x.ai',
   },
+  {
+    id: 'web-novel-writing',
+    num: '08',
+    name: '网文写作',
+    role: '网文长篇连载 · 约束 AI 写好',
+    tagline: '把"放手就崩"逼成稳定推进的流水线',
+    points: [
+      'Canon 状态层 + 防泄漏编译',
+      '反 AI 味三桶 + 模型退化检测',
+      '6 个确定性脚本 · 人当导演 AI 当子程序',
+    ],
+    source: '原创 · 借鉴 WebNovelOps & oh-story · 中文为主',
+  },
 ];
 
 export const SKILL_BY_ID = Object.fromEntries(SKILLS.map((s) => [s.id, s]));

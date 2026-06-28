@@ -21,6 +21,7 @@ const ALL = [
   'dr-sharp',
   'trident',
   'serenity-bottleneck-research',
+  'web-novel-writing',
 ];
 
 const ids = process.argv.slice(2).length ? process.argv.slice(2) : ALL;
