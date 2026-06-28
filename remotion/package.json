@@ -1,0 +1,24 @@
+{
+  "name": "ax-skills-remotion",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Remotion source for AX-skills promo videos — Dune Style A motion graphics, rendered to mp4 and hosted on R2 (media.ax0x.ai/ax-skills/).",
+  "scripts": {
+    "dev": "remotion studio",
+    "studio": "remotion studio",
+    "render": "remotion render",
+    "render:all": "node scripts/render-all.mjs",
+    "upload:all": "node scripts/upload-r2.mjs"
+  },
+  "dependencies": {
+    "@remotion/google-fonts": "4.0.484",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "remotion": "4.0.484"
+  },
+  "devDependencies": {
+    "@remotion/cli": "4.0.484",
+    "@types/react": "19.2.7",
+    "typescript": "5.9.3"
+  }
+}

@@ -462,6 +462,38 @@
 <div id="hint">← → 翻页 · B 静态 · ESC 索引</div>
 
 <a id="home-link" href="../" aria-label="返回 AX Skills 列表">← AX Skills</a>
+<!-- promo video (shared snippet; slug derived from path; streamed from R2) -->
+<a id="promo-link" href="#" role="button" aria-label="播放宣传片">▶ 宣传片</a>
+<div id="promo-lb" aria-hidden="true"><figure><span id="promo-x" role="button" tabindex="0">✕ ESC</span><video id="promo-v" controls playsinline preload="none"></video></figure></div>
+<style>
+  #promo-link{position:fixed;top:2.6vh;left:3vw;transform:translateX(120px);z-index:40;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;color:#aaa;opacity:.5;mix-blend-mode:difference;transition:opacity .2s}
+  #promo-link:hover{opacity:.92}
+  body.low-power #promo-link{mix-blend-mode:normal;opacity:.72}
+  #promo-lb{position:fixed;inset:0;z-index:120;display:none;place-items:center;padding:clamp(16px,4vw,56px);background:rgba(31,26,20,.82);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  #promo-lb.on{display:grid}
+  #promo-lb figure{position:relative;width:min(1100px,94vw);margin:0;border:1px solid #cdbf9f;box-shadow:0 30px 90px rgba(0,0,0,.5);background:#1f1a14}
+  #promo-lb video{display:block;width:100%;height:auto;background:#f0e6d2}
+  #promo-x{position:absolute;top:-40px;right:0;cursor:pointer;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#f0e6d2;opacity:.85}
+  #promo-x:hover{opacity:1}
+</style>
+<script>
+(function(){
+  var slug=(location.pathname.replace(/\/index\.html?$/i,'').replace(/\/+$/,'').split('/').pop())||'';
+  var L=document.getElementById('promo-link'),B=document.getElementById('promo-lb'),
+      V=document.getElementById('promo-v'),X=document.getElementById('promo-x');
+  if(!slug){if(L)L.style.display='none';return;}
+  function open(e){if(e){e.preventDefault();e.stopPropagation();}
+    V.src='https://media.ax0x.ai/ax-skills/'+slug+'.mp4';
+    B.classList.add('on');var p=V.play();if(p&&p.catch)p.catch(function(){});}
+  function close(){B.classList.remove('on');V.pause();V.removeAttribute('src');V.load();}
+  L.addEventListener('click',open);
+  X.addEventListener('click',function(e){e.stopPropagation();close();});
+  B.addEventListener('click',function(e){e.stopPropagation();if(e.target===B)close();});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&B.classList.contains('on')){e.stopImmediatePropagation();close();}
+  },true);
+})();
+</script>
 
 <div id="deck">
 

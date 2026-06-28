@@ -97,6 +97,28 @@
     font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
   footer a{border-bottom:1px solid var(--line)}
   footer a:hover{color:var(--ink);border-bottom-color:var(--ink-3)}
+
+  /* promo video — play affordance + lightbox */
+  .card .play{position:relative;z-index:2;display:inline-flex;align-items:center;gap:.45em;cursor:pointer;
+    font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ink);background:var(--ink);color:var(--paper);border:1px solid var(--ink);
+    padding:7px 11px;transition:opacity .2s}
+  .card .play:hover{opacity:.82}
+  .card .play .tri{font-size:9px;transform:translateY(.5px)}
+  .lb{position:fixed;inset:0;z-index:50;display:none;place-items:center;padding:clamp(16px,4vw,56px);
+    background:rgba(31,26,20,.78);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .lb[open],.lb.on{display:grid}
+  .lb figure{position:relative;width:min(1100px,94vw);margin:0;border:1px solid var(--line);
+    box-shadow:0 30px 90px rgba(0,0,0,.45);background:var(--ink)}
+  .lb video{display:block;width:100%;height:auto;background:var(--paper)}
+  .lb figcaption{display:flex;justify-content:space-between;align-items:center;gap:1rem;
+    padding:12px 16px;background:var(--paper);border-top:1px solid var(--line);
+    font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+  .lb figcaption a{color:var(--ink-2);border-bottom:1px solid var(--line)}
+  .lb figcaption a:hover{color:var(--ink);border-bottom-color:var(--ink-3)}
+  .lb .x{position:absolute;top:-44px;right:0;cursor:pointer;font-family:var(--mono);font-size:13px;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--paper);opacity:.85}
+  .lb .x:hover{opacity:1}
 </style>
 </head>
 <body>
@@ -111,7 +133,7 @@
   <section class="hero">
     <span class="kicker">Agent Skills · 装上即用</span>
     <h1>趁手的能力，<br>都折叠成 <em>skill</em>。</h1>
-    <p class="lead">AX 的 Agent Skills 展示页。有的从真实上线产品里抽出来，有的从一次次折腾里沉淀，有的把别人的好 prompt 打磨得更趁手 —— 每一个都装上即用，还顺手配了一份路演 deck。</p>
+    <p class="lead">AX 的 Agent Skills 展示页。有的从真实上线产品里抽出来，有的从一次次折腾里沉淀，有的把别人的好 prompt 打磨得更趁手 —— 每一个都装上即用，还配了一份路演 deck 和一支动画宣传片。</p>
   </section>
 
   <section class="grid">
@@ -225,5 +247,73 @@
   </footer>
 
 </div>
+
+<!-- promo-video lightbox: src streamed from R2 (media.ax0x.ai/ax-skills/) -->
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="技能宣传片">
+  <figure>
+    <span class="x" id="lbx" role="button" tabindex="0">✕ 关闭 · ESC</span>
+    <video id="lbv" controls playsinline preload="none"></video>
+    <figcaption>
+      <span id="lbt">宣传片</span>
+      <a id="lbd" href="#">查看完整 deck →</a>
+    </figcaption>
+  </figure>
+</div>
+
+<script>
+(function () {
+  var R2 = 'https://media.ax0x.ai/ax-skills/';
+  var lb = document.getElementById('lb');
+  var v = document.getElementById('lbv');
+  var t = document.getElementById('lbt');
+  var d = document.getElementById('lbd');
+  var x = document.getElementById('lbx');
+
+  function open(slug, name) {
+    v.src = R2 + slug + '.mp4';
+    t.textContent = name + ' · 宣传片';
+    d.href = slug + '/';
+    lb.classList.add('on');
+    document.body.style.overflow = 'hidden';
+    var p = v.play();
+    if (p && p.catch) p.catch(function () {});
+  }
+  function close() {
+    lb.classList.remove('on');
+    v.pause();
+    v.removeAttribute('src');
+    v.load();
+    document.body.style.overflow = '';
+  }
+
+  // Inject a "▶ 影片" button into every card — slug derived from the deck link,
+  // which 1:1 matches the R2 filename (single source of truth, no per-card HTML).
+  document.querySelectorAll('.card').forEach(function (card) {
+    var go = card.querySelector('.go');
+    var span = card.querySelector('.cta > span');
+    var h2 = card.querySelector('h2');
+    if (!go || !span) return;
+    var slug = go.getAttribute('href').replace(/\/+$/, '');
+    if (!slug) return;
+    var name = h2 && h2.firstChild ? h2.firstChild.textContent.trim() : slug;
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'play';
+    b.setAttribute('aria-label', name + ' 宣传片');
+    var tri = document.createElement('span');
+    tri.className = 'tri';
+    tri.textContent = '▶';
+    b.appendChild(tri);
+    b.appendChild(document.createTextNode(' 影片'));
+    b.addEventListener('click', function () { open(slug, name); });
+    span.insertBefore(b, span.firstChild);
+  });
+
+  x.addEventListener('click', close);
+  x.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') close(); });
+  lb.addEventListener('click', function (e) { if (e.target === lb) close(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+})();
+</script>
 </body>
 </html>
