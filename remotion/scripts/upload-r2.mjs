@@ -16,6 +16,7 @@ const BUCKET = 'ax-blog-media';
 const PREFIX = 'ax-skills';
 
 const ALL = [
+  // horizontal terminal promos (<slug>.mp4)
   'banxian',
   'jewelry',
   'game',
@@ -24,6 +25,8 @@ const ALL = [
   'trident',
   'serenity-bottleneck-research',
   'web-novel-writing',
+  // vertical short-video reels (<slug>-v.mp4)
+  'jewelry-v',
 ];
 
 const ids = process.argv.slice(2).length ? process.argv.slice(2) : ALL;
