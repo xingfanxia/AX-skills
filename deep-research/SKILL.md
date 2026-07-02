@@ -10,6 +10,16 @@ version: 3.0.0
 
 # 深度调研工作流
 
+## 搜索工具（Claude Code 环境强制）
+
+本工作流全程 10-30+ 次搜索。在 Claude Code 里，主控和所有 sub-agent 一律用 **tavily-skill CLI**（file 模式，结果落盘不进上下文），不要用 Tavily MCP，也不要用裸 WebSearch——那是 CLAUDE.md → Web Search Routing 点名的 token 泄漏反模式：
+
+```bash
+~/.claude/skills/tavily-skill/.venv/bin/tavily-skill search "query" --output ./tmp/tavily/<slug>.json
+```
+
+非 Claude Code 环境（无此 CLI）再退回宿主自带的搜索工具。
+
 ## 核心原则
 
 1. **激励感知验证**: 信息价值取决于来源的激励结构。厂商叙事有用但不能自证。每个主要 claim 都必须追溯到与发布方激励无关的独立证据。
@@ -72,7 +82,7 @@ version: 3.0.0
 4. 必须返回 URL 和原文摘录
 5. 可以覆盖的其他相关维度（形成 overlap）
 
-**Tavily 参数**: `max_results=6`, `search_depth="advanced"`, `include_answer=false`
+**Tavily 参数**: CLI 默认即为 `--max-results 6 --search-depth advanced --answer off`，无需显式传参；sub-agent prompt 里带上「搜索一律用 tavily-skill CLI --output 落盘」
 
 ## Phase 3: 整合与交叉验证
 

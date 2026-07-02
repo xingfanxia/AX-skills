@@ -11,13 +11,13 @@ Image generation via Google's Gemini multimodal API.
 
 ```bash
 # Install via the AX-skills repo
-git clone https://github.com/xingfanxia/AX-skills.git ~/AX-skills
-ln -sf ~/AX-skills/gemini-image ~/.claude/skills/gemini-image
-ln -sf ~/AX-skills/gemini-image ~/.codex/skills/gemini-image
+git clone https://github.com/xingfanxia/AX-skills.git ~/projects/devtools/AX-skills
+ln -sf ~/projects/devtools/AX-skills/gemini-image ~/.claude/skills/gemini-image
+ln -sf ~/projects/devtools/AX-skills/gemini-image ~/.codex/skills/gemini-image
 
 # Get API key from Google AI Studio: https://aistudio.google.com/apikey
 # Either export GEMINI_API_KEY in your shell, or:
-echo 'GEMINI_API_KEY=your_key_here' > ~/AX-skills/gemini-image/.env
+echo 'GEMINI_API_KEY=your_key_here' > ~/projects/devtools/AX-skills/gemini-image/.env
 ```
 
 `.env` is gitignored. The script auto-installs deps on first run via `uv` (no manual venv needed).

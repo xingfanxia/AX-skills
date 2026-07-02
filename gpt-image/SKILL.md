@@ -37,7 +37,7 @@ requests and nanobanana for illustrative requests.
 ## Invocation
 
 ```bash
-~/.codex/skills/gpt-image/generate.py "<prompt>" [options]
+~/.claude/skills/gpt-image/generate.py "<prompt>" [options]
 ```
 
 The script is a PEP 723 uv script with inline dependencies — no venv setup
@@ -57,29 +57,29 @@ needed. uv caches `openai` after first run.
 
 ```bash
 # Single image, default landscape
-~/.codex/skills/gpt-image/generate.py "editorial product shot of a matte-black espresso machine, soft window light, shallow depth of field" --size 1792x1024
+~/.claude/skills/gpt-image/generate.py "editorial product shot of a matte-black espresso machine, soft window light, shallow depth of field" --size 1792x1024
 
 # Batch of 4 (auto-throttled on Azure)
-~/.codex/skills/gpt-image/generate.py "minimalist poster for a jazz club, 1960s swiss style, bold typography reading 'BLUE NOTE'" --n 4 --output ./assets
+~/.claude/skills/gpt-image/generate.py "minimalist poster for a jazz club, 1960s swiss style, bold typography reading 'BLUE NOTE'" --n 4 --output ./assets
 
 # Force OpenAI direct (skip Azure for known-large batches)
-~/.codex/skills/gpt-image/generate.py "cover art variations for Mio AI" --n 8 --provider openai
+~/.claude/skills/gpt-image/generate.py "cover art variations for Mio AI" --n 8 --provider openai
 
 # Force Azure (use contracted compute, no fallback)
-~/.codex/skills/gpt-image/generate.py "retry this one on Azure only" --provider azure
+~/.claude/skills/gpt-image/generate.py "retry this one on Azure only" --provider azure
 ```
 
 ### Examples (image + text → edited image)
 
 ```bash
 # Edit: change background while preserving subject + pose
-~/.codex/skills/gpt-image/generate.py "replace the background with a cozy library, keep the cat and pose unchanged" --edit ./cat.png --size 1024x1792
+~/.claude/skills/gpt-image/generate.py "replace the background with a cozy library, keep the cat and pose unchanged" --edit ./cat.png --size 1024x1792
 
 # Hybrid/style transfer: use source image as structural reference
-~/.codex/skills/gpt-image/generate.py "transform into a Golden British Shorthair × Munchkin hybrid — plush golden fur, short legs kept" --edit ./munchkin.png --name hybrid
+~/.claude/skills/gpt-image/generate.py "transform into a Golden British Shorthair × Munchkin hybrid — plush golden fur, short legs kept" --edit ./munchkin.png --name hybrid
 
 # Multi-image (pose + style)
-~/.codex/skills/gpt-image/generate.py "draw this person in this pose" --edit ./person.png --edit ./pose.png
+~/.claude/skills/gpt-image/generate.py "draw this person in this pose" --edit ./person.png --edit ./pose.png
 ```
 
 Azure latency: edit ~42s, generate ~100-125s (as of 2026-04, eastus2). Edit is actually faster because much of the composition comes from the input image.
@@ -153,7 +153,7 @@ The script prints the path of each saved PNG to stdout (one per line),
 which makes it easy to pipe into subsequent tools:
 
 ```bash
-~/.codex/skills/gpt-image/generate.py "prompt" --n 3 | xargs open
+~/.claude/skills/gpt-image/generate.py "prompt" --n 3 | xargs open
 ```
 
 ## Prompting tips

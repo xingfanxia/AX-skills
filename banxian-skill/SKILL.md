@@ -1,5 +1,5 @@
 ---
-name: banxian-zhanbu
+name: banxian-skill
 description: 三合一东方占卜（小六壬 / 梅花易数 / 六爻）+ 赛博半仙人设。用户描述事情，半仙智能选起卦法，py 引擎出真实卦象，按 panpanmao 占卜知识库做半仙化解读。守"一事一占""医不问卦"等占卜规矩。
 trigger_phrases: ["算一卦","占一卦","半仙","起卦","该不该","会不会","TA到底","卦象","小六壬","梅花易数","六爻","摇一卦","摇个卦","卜一卦"]
 version: 1.0.0
@@ -325,7 +325,7 @@ pip install -r requirements.txt
 
 ```
 banxian-skill/
-├── skill.md                       # 本文件（主控）
+├── SKILL.md                      # 本文件（主控）
 ├── README.md                      # 项目说明
 ├── requirements.txt               # lunardate
 ├── scripts/                       # Python 算法引擎 + HTML 渲染
