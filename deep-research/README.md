@@ -22,8 +22,8 @@ The point of this skill is **judging the truth and credibility of claims**, not 
 
 1. Decomposes the question into verifiable sub-claims
 2. Spawns parallel research agents per claim
-3. Each finding is rated by **source tier** (Tier 1: primary / authoritative → Tier 4: anonymous / opinion)
-4. Cross-validates by requiring multi-tier corroboration
+3. Each finding is rated by **incentive-aware source tier** (Tier 1: vendor's own docs/blog — claims to verify, not evidence; up to Tier 4: GitHub issues, migration stories, production post-mortems — behavioral evidence, highest credibility)
+4. Cross-validates by requiring multi-tier corroboration, then runs a deterministic citation-integrity gate (`scripts/verify_citations.py`) before delivery
 5. Produces a decision memo with citations, confidence levels, and a clear recommendation
 
 ## Install

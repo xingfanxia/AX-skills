@@ -120,6 +120,8 @@ echo '{"method":"coin","params":{"tosses":[V1,V2,V3,V4,V5,V6]},"datetime":"<ISO>
 
 `<ISO>` 用当前时间的 ISO 8601 字符串，例如 `2026-05-06T15:30:00+08:00`。
 
+查表数据在 `scripts/_lookup/`（`bagua.json` / `hexagrams_64.json` / `liushen.json` / `liuqin_rules.json` / `shichen.json`），由 `_common.py` 的 `read_lookup()` 按名加载，不要手改。
+
 输出统一 JSON 结构：
 
 ```json

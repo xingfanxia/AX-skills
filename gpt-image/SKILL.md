@@ -167,3 +167,27 @@ GPT Image is strongest when you give it:
 
 For typography/text integration, GPT Image is usually better than Gemini.
 For reference-image editing, use nanobanana instead.
+
+## 中文文字排版纪律 (CJK text discipline)
+
+Any prompt that renders Chinese text MUST end with this suffix, appended
+verbatim (`prompt + SUFFIX` — a hard invariant you concatenate every time,
+never trust the model to remember it):
+
+```
+禁止：文字重叠、文字压在复杂图像上、伪汉字乱码、逐字竖排英文、
+超过两种字体、页面四边贴字无留白、装饰元素盖过标题、每页超过 5 个信息块。
+```
+
+- **>30 字正文 → 留位策略**: image models cannot reliably render long CJK
+  body text. Have the model draw only the layout and visuals, leave the text
+  zone blank, and overlay real text in post (PPT / image editor). This is the
+  only reliable approach for long Chinese copy.
+- **成套图 cover-first**: generate the cover first (it locks the style), then
+  1 content image to verify style match, then batch the rest — same style
+  brief injected into every prompt, only content parameters vary. Re-check
+  against the cover every ~5 images; on drift, regenerate reusing the cover
+  prompt's style paragraph.
+- 中文横排；标点不出现在行首；中英混排时英文占比 ≤ 20%。
+
+<!-- Adapted from staruhub/ClaudeSkills (MIT) -->

@@ -94,6 +94,21 @@ Defaults to PNG (Gemini API returns PNG). Convert to JPG to save space (~75% sma
 sips -s format jpeg -s formatOptions 85 in.png --out out.jpg
 ```
 
+## 中文文字排版纪律 (CJK text discipline)
+
+Any prompt that renders Chinese text MUST end with this suffix, appended verbatim (`prompt + SUFFIX` — a hard invariant you concatenate every time, never trust the model to remember it):
+
+```
+禁止：文字重叠、文字压在复杂图像上、伪汉字乱码、逐字竖排英文、
+超过两种字体、页面四边贴字无留白、装饰元素盖过标题、每页超过 5 个信息块。
+```
+
+- **>30 字正文 → 留位策略**: image models cannot reliably render long CJK body text. Have the model draw only layout + visuals, leave the text zone blank, overlay real text in post (PPT / image editor). This is the only reliable approach for long Chinese copy. (For text that must render readably, gpt-image is the stronger pick anyway — see routing above.)
+- **成套图 cover-first**: generate the cover first (locks the style), then 1 content image to verify style match, then batch the rest — same style brief injected into every prompt, only content parameters vary. Re-check against the cover every ~5 images; on drift, regenerate reusing the cover prompt's style paragraph (`--reference cover.png` also helps here).
+- 中文横排；标点不出现在行首；中英混排时英文占比 ≤ 20%。
+
+<!-- Adapted from staruhub/ClaudeSkills (MIT) -->
+
 ## Cost note
 
 Both models are GA (previews shut down 2026-06-25). nb2 (`gemini-3.1-flash-image`) output: $0.067/1K, $0.101/2K, $0.151/4K per image; pro (`gemini-3-pro-image`) costs roughly 2x nb2. Check current pricing at https://ai.google.dev/gemini-api/docs/pricing.

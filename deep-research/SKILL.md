@@ -5,7 +5,7 @@ description: |
   适用场景：需要做决策的调研（"该选A还是B"、"X靠不靠谱"、"evaluate"、"帮我验证"）、技术评估、方案对比、行业可行性判断。
   不适用：纯粹想了解一个东西的来龙去脉（用 narrative-research）、想要叙事风格的研究报告（用 narrative-research）。
   触发词：深度调研、帮我调研、evaluate、该选哪个、靠不靠谱、对比一下、investigate、competitive analysis。
-version: 3.0.0
+version: 3.1.0
 ---
 
 # 深度调研工作流
@@ -39,6 +39,16 @@ version: 3.0.0
 | Tier 4 | GitHub issues、migration stories、production post-mortems、commit history | 最高可信度，行为证据而非态度表达 |
 
 证据可信度递增：态度表达 < 使用场景描述 < 对比决策记录 < Migration stories < Production post-mortems < 代码/commit 级证据。优先收集后半部分。
+
+**Claim 类型 ↔ 证据类型匹配**——来源可以很有名，但仍然是错误类型的证据：
+
+| Claim 类型 | 对口证据类型 |
+|-----------|-------------|
+| 产品功能/特性 | 官方文档、源码 |
+| 法规/合规 | 官方法律文本、监管机构发布 |
+| 科学有效性 | 同行评审论文、meta 分析 |
+| 市场趋势/规模 | 财报、监管披露文件 |
+| 运营故障/可靠性 | Incident 报告、post-mortem |
 
 ## 两种 Reader Mode
 
@@ -108,11 +118,27 @@ version: 3.0.0
 
 **External mode 写作顺序**: Why it matters → 核心判断 → 背景与定义 → 分维度证据 → 边界与反例 → 决策意义
 
+**确定性引用校验（交付前必跑）**：
+
+```bash
+python3 ~/.claude/skills/deep-research/scripts/verify_citations.py <报告.md> --sources tmp/
+```
+
+脚本在本 skill 的 `scripts/` 目录下（Codex 环境把 `~/.claude` 换成 `~/.codex`）。它用 URL 签名（域名+路径前段）把报告里每条引用对到 `tmp/` 落盘的搜索结果和笔记的 URL 池，抓虚构 URL、空链接/悬空引用、汇总与正文不一致、单一来源集中（>25%）。critical 必须修复后重跑，exit 0 才能交付；warning 逐条人工判断（同域不同文的要确认是不是同一篇）。
+
 **存储**: `contexts/survey_sessions/<topic>_survey_YYYYMMDD.md`
+
+## 续研（Round 2+）
+
+同一课题的后续调研不重跑全流程、不重写全文：
+1. 复用 `tmp/<session_slug>/`：读旧 scratchpad 和 claim 表，明确上轮「未验证 / 仅 vendor source」的遗留点
+2. Claim 表增量扩展：新 claim 追加行，旧 claim 更新验证状态（含「已验证 → 被新证据推翻」）
+3. 只对新维度和新矛盾点启动 sub-agent，已验证结论不重复搜索
+4. 交付 **delta memo** 而非重写全文：变化了什么 / 新证据 / 对既有结论的影响 / 剩余不确定性
 
 ## URL 留存规范
 
-必须保留 URL：直接引用、数据来源、评价来源、官方信息。
+必须保留 URL：直接引用、数据来源、评价来源、官方信息。正文引用用 inline `[来源](URL)` 或如下格式，报告末尾加 `## 来源汇总` 列出全部来源 URL——引用校验脚本按此结构检查。
 
 ```markdown
 **来源描述**（URL）
@@ -126,6 +152,7 @@ version: 3.0.0
 | 陷阱 | 对策 |
 |-----|------|
 | 只搜到正面信息 | 专门搜 "criticism", "negative review", "scam" |
+| 为反而反（强行 contrarian） | 无真实主流叙事可反驳时，不得为反而反；改为交付一个决策相关的非显然洞察 |
 | 信息来源单一 | 强制要求 sub-agent 找多个独立来源 |
 | 过度总结丢失细节 | 保留原文摘录 |
 | 维度划分太干净没有 overlap | 故意让边缘模糊 |
