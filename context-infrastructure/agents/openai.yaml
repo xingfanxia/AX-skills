@@ -1,0 +1,4 @@
+interface:
+  display_name: "Context Infrastructure"
+  short_description: "Design durable context, memory, and promotion layers."
+  default_prompt: "Use $context-infrastructure to design a durable context and memory promotion system."

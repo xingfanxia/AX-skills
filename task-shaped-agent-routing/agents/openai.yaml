@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task-Shaped Agent Routing"
+  short_description: "Route agent capability and topology by work shape."
+  default_prompt: "Use $task-shaped-agent-routing to choose the right agent capability and team shape for this work."

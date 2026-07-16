@@ -89,6 +89,8 @@ Covered so far: `banxian-skill` · `jewelry-marketing` · `game-script-creation`
 | Skill | Purpose | Status |
 |---|---|---|
 | [`ai-workflow-spine`](./ai-workflow-spine/) | Design or audit AI-native products, agent workflows, and scheduled automations: deterministic plumbing → inspectable boundary artifact → AI judgment → replayable output → tests, with explicit trigger/no-op/stop/cost controls. | ✅ v1.0 |
+| [`investigate`](./investigate/) | Diagnose unclear or cross-component failures with exact symptoms, traced data/control flow, one falsifiable hypothesis at a time, root-cause fixes, and the cheapest observing regression check. | ✅ v1.0 |
+| [`task-shaped-agent-routing`](./task-shaped-agent-routing/) | Route direct work, delegation, capability tiers, reasoning depth, and review topology from the actual task shape; includes bounded child contracts and model-agnostic escalation rules. | ✅ v1.0 |
 | [`autonomous-grind`](./autonomous-grind/) | Discipline layer for autonomous loops (`/goal` companion). Session marker + 5 hooks: Stop hook blocks wrap-up prose (8 EN/中文 pattern groups), PreToolUse blocks `HANDOFF*`/`STATUS*` files, verify-before-clear requires a real test/build run before the loop may end, stale-marker cleanup, `/goal` auto-pairing. JSONL telemetry per fire. Harness-neutral discipline contract; Claude Code-native enforcement. | ✅ v1.0 |
 | [`big-task`](./big-task/) | Risk-tiered engineering workflow router. Auto-detects project profile × task intent → direct / light / full superpowers cycle; subagent dispatch policy (inline / serial / parallel-worktree / parallel-readonly); autonomous through to PR-merged with 4 Critical Decision Triggers as the only pauses + an auditable `## Autonomous decisions` log. Bundles the review-discipline contract (fix all findings; severity routes how, not whether). Requires the [superpowers](https://github.com/obra/superpowers) plugin for Tier 4. | ✅ v1.0 |
 | [`mtc`](./mtc/) | **More Than Coding** — full product workflow from concept to code. Iterates design / story first → aligned data → build → polish. For games, demos, prototypes, interactive experiences. The signature AX workflow. | ✅ |
@@ -105,12 +107,13 @@ Covered so far: `banxian-skill` · `jewelry-marketing` · `game-script-creation`
 |---|---|---|
 | [`neat-freak`](./neat-freak/) | 洁癖 — End-of-session knowledge sync. Reconciles agent memory + project root markdown + `docs/` + README against actual code so nothing rots. Three-audience editorial pass (agent / project-AI / external readers). Cross-platform (Claude Code · Codex · OpenCode · OpenClaw). Idempotent — safe to run every phase. | ✅ |
 
-### Adapted prompts
+### Adapted methods and prompts
 
 Useful adaptations remain available with explicit attribution, but are intentionally placed after AX-original products, workflows, and methods.
 
 | Skill | Purpose | Status |
 |---|---|---|
+| [`context-infrastructure`](./context-infrastructure/) | Design durable agent context with L0–L3 layers, Observer/Reflector separation, conservative promotion, progressive disclosure, privacy, and replay. AX adaptation inspired by [grapeot/context-infrastructure](https://github.com/grapeot/context-infrastructure) and [Mastra Observational Memory](https://mastra.ai/research/observational-memory); architecture is reusable, personal axioms are not. | ✅ v1.0 adapted |
 | [`trident`](./trident/) | 三重心智 — 深度阅读 prompt。同一篇材料同时占据三个不重叠视角：建构者（抽框架）/ 挑战者（找最强反驳）/ 实践者（落到自己的行动），每个视角有明确产出契约，不发散成空话。改进自 [秒秒Guo](https://mmguo.dev/prompts/trident/)。 | ✅ |
 | [`dr-sharp`](./dr-sharp/) | 犀利博士 — 诚实高于善意的深度自审 prompt。把 LLM 变成心理手术刀：揭示隐藏叙事 / 根本矛盾 / 毒性循环 + 荣格镜像，对模式锋利、对人不残忍，内建危机安全底线。改进自 [秒秒Guo](https://mmguo.dev/prompts/dr-sharp/)。 | ✅ |
 
@@ -144,7 +147,7 @@ For OpenAI Codex / OpenClaw, follow your platform's skill installation conventio
 ## Why these skills
 
 - **AX-original work comes first**: Featured and showcase ordering prioritizes skills distilled from shipped AX products, repeated internal workflows, or original AX methods. Adapted skills remain available with explicit attribution, but are intentionally listed after original work.
-- **Earned, not toy-grade**: Each skill comes from real use. `jewelry-marketing` comes from [shichuan (识川)](https://github.com/xingfanxia/shichuan); `ai-workflow-spine`, `tui-engineering`, and `serenity-bottleneck-research` distill repeated engineering or research practice into reusable methods.
+- **Earned, not toy-grade**: Each skill comes from real use. `jewelry-marketing` comes from [shichuan (识川)](https://github.com/xingfanxia/shichuan); `ai-workflow-spine`, `task-shaped-agent-routing`, `tui-engineering`, and `serenity-bottleneck-research` distill repeated engineering or research practice into reusable methods.
 - **Niche depth over generic breadth**: Better to nail one merchant vertical than be average at everything.
 - **Tool-grade, not toy-grade**: Single command, sensible defaults, real output bundle, error recovery.
 
@@ -190,6 +193,8 @@ When the agent has multiple candidate skills, route by intent:
 
 **Workflow / quality**
 - Design or audit an AI-native workflow / agent pipeline / scheduled automation → `ai-workflow-spine`
+- Diagnose an unclear, intermittent, or cross-component failure → `investigate`
+- Design direct-vs-delegated execution, capability tiers, or multi-agent topology → `task-shaped-agent-routing`
 - Build a game / demo / interactive prototype → `mtc`
 - Reviewing a `PLAN.md` / spec → `plan-design-review`
 - "Audit the whole codebase" / "clean up everything" → `codebase-sweep`
@@ -199,6 +204,7 @@ When the agent has multiple candidate skills, route by intent:
 - Route a non-trivial engineering task to the right amount of process → `big-task`
 - End-of-session knowledge sync (memory + docs + README) → `neat-freak`
 
-**Adapted reading / reflection prompts**
+**Adapted methods / reading / reflection prompts**
+- Design long-running context, observation, reflection, and durable-memory promotion → `context-infrastructure`
 - 一篇长文/材料想"读透"、多视角批判性分析（不是要摘要） → `trident`
 - 想被狠狠点醒、做深度自我剖析、看清反复犯的模式（别安慰我） → `dr-sharp`

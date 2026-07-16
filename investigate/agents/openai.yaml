@@ -1,0 +1,4 @@
+interface:
+  display_name: "Focused Investigation"
+  short_description: "Diagnose unclear bugs with falsifiable evidence."
+  default_prompt: "Use $investigate to diagnose this unclear failure from evidence before changing code."
