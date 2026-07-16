@@ -157,7 +157,7 @@ const onTap = (x: number, y: number): void => {
 |---|---|
 | tap | SGR press + release at the cell |
 | vertical pan | a burst of wheel-up/down events |
-| horizontal swipe | **nothing** — hardwired to Moshi's multiplexer integration: live detection of tmux/Zellij/Herdr (remote CLI probes like `herdr session list --json`), then Moshi sends that multiplexer's tab chord. Other TUIs get "no active window". NOT bindable to custom keys — only tap/long-press/D-pad slots accept the custom shortcut builder. |
+| horizontal swipe | **nothing by default** — swipe arms only when Moshi's live multiplexer detection fires: the closed-source `moshi-hook` daemon does a literal env read of `$TMUX_PANE` / `$ZELLIJ` / `$HERDR_ENV` (precedence in that order — verified empirically via `moshi-hook context`), then swipe sends that multiplexer's prefix chord (`Ctrl-B n`/`p` for tmux/Herdr). The SSH preflight (`command -v` + session listing) only drives the picker. No plugin API; other TUIs get "no active window"; NOT bindable to custom keys — only tap/long-press/D-pad slots accept the custom shortcut builder. |
 | Mouse-Mode drag | press/drag/release forwarded to the TUI (gesture recognizer applies) |
 
 Design consequences (bake these in from the start):
@@ -171,5 +171,14 @@ Design consequences (bake these in from the start):
    and for terminals whose gestures CAN send arbitrary keys.
 4. Keep the drag-swipe recognizer anyway — it works in Moshi's Mouse Mode and
    on desktop terminals that forward drags.
-5. Quit on `esc` as well as `q` — but only with the escape timeout from §3,
+5. **The impersonation path** (verified): detection is a bare env read, so a
+   TUI launched with `HERDR_ENV=1 HERDR_SESSION=<name>` reports
+   `kind: "herdr"` and arms swipe, which then delivers `Ctrl-B n`/`p` as
+   ordinary key input. Support the prefix chord (Ctrl-B, then n/p/digit, ~2s
+   window, tmux-style swallow of unknown keys) and phone swipe becomes
+   native. Preconditions: moshi-hook daemon serving on the host, and a plain
+   (non-tmux) session — `$TMUX_PANE` wins precedence and an outer tmux would
+   eat the chord anyway. Ship the chord support regardless: it matches
+   tmux/herdr muscle memory and is inert otherwise.
+6. Quit on `esc` as well as `q` — but only with the escape timeout from §3,
    or drag floods will fake it.

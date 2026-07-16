@@ -98,7 +98,7 @@ identity. Detail: [references/architecture.md](references/architecture.md).
 |---|---|
 | tap | SGR press + release |
 | vertical pan | wheel-up/down burst |
-| horizontal swipe | **nothing** — hardwired to the app's multiplexer integration (tmux/Zellij/Herdr detection via remote CLI; "no active window" otherwise; NOT bindable to custom keys) |
+| horizontal swipe | **nothing by default** — armed only by moshi-hook's live env read of `$TMUX_PANE`/`$ZELLIJ`/`$HERDR_ENV` (that precedence); on detection swipe sends the mux's prefix chord (`Ctrl-B n`/`p`). Impersonatable: `HERDR_ENV=1` + speak the chord (input.md §6) |
 | Mouse-Mode drag | press/drag/release forwarded (gesture recognizer applies) |
 
 Consequences: tap-the-tab-label is primary phone navigation, never make swipe
