@@ -98,7 +98,7 @@ identity. Detail: [references/architecture.md](references/architecture.md).
 |---|---|
 | tap | SGR press + release |
 | vertical pan | wheel-up/down burst |
-| horizontal swipe | **nothing by default** — armed only by moshi-hook's live env read of `$TMUX_PANE`/`$ZELLIJ`/`$HERDR_ENV` (that precedence); on detection swipe sends the mux's prefix chord (`Ctrl-B n`/`p`). Impersonatable: `HERDR_ENV=1` + speak the chord (input.md §6) |
+| horizontal swipe | **nothing by default** — armed only by moshi-hook's live env read of `$TMUX_PANE`/`$ZELLIJ`/`$HERDR_ENV` (that precedence); on detection swipe sends the mux's prefix chord (`Ctrl-B n`/`p`). Two verified recipes: tmux conditional binding forwards the chord into a pane titled via OSC 2 (input.md §6.5 — the default-setup path), or bare-shell `HERDR_ENV=1` impersonation + speak the chord (§6.6) |
 | Mouse-Mode drag | press/drag/release forwarded (gesture recognizer applies) |
 
 Consequences: tap-the-tab-label is primary phone navigation, never make swipe

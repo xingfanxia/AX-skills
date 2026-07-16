@@ -171,7 +171,19 @@ Design consequences (bake these in from the start):
    and for terminals whose gestures CAN send arbitrary keys.
 4. Keep the drag-swipe recognizer anyway — it works in Moshi's Mouse Mode and
    on desktop terminals that forward drags.
-5. **The impersonation path** (verified): detection is a bare env read, so a
+5. **The tmux passthrough** (primary recipe — verified end-to-end; works
+   inside the tmux session phone terminals attach by default): have the TUI
+   set an OSC 2 pane title (`\x1b]2;mytui\x07` on enter, cleared on exit),
+   then bind conditionally in tmux so the swipe chord forwards into the pane
+   instead of switching windows:
+   ```tmux
+   bind-key n if-shell -F "#{m:mytui*,#{pane_title}}" "send-keys n" "next-window"
+   bind-key p if-shell -F "#{m:mytui*,#{pane_title}}" "send-keys p" "previous-window"
+   ```
+   Stock window-switching is preserved for every other pane. Make your
+   installer add this idempotently (marker-guarded append + live
+   `tmux source-file`).
+6. **The impersonation path** (verified): detection is a bare env read, so a
    TUI launched with `HERDR_ENV=1 HERDR_SESSION=<name>` reports
    `kind: "herdr"` and arms swipe, which then delivers `Ctrl-B n`/`p` as
    ordinary key input. Support the prefix chord (Ctrl-B, then n/p/digit, ~2s
@@ -180,5 +192,5 @@ Design consequences (bake these in from the start):
    (non-tmux) session — `$TMUX_PANE` wins precedence and an outer tmux would
    eat the chord anyway. Ship the chord support regardless: it matches
    tmux/herdr muscle memory and is inert otherwise.
-6. Quit on `esc` as well as `q` — but only with the escape timeout from §3,
+7. Quit on `esc` as well as `q` — but only with the escape timeout from §3,
    or drag floods will fake it.
