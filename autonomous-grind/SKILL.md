@@ -44,7 +44,7 @@ The marker file is your "I'm in deep work mode" flag. Hooks read it; if absent, 
    # The session-uuid IS the session ID. Most-recently-modified .jsonl in the encoded project dir is this session.
    proj_root="${CLAUDE_PROJECT_DIR:-$PWD}"
    # Claude Code encoding: every non-word char ([^a-zA-Z0-9_]) becomes '-'. So
-   # /Users/you/dev/my-app → -Users-you-dev-my-app; a '.' becomes its own '-'.
+   # /Users/you/dev/my-app → -Users-you-dev-my-app; a '.' becomes its own '-'. lint-allow-path
    encoded="$(echo "$proj_root" | sed 's|[^a-zA-Z0-9_]|-|g')"
    proj_dir="$HOME/.claude/projects/$encoded"
    sid="$(ls -1t "$proj_dir"/*.jsonl 2>/dev/null | head -1 | xargs -I{} basename {} .jsonl 2>/dev/null)"

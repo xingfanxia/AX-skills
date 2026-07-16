@@ -94,39 +94,9 @@ No essay. Just the decision. Then **wait** — do not proceed until user answers
 
 User can interrupt at ANY point with: "stop", "pause", "wait", "let me look", or by hitting Ctrl-C. Respect interruption immediately. Resume on user's explicit "continue" / "go" / "proceed" / "moveon".
 
-### Status updates while autonomous
+### Status updates + final report
 
-While running autonomously, emit ONE short progress line per phase boundary (≤ 80 chars):
-
-```
-▸ Phase 2b · parallel-worktree (4 tasks) · running
-✓ Phase 2b · 4/4 green · committed (a1b2c3d) · → Phase 2c
-✓ Phase 2c · review clean · → Phase 2g
-✓ Phase 2g · 6/6 PASS · → Phase 6a
-```
-
-NOT a multi-paragraph essay per phase. The user will read commits + PR description for detail; mid-flight chatter steals their attention without informing them.
-
-### Final report (at PR-opened or PR-merged)
-
-ONE summary block (per existing Exit section, augmented):
-
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- /big-task ▸ COMPLETE  (autonomous run)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- Phases shipped: N
- Commits: N      LOC: +A / -B
- Tests: unit X / integ Y / e2e Z
- Autonomous decisions made:
-   • <decision 1 — what was silently picked and why>
-   • <decision 2 — ...>
- Critical-decision pauses: N (none / list)
- Deferred follow-ups (FLAG batch): N (linked from PR)
- PR: <url>
-```
-
-The `## Autonomous decisions` log is non-optional — it's the receipt the user needs to audit autonomy after-the-fact.
+While autonomous: ONE short progress line per phase boundary (≤80 chars, e.g. `✓ Phase 2b · 4/4 green · committed (a1b2c3d) · → Phase 2c`) — never a multi-paragraph essay. At PR-opened/merged: ONE summary block — phases / commits / tests / LOC, the **non-optional `## Autonomous decisions` log** (the receipt the user needs to audit autonomy after-the-fact), critical-decision pauses, deferred FLAG batch. Exact templates: `references/report-templates.md`.
 
 ---
 
@@ -142,42 +112,7 @@ Grep for `workflow-profile:start` in `./CLAUDE.md`. If found, extract `<name>` f
 
 ### Step 2 — Auto-detect from repo signals (runs only when no explicit block)
 
-Run ONE bash command to collect signals (≤1s):
-
-```bash
-{
-  # Schema: concrete file existence tests only — DO NOT use `ls glob | head` because that always succeeds on empty input in zsh
-  ( [ -f prisma/schema.prisma ] || [ -f drizzle.config.ts ] || [ -f drizzle.config.js ] || [ -f drizzle.config.mjs ] || [ -f knexfile.js ] || [ -d db/migrations ] || { [ -d migrations ] && find migrations -maxdepth 1 -name "*.sql" 2>/dev/null | grep -q . ; } ) && echo schema
-  # Auth / payment libs
-  [ -f package.json ] && grep -qE '"(stripe|@stripe|better-auth|next-auth|@auth/core|lucia)"' package.json 2>/dev/null && echo auth-payment
-  # Components dir (root OR src/ OR app/) + UI framework
-  ( [ -d components ] || [ -d src/components ] || [ -d app/components ] ) && [ -f package.json ] && grep -qE '"(tailwindcss|@radix-ui|@chakra-ui|@mui/material|shadcn)"' package.json 2>/dev/null && echo components-ui
-  # Locked design reference
-  ( [ -f HANDOFF.md ] || [ -d directions ] || [ -d docs/design ] ) && echo design-ref
-  # E2E framework
-  [ -f package.json ] && grep -q '"@playwright/test"' package.json 2>/dev/null && echo playwright
-  # Markdown content volume
-  CONTENT=0
-  for d in content/posts _posts content/blog docs/posts posts; do
-    [ -d "$d" ] && CONTENT=$((CONTENT + $(find "$d" -maxdepth 2 -name "*.md" 2>/dev/null | wc -l | tr -d ' ')))
-  done
-  [ "$CONTENT" -gt 5 ] && echo "content-$CONTENT"
-  # Backend language indicator
-  ( [ -f go.mod ] || [ -f Cargo.toml ] || [ -f pyproject.toml ] ) && echo backend-lang
-} 2>/dev/null
-```
-
-**Classify from emitted signals** — apply rules in order, first match wins:
-
-| # | Rule | Profile | Reasoning |
-|---|------|---------|-----------|
-| 1 | `content-N` where **N >= 20** | `light-project` | Overwhelmingly content-dominant (blog, docs repo). Even if the repo also has components or accidental schema artifacts, the content is what ships. Blog with 270 posts + MarkdownRenderer component is still a blog. |
-| 2 | (`schema` OR `auth-payment`) AND (`backend-lang` OR NOT `components-ui`) | `heavy-project` | Real backend risk (migrations / auth / payments) in a codebase that's primarily backend-shaped. Requires TDD + spec discipline. |
-| 3 | `components-ui` OR `design-ref` OR `playwright` | `ui-project` | UI work with visual verification stack. Shichuan/Elan canonical shape. |
-| 4 | `content-N` where N >= 5 (fell through rule 1) | `light-project` | Moderately content-dominant but mixed. Still prefer light unless clear heavy signal. |
-| 5 | Anything else (only `backend-lang`, or nothing) | `unknown` | Can't confidently classify — fall through to Phase 0 rubric. |
-
-Call this the **repo-shape profile**. It reflects what the codebase IS, not what the current task IS.
+Run the one-command repo scan (≤1s) and classify from the emitted signals — schema / auth-payment / components-ui / design-ref / playwright / content volume / backend-lang. Script + ordered classification rules: `references/profile-detection.md`. Output is the **repo-shape profile** (`light-project` / `heavy-project` / `ui-project` / `unknown`) — it reflects what the codebase IS, not what the current task IS.
 
 ### Step 2.5 — Task intent (judgment, NOT keyword matching)
 
@@ -228,32 +163,20 @@ Print the reasoning, not a label: `Profile: heavy (repo: light; intent: task int
 
 ### Step 3 — Route by final profile
 
-**If `light-project`:**
-- **Exit big-task immediately.** Execute the request directly in the current context — no subagents, no planning, no tier rubric, no superpowers cycle.
-- This is the project's "just do it" stance for solo blog/content/script work.
-- **Escalation exception:** if the request clearly involves schema migrations, cross-service protocol changes, atomicity, or concurrency, **silently escalate to Phase 0 rubric** (per Phase -1 auto-resolution table) and log the escalation in the PR's `## Autonomous decisions` section. Do NOT pause to confirm — schema/auth/concurrency are class-2 critical decisions only when the user is making the architectural choice itself, not when escalating tier.
+| Profile | Route |
+|---|---|
+| `light-project` | **Exit big-task immediately** — execute directly, no subagents, no planning. Silently escalate to the Phase 0 rubric only for schema / protocol / atomicity / concurrency work (log in PR `## Autonomous decisions`) |
+| `ui-project` | **Force Tier 3 (light), skip the Phase 0 rubric.** Checkbox task-list plans; Phase 2g Playwright screenshot sweep is MANDATORY |
+| `heavy-project` | Phase 0 rubric below; at Tier 4 run the full superpowers cycle (worktrees, TDD-mandatory, review gates) |
+| `unknown` | Phase 0 rubric; if the project has durable character, suggest `/workflow-profile <name>` to make routing sticky |
 
-**If `ui-project`:**
-- **Force Tier 3 (light process), skip Phase 0 rubric entirely.** File count and "architectural risk" heuristics don't apply — UI work is visual-driven with Playwright verification, which inverts the usual risk calculus.
-- Use superpowers `subagent-driven-development` for multi-component work. Invoke `brainstorming` ONLY for a truncated spec (1 page max) — do NOT produce inline code, TypeScript essays, or 1000+ line plans.
-- Plans are checkbox task lists (files + Playwright assertion per task), not treatises.
-- **Verification at Phase 2g is MANDATORY Playwright sweep**: Claude reads the PNGs directly (multimodal), compares against design reference. No LLM verifier agent.
-
-**If `heavy-project`:**
-- Proceed with Phase 0 rubric below, BUT at Tier 4 use the superpowers full cycle (`brainstorming` → spec → `writing-plans` → `subagent-driven-development` → `requesting-code-review` → `verification-before-completion`).
-- Worktrees, TDD-mandatory, human + automated code review all apply.
-
-**If `unknown`:** fall through to Phase 0 rubric. Default Tier 4 engine is the superpowers cycle (see description paragraph above). When the task completes, if the project has durable character, suggest the user run `/workflow-profile <name>` to make routing sticky and skip the detection cost next time.
+Full per-profile detail + when auto-detection gets it wrong (trust it and proceed; re-route only after 2+ phases produce FLAG verdicts pointing at the wrong profile): `references/profile-detection.md`.
 
 ### Overrides
 
 - User says "skip workflow" / "just do it" / "quick and dirty" → drop to direct execution regardless of profile.
 - User says "use superpowers" / "just brainstorm it" → override the cycle depth for this one task.
 - User wants durable override: run `Skill(skill="workflow-profile", args="<light|ui|heavy>")` to write an explicit block (wins against auto-detect forever after).
-
-### When auto-detection gets it wrong
-
-If detected profile is obviously wrong (e.g., auto-detected `ui` on a repo that's actually a backend-with-small-UI heavy project), **trust the auto-detect and proceed silently** (per Phase -1). Re-route ONLY mid-flight if 2+ phases produce FLAG verdicts pointing at the wrong profile — at that point the evidence is on disk, not a judgment call. Log the detected profile in PR `## Autonomous decisions` so the user can `/workflow-profile <name>` to pin a different one for next time.
 
 ---
 
@@ -306,16 +229,7 @@ Default = skip. Only invoke when requirements are genuinely ambiguous at the imp
 
 ## Model selection (consistency across all subagents)
 
-For quality-mode Tier 4 work, **every subagent spawned throughout the big-task flow should use Opus** — don't let any per-role default silently downgrade synthesis or verification. Pass `model: "opus"` explicitly on all `Task(subagent_type=...)` invocations, including:
-
-- Research / exploration agents (codegraph + parallel `Explore` codebase mapping)
-- Plan / spec reviewers (`plan-design-review`, `superpowers:writing-plans` review passes)
-- `feature-dev:code-reviewer` (Phase 4 tracks)
-- `think-ultra` (Phase 2c, Phase 3)
-
-For a balanced budget: Sonnet everywhere — **Sonnet 5 is the floor, never haiku** (the author's measured stance: haiku's quality floor is below acceptable even for lookups — re-runs eat the savings). To inherit: match the current session model.
-
-Rationale: Tier 4 multi-week scope amortizes the Opus cost across downstream planning/execution — cheaper than shipping a bad plan and rewriting phases. Don't let per-role defaults silently downgrade synthesis or verification.
+For quality-mode Tier 4 work, pass `model: "opus"` explicitly on ALL `Task()` invocations — research/exploration agents, plan reviewers, code reviewers, `think-ultra` — so no per-role default silently downgrades synthesis or verification; multi-week Tier-4 scope amortizes the cost. Balanced budget: Sonnet everywhere — **Sonnet 5 is the floor, never haiku** (the author's measured stance: haiku's quality floor is below acceptable even for lookups — re-runs eat the savings). To inherit: match the current session model.
 
 ---
 
@@ -539,30 +453,7 @@ Phase complete only when verification passes.
 
 Precondition: Phase 5 verification passed — this IS the PR readiness gate: tests/lint/build pass locally BEFORE the PR exists; CI confirms, it never discovers. Never open the PR early to "see CI"; every push to an open PR burns a CI run + re-triggers all review bots.
 
-PR description template (enforce):
-
-```markdown
-## Summary
-- [3-5 bullets: what changed and why]
-
-## Phases shipped
-[list from ROADMAP, or single-phase description]
-
-## Tests added
-- Unit: N
-- Integration (real APIs): N
-- E2E: N
-
-## Risks / follow-ups
-- [Track 4 deferred items]
-- [Any MEDIUM-severity findings not addressed]
-
-## Test plan
-- [ ] [specific manual checks]
-- [ ] CI green
-
-@claude please review.
-```
+PR description template (enforce): summary bullets · phases shipped · tests added (unit / integration / e2e counts) · risks & follow-ups · test-plan checklist · closing `@claude please review.` Exact template: `references/report-templates.md`.
 
 ### 6b — PR review + CI self-healing loop
 
@@ -572,22 +463,7 @@ PR description template (enforce):
 
 ## Exit
 
-When PR merges OR user says "done" / "stop":
-
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- /big-task ▸ COMPLETE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- Phases shipped: N
- Commits: N
- Tests added: unit X / integ Y / e2e Z
- LOC: +A / -B
- Tracks cleaned: 8
- Deferred follow-ups: N
- PR: <url>
-```
-
-Delete cron monitor. Suggest memory append if cross-project learnings emerged.
+When PR merges OR user says "done" / "stop": emit the COMPLETE summary block (phases / commits / tests / LOC / deferred follow-ups / PR url — exact template: `references/report-templates.md`). Delete the cron monitor. Suggest a memory append if cross-project learnings emerged.
 
 ---
 
@@ -602,13 +478,4 @@ Delete cron monitor. Suggest memory append if cross-project learnings emerged.
 
 ## Adaptation hints
 
-- **Tier 3** → no formal plan doc, single implicit phase, inline plan
-- **No frontend changes** → skip the UI spec, skip E2E tests
-- **Monorepo** → apply 8-track cleanup per package, parallelize agents per package
-- **No existing tests in repo** → include a "test scaffolding" sub-phase in phase 1
-- **Schema/migration involved** → bump to tier 4 regardless of file count
-- **User already has a plan doc for unrelated work** → write the new milestone into its own plan doc, don't clobber existing
-- **Codebase mapping** — use codegraph (`mcp__codegraph__*` / `codegraph` CLI) for symbol discovery; fan out parallel `Explore` agents per area. Tier 4 initial mapping should cover stack, conventions, test setup, and known concerns (README drift, tech debt, migration blockers) — the concerns survey is critical for downstream phase planning. Reserve a single focused `Explore` agent for targeted refreshes when one specific area changed.
-- **AI-heavy phase (LLM prompts, evals, prompt engineering)** → produce an AI design doc (framework selection + eval planning + guardrails) before `superpowers:writing-plans`.
-- **External design bundle** (Claude Design, Figma export, v0, prototype) → copy to `docs/{project}/reference/` **before Phase 1**. Cite persistent paths in the plan doc — never reference `/tmp/` or external URLs that will break mid-project.
-- **Locked design reference (HANDOFF.md, directions/*.jsx, theme-ui.jsx, Figma URL, screenshots)** → static-grep tests only catch textual/structural drift, NOT visual drift. Every UI phase MUST run the Phase 2g visual verification pass (screenshot sweep → Claude multimodal compare → PASS/FLAG/BLOCK). For milestones with 2+ UI phases, additionally set up Playwright + pixelmatch/resemble.js pixel-diff against checked-in baseline PNGs in CI (~30-60 min setup) — stricter than Claude's visual eye, catches 1-2px subtleties. Rationale: agents interpolating "reasonable" styling off-reference is a known failure mode; screenshot → visual compare → pixel-diff is a 3-layer defense.
+Per-situation adjustments (tier 3 = no plan doc, single implicit phase; no frontend → skip UI spec + E2E; monorepo → per-package cleanup; no tests in repo → test-scaffolding sub-phase; schema/migration → tier 4 regardless of file count; codebase mapping via codegraph + parallel Explore agents; AI-heavy phase → AI design doc first; external design bundles → copy into the repo before Phase 1; locked design reference → 3-layer visual defense): `references/adaptation-hints.md`.

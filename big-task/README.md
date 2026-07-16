@@ -18,8 +18,6 @@ Key design positions baked in:
 - **Mandatory visual verification for UI phases** — screenshot sweep + multimodal compare against the design reference; static-grep tests don't catch visual drift.
 - **Knowledge sync every phase** — docs/memory reconciled in the same commit as the code, not at the end.
 
-> **Related:** [`risk-scaled-engineering`](../risk-scaled-engineering/) is the harness-neutral *method* behind this router's risk-tiering (classify by ambiguity / blast radius / reversibility / trust impact). big-task is the concrete Claude Code *implementation* — profile detection, superpowers wiring, subagent dispatch, autonomy contract. Read RSE for the theory; install big-task for the machine.
-
 ## Dependencies
 
 | Kind | What | Notes |
