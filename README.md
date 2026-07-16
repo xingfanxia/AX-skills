@@ -4,13 +4,13 @@ A collection of production-grade Claude Code skills built by [@xingfanxia](https
 
 > **What's a Skill?** A reusable slash-command-style capability for AI coding agents — bundles a `SKILL.md` (how to use), Python entrypoints, prompt templates, and reference docs. The agent invokes it like `/jewelry-marketing` and the skill takes over.
 
-## Showcase (live)
+## Skill pages (live)
 
-Several skills ship with a one-page **路演 deck** plus a ~20s animated **promo video**, all in one unified 电子杂志 · 🌙 沙丘 / Dune style:
+Several skills have a one-page overview plus a ~20s animated demo video, in a unified 电子杂志 · 🌙 沙丘 / Dune style:
 
 **🔗 https://xingfanxia.github.io/AX-skills/**
 
-Decked + filmed: `banxian-skill` · `jewelry-marketing` · `game-script-creation` · `proxy-node-setup` · `dr-sharp` · `trident` · `serenity-bottleneck-research`. The landing grid has a **▶ 影片** button on every card (opens a lightbox); each deck carries a matching **▶ 宣传片** link. Decks are single-file HTML in [`docs/`](./docs); the promo videos are authored with [Remotion](https://www.remotion.dev/) in [`remotion/`](./remotion) and streamed from R2 (`media.ax0x.ai` — mp4s are not committed). Details: [docs/README.md](./docs/README.md).
+Covered so far: `banxian-skill` · `jewelry-marketing` · `game-script-creation` · `proxy-node-setup` · `dr-sharp` · `trident` · `serenity-bottleneck-research`. Each card on the landing grid has a **▶** button that opens the demo video in a lightbox. The pages are single-file HTML in [`docs/`](./docs); the videos are authored with [Remotion](https://www.remotion.dev/) in [`remotion/`](./remotion) and streamed from R2 (`media.ax0x.ai` — mp4s are not committed). Details: [docs/README.md](./docs/README.md).
 
 ## Skills in this repo
 
