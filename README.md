@@ -13,6 +13,7 @@ for when it matters. The full catalog is further down.
 | Skill | Why it's here |
 |---|---|
 | [`tui-engineering`](./tui-engineering/) | Build phone-friendly terminal UIs with zero terminal libraries — architecture, ANSI math, mouse/touch gestures, narrow-mode, headless tests. Comes with a [runnable reference repo](https://github.com/xingfanxia/axfleet-ui-public). |
+| [`ai-workflow-spine`](./ai-workflow-spine/) | Design AI-native workflows with explicit deterministic/AI boundaries, replayable artifacts, trigger/no-op/stop contracts, and offline-first verification. |
 | [`deep-research`](./deep-research/) | Multi-agent verification research with source-authority tiers — the skill to reach for before a real decision. |
 | [`apple-pdf`](./apple-pdf/) | The default "make this a PDF" path — SF typography, clean layout, zero fiddling. |
 | [`gpt-image`](./gpt-image/) + [`gemini-image`](./gemini-image/) | The image-generation pair: gpt-image for photorealistic / text-in-image, gemini-image for illustration + multi-reference editing. Same shape, auto-fallback. |
@@ -60,13 +61,6 @@ Covered so far: `banxian-skill` · `jewelry-marketing` · `game-script-creation`
 | [`narrative-research`](./narrative-research/) | 横纵分析法（Horizontal-Vertical Analysis）by 卡兹克 — 双轴叙事型调研。纵轴追溯生命历程，横轴对比共时竞品，交叉出洞察 + PDF 报告。**Use for understanding a thing from zero.** Narrative counterpart to `deep-research`. | ✅ |
 | [`serenity-bottleneck-research`](./serenity-bottleneck-research/) | Turn a secular tech/industry trend, supply chain, or public investment thesis into concrete constraints, an evidence ladder (L0–L4), disconfirmation tests, and a reflexivity / attention-risk filter. Distills the *research process*, not trades — output is hypotheses to verify, never buy/sell advice. | ✅ |
 
-### Reading / reflection
-
-| Skill | Purpose | Status |
-|---|---|---|
-| [`trident`](./trident/) | 三重心智 — 深度阅读 prompt。同一篇材料同时占据三个不重叠视角：建构者（抽框架）/ 挑战者（找最强反驳）/ 实践者（落到自己的行动），每个视角有明确产出契约，不发散成空话。改进自 [秒秒Guo](https://mmguo.dev/prompts/trident/)。 | ✅ |
-| [`dr-sharp`](./dr-sharp/) | 犀利博士 — 诚实高于善意的深度自审 prompt。把 LLM 变成心理手术刀：揭示隐藏叙事 / 根本矛盾 / 毒性循环 + 荣格镜像，对模式锋利、对人不残忍，内建危机安全底线。改进自 [秒秒Guo](https://mmguo.dev/prompts/dr-sharp/)。 | ✅ |
-
 ### Media generation
 
 | Skill | Purpose | Status |
@@ -92,6 +86,7 @@ Covered so far: `banxian-skill` · `jewelry-marketing` · `game-script-creation`
 
 | Skill | Purpose | Status |
 |---|---|---|
+| [`ai-workflow-spine`](./ai-workflow-spine/) | Design or audit AI-native products, agent workflows, and scheduled automations: deterministic plumbing → inspectable boundary artifact → AI judgment → replayable output → tests, with explicit trigger/no-op/stop/cost controls. | ✅ v1.0 |
 | [`mtc`](./mtc/) | **More Than Coding** — full product workflow from concept to code. Iterates design / story first → aligned data → build → polish. For games, demos, prototypes, interactive experiences. The signature AX workflow. | ✅ |
 | [`plan-design-review`](./plan-design-review/) | Design-completeness review for `PLAN.md` / spec docs. Rates 7 dimensions 0-10, detects AI-slop patterns, builds interaction state tables. Catches gaps before code goes in. | ✅ |
 | [`codebase-sweep`](./codebase-sweep/) | Full-codebase audit + cleanup loop (parallel reviewers + iterative fix + docs cleanup + architecture documentation + orphan-script archiving). One-shot comprehensive review of the whole project. | ✅ |
@@ -105,6 +100,15 @@ Covered so far: `banxian-skill` · `jewelry-marketing` · `game-script-creation`
 | Skill | Purpose | Status |
 |---|---|---|
 | [`neat-freak`](./neat-freak/) | 洁癖 — End-of-session knowledge sync. Reconciles agent memory + project root markdown + `docs/` + README against actual code so nothing rots. Three-audience editorial pass (agent / project-AI / external readers). Cross-platform (Claude Code · Codex · OpenCode · OpenClaw). Idempotent — safe to run every phase. | ✅ |
+
+### Adapted prompts
+
+Useful adaptations remain available with explicit attribution, but are intentionally placed after AX-original products, workflows, and methods.
+
+| Skill | Purpose | Status |
+|---|---|---|
+| [`trident`](./trident/) | 三重心智 — 深度阅读 prompt。同一篇材料同时占据三个不重叠视角：建构者（抽框架）/ 挑战者（找最强反驳）/ 实践者（落到自己的行动），每个视角有明确产出契约，不发散成空话。改进自 [秒秒Guo](https://mmguo.dev/prompts/trident/)。 | ✅ |
+| [`dr-sharp`](./dr-sharp/) | 犀利博士 — 诚实高于善意的深度自审 prompt。把 LLM 变成心理手术刀：揭示隐藏叙事 / 根本矛盾 / 毒性循环 + 荣格镜像，对模式锋利、对人不残忍，内建危机安全底线。改进自 [秒秒Guo](https://mmguo.dev/prompts/dr-sharp/)。 | ✅ |
 
 ## Install (Claude Code)
 
@@ -135,7 +139,8 @@ For OpenAI Codex / OpenClaw, follow your platform's skill installation conventio
 
 ## Why these skills
 
-- **Earned, not toy-grade**: Each skill comes from real use — distilled from a shipped product, sharpened over repeated builds, or ported and improved from a strong prompt. `jewelry-marketing` comes from [shichuan (识川)](https://github.com/xingfanxia/shichuan) — research-backed by 千瓜 / 数英 case studies on 周大福 / HEFANG / 樱桃珠宝 / 翡翠平安环 etc.; `dr-sharp` / `trident` are improved ports of 秒秒Guo prompts; `serenity-bottleneck-research` distills a research method into a reusable skill.
+- **AX-original work comes first**: Featured and showcase ordering prioritizes skills distilled from shipped AX products, repeated internal workflows, or original AX methods. Adapted skills remain available with explicit attribution, but are intentionally listed after original work.
+- **Earned, not toy-grade**: Each skill comes from real use. `jewelry-marketing` comes from [shichuan (识川)](https://github.com/xingfanxia/shichuan); `ai-workflow-spine`, `tui-engineering`, and `serenity-bottleneck-research` distill repeated engineering or research practice into reusable methods.
 - **Niche depth over generic breadth**: Better to nail one merchant vertical than be average at everything.
 - **Tool-grade, not toy-grade**: Single command, sensible defaults, real output bundle, error recovery.
 
@@ -179,14 +184,15 @@ When the agent has multiple candidate skills, route by intent:
 **Learning / coaching**
 - 想在 Claude Code 里被**主动带着**学点东西(英语/某技术/任意技能),要零考试·零背诵·不挫败的引导式学习 → `learning-coach`
 
-**Reading / reflection**
-- 一篇长文/材料想"读透"、多视角批判性分析（不是要摘要） → `trident`
-- 想被狠狠点醒、做深度自我剖析、看清反复犯的模式（别安慰我） → `dr-sharp`
-
 **Workflow / quality**
+- Design or audit an AI-native workflow / agent pipeline / scheduled automation → `ai-workflow-spine`
 - Build a game / demo / interactive prototype → `mtc`
 - Reviewing a `PLAN.md` / spec → `plan-design-review`
 - "Audit the whole codebase" / "clean up everything" → `codebase-sweep`
 - "Audit and fix" / iterative fix on recent changes → `audit-fix-loop`
 - Autonomously close out PR review feedback + CI → `pr-fix-loop`
 - End-of-session knowledge sync (memory + docs + README) → `neat-freak`
+
+**Adapted reading / reflection prompts**
+- 一篇长文/材料想"读透"、多视角批判性分析（不是要摘要） → `trident`
+- 想被狠狠点醒、做深度自我剖析、看清反复犯的模式（别安慰我） → `dr-sharp`

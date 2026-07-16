@@ -6,7 +6,7 @@
 <title>AX Skills · 技能展示 / Showcase</title>
 <meta name="description" content="AX 的 Agent Skills 展示页 —— 从产品、折腾和打磨过的 prompt 里沉淀出来的可复用能力，任何 Agent 装上即用。">
 <meta property="og:title" content="AX Skills · 技能展示 / Showcase">
-<meta property="og:description" content="趁手的能力，都折叠成 skill。每个装上即用，还配一份路演 deck。">
+<meta property="og:description" content="趁手的能力，都折叠成 skill。每个装上即用，部分还配交互 demo 和动画 demo。">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -98,7 +98,7 @@
   footer a{border-bottom:1px solid var(--line)}
   footer a:hover{color:var(--ink);border-bottom-color:var(--ink-3)}
 
-  /* promo video — play affordance + lightbox */
+  /* demo video — play affordance + lightbox */
   .card .play{position:relative;z-index:2;display:inline-flex;align-items:center;gap:.45em;cursor:pointer;
     font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
     color:var(--ink);background:var(--ink);color:var(--paper);border:1px solid var(--ink);
@@ -133,7 +133,7 @@
   <section class="hero">
     <span class="kicker">Agent Skills · 装上即用</span>
     <h1>趁手的能力，<br>都折叠成 <em>skill</em>。</h1>
-    <p class="lead">AX 的 Agent Skills 展示页。有的从真实上线产品里抽出来，有的从一次次折腾里沉淀，有的把别人的好 prompt 打磨得更趁手 —— 每一个都装上即用，还配了一份路演 deck 和一支动画宣传片。</p>
+    <p class="lead">AX 的 Agent Skills 展示页。有的从真实上线产品里抽出来，有的从一次次折腾里沉淀，有的把别人的好 prompt 打磨得更趁手 —— 每一个都装上即用，部分还配交互 demo 和动画 demo。</p>
   </section>
 
   <section class="grid">
@@ -196,36 +196,8 @@
       </div>
     </article>
 
-    <article class="card dr-sharp">
-      <span class="num">05</span>
-      <div class="role">诚实高于善意 · 深度自审协议</div>
-      <h2>犀利博士<span class="id">dr-sharp</span></h2>
-      <p>把 LLM 变成一把心理手术刀：揭示隐藏叙事 / 根本矛盾 / 毒性循环 + 荣格镜像。对模式锋利、对人不残忍，内建危机安全底线。</p>
-      <div class="src"><span class="sq"></span> 改进自 <a class="ext" href="https://mmguo.dev/prompts/dr-sharp/" target="_blank" rel="noopener">秒秒Guo · Dr. Sharp</a></div>
-      <div class="cta">
-        <a class="go" href="dr-sharp/">查看 <span class="arr">→</span></a>
-        <span style="display:flex;gap:.5em">
-          <a class="pdf" href="https://github.com/xingfanxia/AX-skills/tree/main/dr-sharp" target="_blank" rel="noopener">源码 ↗</a>
-        </span>
-      </div>
-    </article>
-
-    <article class="card trident">
-      <span class="num">06</span>
-      <div class="role">深度阅读 · 三重视角</div>
-      <h2>三重心智<span class="id">trident</span></h2>
-      <p>一篇文章读出三个视角 —— 建构者抽框架、挑战者找反驳、实践者落地。每个视角都有交付物，不发散成空话。</p>
-      <div class="src"><span class="sq"></span> 改进自 <a class="ext" href="https://mmguo.dev/prompts/trident/" target="_blank" rel="noopener">秒秒Guo · 三重心智</a></div>
-      <div class="cta">
-        <a class="go" href="trident/">查看 <span class="arr">→</span></a>
-        <span style="display:flex;gap:.5em">
-          <a class="pdf" href="https://github.com/xingfanxia/AX-skills/tree/main/trident" target="_blank" rel="noopener">源码 ↗</a>
-        </span>
-      </div>
-    </article>
-
     <article class="card serenity-bottleneck-research">
-      <span class="num">07</span>
+      <span class="num">05</span>
       <div class="role">投资研究 · 瓶颈拆解</div>
       <h2>瓶颈研究<span class="id">serenity-bottleneck-research</span></h2>
       <p>把一个产业叙事拆成约束、证据分级（L0–L4）、反身性过滤和证伪条件。蒸馏研究方法，不蒸馏持仓 —— 输出待验证的假设，不是买卖建议。</p>
@@ -239,7 +211,7 @@
     </article>
 
     <article class="card web-novel-writing">
-      <span class="num">08</span>
+      <span class="num">06</span>
       <div class="role">网文长篇连载 · 约束 AI 写好</div>
       <h2>网文写作<span class="id">web-novel-writing</span></h2>
       <p>把"放手就崩"的 AI 续写，逼成稳定推进的流水线 —— Canon 状态层 + 防泄漏编译 + 反 AI 味三桶 + 6 个确定性脚本。专治"写四五章就崩 / prompt 泄漏 / AI 味重"。</p>
@@ -251,9 +223,37 @@
         </span>
       </div>
     </article>
+
+    <article class="card dr-sharp">
+      <span class="num">07</span>
+      <div class="role">诚实高于善意 · 深度自审协议</div>
+      <h2>犀利博士<span class="id">dr-sharp</span></h2>
+      <p>把 LLM 变成一把心理手术刀：揭示隐藏叙事 / 根本矛盾 / 毒性循环 + 荣格镜像。对模式锋利、对人不残忍，内建危机安全底线。</p>
+      <div class="src"><span class="sq"></span> 改进自 <a class="ext" href="https://mmguo.dev/prompts/dr-sharp/" target="_blank" rel="noopener">秒秒Guo · Dr. Sharp</a></div>
+      <div class="cta">
+        <a class="go" href="dr-sharp/">查看 <span class="arr">→</span></a>
+        <span style="display:flex;gap:.5em">
+          <a class="pdf" href="https://github.com/xingfanxia/AX-skills/tree/main/dr-sharp" target="_blank" rel="noopener">源码 ↗</a>
+        </span>
+      </div>
+    </article>
+
+    <article class="card trident">
+      <span class="num">08</span>
+      <div class="role">深度阅读 · 三重视角</div>
+      <h2>三重心智<span class="id">trident</span></h2>
+      <p>一篇文章读出三个视角 —— 建构者抽框架、挑战者找反驳、实践者落地。每个视角都有交付物，不发散成空话。</p>
+      <div class="src"><span class="sq"></span> 改进自 <a class="ext" href="https://mmguo.dev/prompts/trident/" target="_blank" rel="noopener">秒秒Guo · 三重心智</a></div>
+      <div class="cta">
+        <a class="go" href="trident/">查看 <span class="arr">→</span></a>
+        <span style="display:flex;gap:.5em">
+          <a class="pdf" href="https://github.com/xingfanxia/AX-skills/tree/main/trident" target="_blank" rel="noopener">源码 ↗</a>
+        </span>
+      </div>
+    </article>
   </section>
 
-  <p class="note"><span class="sq" aria-hidden="true"></span> 每个 skill 都是开源的（点「源码」看实现 + 安装）；卡片里的 deck 是带内联样式与脚本的单文件 HTML，在浏览器里打开效果最佳，打不开就看 PDF。</p>
+  <p class="note"><span class="sq" aria-hidden="true"></span> 每个 skill 都是开源的（点「源码」看实现 + 安装）；交互 demo 是带内联样式与脚本的单文件 HTML，在浏览器里打开效果最佳，打不开就看 PDF。</p>
 
   <footer>
     <a href="https://github.com/xingfanxia/AX-skills" target="_blank" rel="noopener">github.com/xingfanxia/AX-skills</a>
@@ -262,14 +262,14 @@
 
 </div>
 
-<!-- promo-video lightbox: src streamed from R2 (media.ax0x.ai/ax-skills/) -->
-<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="技能宣传片">
+<!-- demo-video lightbox: src streamed from R2 (media.ax0x.ai/ax-skills/) -->
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="技能 demo 视频">
   <figure>
     <span class="x" id="lbx" role="button" tabindex="0">✕ 关闭 · ESC</span>
     <video id="lbv" controls playsinline preload="none"></video>
     <figcaption>
-      <span id="lbt">宣传片</span>
-      <a id="lbd" href="#">查看完整 deck →</a>
+      <span id="lbt">Demo 视频</span>
+      <a id="lbd" href="#">查看完整 demo →</a>
     </figcaption>
   </figure>
 </div>
@@ -285,7 +285,7 @@
 
   function open(slug, name) {
     v.src = R2 + slug + '.mp4';
-    t.textContent = name + ' · 宣传片';
+    t.textContent = name + ' · Demo';
     d.href = slug + '/';
     lb.classList.add('on');
     document.body.style.overflow = 'hidden';
@@ -300,7 +300,7 @@
     document.body.style.overflow = '';
   }
 
-  // Inject a "▶ 影片" button into every card — slug derived from the deck link,
+  // Inject a "▶ 影片" button into every card — slug derived from the demo link,
   // which 1:1 matches the R2 filename (single source of truth, no per-card HTML).
   document.querySelectorAll('.card').forEach(function (card) {
     var go = card.querySelector('.go');
@@ -313,7 +313,7 @@
     var b = document.createElement('button');
     b.type = 'button';
     b.className = 'play';
-    b.setAttribute('aria-label', name + ' 宣传片');
+    b.setAttribute('aria-label', name + ' demo 视频');
     var tri = document.createElement('span');
     tri.className = 'tri';
     tri.textContent = '▶';

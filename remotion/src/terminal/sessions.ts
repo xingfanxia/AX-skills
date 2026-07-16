@@ -1,12 +1,12 @@
 import type {Session} from './types';
 
 /**
- * Scripted Claude Code sessions — one per deck'd skill. Each shows the skill
+ * Scripted Claude Code sessions — one per showcased skill. Each shows the skill
  * actually being used, GROUNDED IN ITS REAL SKILL.md (invocation, workflow
  * phases, output structure, persona) — not a marketing recap. Kept ≤16 visible
  * lines (the window height) so no scroll is needed, and to font-safe glyphs
  * only (IBM Plex Mono + Noto Sans SC — no Yijing hexagram chars / emoji, which
- * render as tofu). Genericized per repo rules. id === deck slug === R2 filename.
+ * render as tofu). Genericized per repo rules. id === demo slug === R2 filename.
  */
 export const SESSIONS: Session[] = [
   {

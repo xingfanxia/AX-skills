@@ -8,7 +8,7 @@ import {VerticalPromo, reelDuration} from './vertical/VerticalPromo';
 
 /**
  * Compositions — id === showcase slug === R2 filename throughout.
- * - Horizontal `<slug>` (1920×1080): scripted terminal session per deck'd skill.
+ * - Horizontal `<slug>` (1920×1080): scripted terminal session per showcased skill.
  * - Vertical `<slug>-v` (1080×1920): short-video "skill reel" for social platforms.
  */
 export const RemotionRoot: React.FC = () => {
