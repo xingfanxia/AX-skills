@@ -110,9 +110,12 @@ Then spawn a fix agent with the full error log.
 
 ---
 
-## Step 4 — Commit & Push
+## Step 4 — Verify Locally, Then Commit & Push
+
+**Before pushing, run the cheapest local check that would catch a broken fix** — affected tests + lint/build, or the repo's `make verify` / `pnpm verify` if fast. Every push burns a full CI run and re-triggers every review bot; a push that fails CI on something a local run would have caught wastes the round. CI confirms — it never discovers.
 
 ```bash
+# local gate first (affected tests / lint / build)
 git add <file1> <file2> ...   # stage only the specific files you changed
 git commit -m "fix: address PR review comments (round N)"
 git push
@@ -214,7 +217,8 @@ Remaining (if any):
 ## Key Principles
 
 - **Never force-push** — always `git push` (append commits, preserve history)
-- **One commit per round** — keeps review history clean
+- **One commit per round** — keeps review history clean AND caps CI/bot usage at one run per round; never push per-finding
+- **Local gate before every push** — CI confirms, it never discovers (see Step 4)
 - **Don't fix what isn't broken** — only touch files with explicit comments or CI failures
 - **Flaky CI ≠ your bug** — if the same unrelated check fails 3 rounds in a row, flag it and don't loop on it
 - **Wait for CI before declaring done** — pending checks may still fail
