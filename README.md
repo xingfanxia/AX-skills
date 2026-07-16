@@ -12,6 +12,7 @@ for when it matters. The full catalog is further down.
 
 | Skill | Why it's here |
 |---|---|
+| [`autonomous-grind`](./autonomous-grind/) | The single most-invoked skill in the author's setup (182 real invocations) — the discipline layer that stops autonomous `/goal` loops from wrapping up early with a pretty status report. SKILL contract + 5 enforcement hooks. |
 | [`tui-engineering`](./tui-engineering/) | Build phone-friendly terminal UIs with zero terminal libraries — architecture, ANSI math, mouse/touch gestures, narrow-mode, headless tests. Comes with a [runnable reference repo](https://github.com/xingfanxia/axfleet-ui-public). |
 | [`ai-workflow-spine`](./ai-workflow-spine/) | Design AI-native workflows with explicit deterministic/AI boundaries, replayable artifacts, trigger/no-op/stop contracts, and offline-first verification. |
 | [`deep-research`](./deep-research/) | Multi-agent verification research with source-authority tiers — the skill to reach for before a real decision. |
@@ -87,6 +88,7 @@ Covered so far: `banxian-skill` · `jewelry-marketing` · `game-script-creation`
 | Skill | Purpose | Status |
 |---|---|---|
 | [`ai-workflow-spine`](./ai-workflow-spine/) | Design or audit AI-native products, agent workflows, and scheduled automations: deterministic plumbing → inspectable boundary artifact → AI judgment → replayable output → tests, with explicit trigger/no-op/stop/cost controls. | ✅ v1.0 |
+| [`autonomous-grind`](./autonomous-grind/) | Discipline layer for autonomous loops (`/goal` companion). Session marker + 5 hooks: Stop hook blocks wrap-up prose (8 EN/中文 pattern groups), PreToolUse blocks `HANDOFF*`/`STATUS*` files, verify-before-clear requires a real test/build run before the loop may end, stale-marker cleanup, `/goal` auto-pairing. JSONL telemetry per fire. Harness-neutral discipline contract; Claude Code-native enforcement. | ✅ v1.0 |
 | [`mtc`](./mtc/) | **More Than Coding** — full product workflow from concept to code. Iterates design / story first → aligned data → build → polish. For games, demos, prototypes, interactive experiences. The signature AX workflow. | ✅ |
 | [`plan-design-review`](./plan-design-review/) | Design-completeness review for `PLAN.md` / spec docs. Rates 7 dimensions 0-10, detects AI-slop patterns, builds interaction state tables. Catches gaps before code goes in. | ✅ |
 | [`codebase-sweep`](./codebase-sweep/) | Full-codebase audit + cleanup loop (parallel reviewers + iterative fix + docs cleanup + architecture documentation + orphan-script archiving). One-shot comprehensive review of the whole project. | ✅ |
@@ -191,6 +193,7 @@ When the agent has multiple candidate skills, route by intent:
 - "Audit the whole codebase" / "clean up everything" → `codebase-sweep`
 - "Audit and fix" / iterative fix on recent changes → `audit-fix-loop`
 - Autonomously close out PR review feedback + CI → `pr-fix-loop`
+- Keep an autonomous `/goal` loop from stopping early with a status report → `autonomous-grind`
 - End-of-session knowledge sync (memory + docs + README) → `neat-freak`
 
 **Adapted reading / reflection prompts**
