@@ -171,8 +171,9 @@ Design consequences (bake these in from the start):
    and for terminals whose gestures CAN send arbitrary keys.
 4. Keep the drag-swipe recognizer anyway — it works in Moshi's Mouse Mode and
    on desktop terminals that forward drags.
-5. **The tmux passthrough** (primary recipe — verified end-to-end; works
-   inside the tmux session phone terminals attach by default): have the TUI
+5. **The tmux passthrough** (primary recipe — verified end-to-end and
+   device-confirmed; works inside the tmux session phone terminals attach by
+   default): have the TUI
    set an OSC 2 pane title (`\x1b]2;mytui\x07` on enter, cleared on exit),
    then bind conditionally in tmux so the swipe chord forwards into the pane
    instead of switching windows:
