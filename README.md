@@ -4,6 +4,26 @@ A collection of production-grade Claude Code skills built by [@xingfanxia](https
 
 > **What's a Skill?** A reusable slash-command-style capability for AI coding agents — bundles a `SKILL.md` (how to use), Python entrypoints, prompt templates, and reference docs. The agent invokes it like `/jewelry-marketing` and the skill takes over.
 
+## Featured — what actually gets used
+
+Ordering below is backed by real invocation counts from the author's own
+sessions (as of 2026-07, ~500 sessions), plus the skills the author reaches
+for when it matters. The full catalog is further down.
+
+| Skill | Why it's here |
+|---|---|
+| [`tui-engineering`](./tui-engineering/) | Build phone-friendly terminal UIs with zero terminal libraries — architecture, ANSI math, mouse/touch gestures, narrow-mode, headless tests. Comes with a [runnable reference repo](https://github.com/xingfanxia/axfleet-ui-public). |
+| [`deep-research`](./deep-research/) | Multi-agent verification research with source-authority tiers — the skill to reach for before a real decision. |
+| [`apple-pdf`](./apple-pdf/) | The default "make this a PDF" path — SF typography, clean layout, zero fiddling. |
+| [`gpt-image`](./gpt-image/) + [`gemini-image`](./gemini-image/) | The image-generation pair: gpt-image for photorealistic / text-in-image, gemini-image for illustration + multi-reference editing. Same shape, auto-fallback. |
+| [`cloudflare-r2-setup`](./cloudflare-r2-setup/) | Proven runbook: move a Vercel/Next.js app's storage to R2 with instant rollback — includes every pitfall actually hit. |
+| [`proxy-node-setup`](./proxy-node-setup/) | Proven runbook: sing-box 5-protocol proxy node from zero, end-to-end reproducible. |
+| [`neat-freak`](./neat-freak/) | The most-invoked skill in this repo (170+ real invocations) — end-of-session knowledge sync so docs and memory never rot. |
+| [`pr-fix-loop`](./pr-fix-loop/) + [`audit-fix-loop`](./audit-fix-loop/) | Autonomous fix loops: PR review feedback until green; code audits until clean. |
+| [`plan-design-review`](./plan-design-review/) | 7-dimension design review for plan/spec docs before code goes in. |
+| [`khazix-writer`](./khazix-writer/) + [`wandian-writer`](./wandian-writer/) | The Chinese long-form writing pair — 口语叙事 vs 冷静深度, both with anti-AI-slop self-check layers. |
+| [`mtc`](./mtc/) | Concept → design → data → code, the signature full-product workflow. |
+
 ## Skill pages (live)
 
 Several skills have a one-page overview plus a ~20s animated demo video, in a unified 电子杂志 · 🌙 沙丘 / Dune style:
