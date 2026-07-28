@@ -1,0 +1,4 @@
+interface:
+  display_name: "Download Web Video"
+  short_description: "Download Bilibili and YouTube with login-aware acceleration."
+  default_prompt: "Use $download-web-video to download this Bilibili or YouTube video with browser login and reusable evidence files."

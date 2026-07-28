@@ -70,6 +70,8 @@ Covered so far: `banxian-skill` · `jewelry-marketing` · `game-script-creation`
 | [`gpt-image`](./gpt-image/) | OpenAI gpt-image-2 image generation — Azure-routed with auto fallback to OpenAI direct on rate-limit. Defaults to JPG. Best for photorealistic / editorial / product / UI mockups / images with rendered text. Sister to `gemini-image`. | ✅ |
 | [`gemini-image`](./gemini-image/) | Google Gemini 3.1 Flash Image generation. Sister to `gpt-image` — same shape, different provider. Best for **multi-reference image input** (background swap, character consistency across scenes — gpt-image cannot do this) and softer / illustrated / Studio Ghibli / watercolor aesthetics. | ✅ |
 | [`transcribe`](./transcribe/) | Audio / video transcription via Google Gemini 3 Flash. Speaker diarization, auto language detection, files up to 500MB / ~8.4 hours. ~\$0.50/M input tokens. | ✅ |
+| [`download-web-video`](./download-web-video/) | Reproducibly download Bilibili or YouTube media with yt-dlp, browser/file cookie auth, captions, hashes, and optional measured Bilibili CDN acceleration. Keeps credentials and signed media URLs out of the public skill source. | ✅ |
+| [`analyze-video-evidence`](./analyze-video-evidence/) | Turn a downloaded video into a replayable evidence bundle: preferred captions, ffprobe metadata, uniform + targeted ffmpeg frames, contact sheet, transcript, and a claim-to-timestamp ledger for grounded analysis. | ✅ |
 
 ### Documents
 
@@ -179,6 +181,8 @@ When the agent has multiple candidate skills, route by intent:
 - **Image gen** — default to `gpt-image` (photorealistic / editorial / product / UI / text-in-image / batches > 5). Switch to `gemini-image` for multi-reference image input (background swap, character consistency) OR softer / illustrated / Studio Ghibli / watercolor aesthetics. Both can do every category — pick by the differentiators above
 - **PDF** generation from markdown → `apple-pdf`
 - **Audio → text** → `transcribe`
+- **Bilibili / YouTube download with login state** → `download-web-video`
+- **Video → transcript + frames + evidence-grounded analysis** → `analyze-video-evidence`
 
 **Writing**
 - **ZH long-form**, personal experience / methodology / 活人感 → `khazix-writer`

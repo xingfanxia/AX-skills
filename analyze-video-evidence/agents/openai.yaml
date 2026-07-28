@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Video Evidence"
+  short_description: "Turn captions and frames into traceable video findings."
+  default_prompt: "Use $analyze-video-evidence to analyze this video with timestamped captions, frames, and a claim-evidence report."
