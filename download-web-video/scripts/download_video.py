@@ -232,6 +232,22 @@ def require_executable(name: str) -> str:
     return path
 
 
+def should_use_aria2(site: str, accelerator: str, available: bool) -> bool:
+    """Keep Bilibili auto mode fast without trusting multi-range assembly.
+
+    Some Bilibili UPOS mirrors acknowledge range requests but return an
+    inconsistent byte window after a retry.  aria2 can then exit successfully
+    with a structurally valid container whose media tracks end early.  CDN host
+    selection is still useful in auto mode; split-range downloading is reserved
+    for an explicit force request and is always followed by stream validation.
+    """
+    if not available or accelerator == "off":
+        return False
+    if site == "bilibili":
+        return accelerator == "force"
+    return True
+
+
 def run_checked(command: list[str], *, env: dict[str, str] | None = None) -> None:
     try:
         subprocess.run(command, check=True, env=env)
@@ -518,6 +534,167 @@ def load_written_metadata(output_dir: Path) -> list[dict[str, Any]]:
     return summaries
 
 
+def _duration(value: Any) -> float | None:
+    try:
+        duration = float(value)
+    except (TypeError, ValueError):
+        return None
+    return duration if duration > 0 else None
+
+
+def evaluate_media_probe(
+    payload: dict[str, Any],
+    *,
+    expected_duration: float | None,
+    expect_video: bool,
+    expect_audio: bool,
+) -> dict[str, Any]:
+    """Validate required streams and catch track truncation hidden by containers."""
+    streams = payload.get("streams") or []
+    if not isinstance(streams, list):
+        streams = []
+    format_duration = _duration((payload.get("format") or {}).get("duration"))
+    by_type: dict[str, list[float]] = {"video": [], "audio": []}
+    for stream in streams:
+        if not isinstance(stream, dict):
+            continue
+        codec_type = stream.get("codec_type")
+        stream_duration = _duration(stream.get("duration"))
+        if codec_type in by_type and stream_duration is not None:
+            by_type[codec_type].append(stream_duration)
+
+    required = [
+        codec_type
+        for codec_type, required_now in (("video", expect_video), ("audio", expect_audio))
+        if required_now
+    ]
+    present = {
+        codec_type
+        for codec_type in ("video", "audio")
+        if any(
+            isinstance(stream, dict) and stream.get("codec_type") == codec_type
+            for stream in streams
+        )
+    }
+    missing = [codec_type for codec_type in required if codec_type not in present]
+    if missing:
+        raise DownloadError(f"media is missing required stream(s): {', '.join(missing)}")
+
+    measured: dict[str, float] = {}
+    for codec_type in required:
+        durations = by_type[codec_type]
+        if durations:
+            measured[codec_type] = max(durations)
+        elif format_duration is not None:
+            measured[codec_type] = format_duration
+
+    if expected_duration is not None:
+        tolerance = max(5.0, expected_duration * 0.01)
+        minimum = expected_duration - tolerance
+        truncated = {
+            codec_type: round(duration, 3)
+            for codec_type, duration in measured.items()
+            if duration < minimum
+        }
+        if truncated:
+            detail = ", ".join(f"{kind}={value}s" for kind, value in truncated.items())
+            raise DownloadError(
+                "media track duration is shorter than metadata "
+                f"(expected about {round(expected_duration, 3)}s; {detail})"
+            )
+        if required and any(codec_type not in measured for codec_type in required):
+            missing_duration = [
+                codec_type for codec_type in required if codec_type not in measured
+            ]
+            raise DownloadError(
+                f"ffprobe could not measure required stream duration(s): "
+                f"{', '.join(missing_duration)}"
+            )
+
+    actual_duration = min(measured.values()) if measured else format_duration
+    return {
+        "expected_duration_seconds": (
+            round(expected_duration, 3) if expected_duration is not None else None
+        ),
+        "actual_duration_seconds": (
+            round(actual_duration, 3) if actual_duration is not None else None
+        ),
+        "stream_durations_seconds": {
+            key: round(value, 3) for key, value in measured.items()
+        },
+        "required_streams": required,
+        "status": "passed",
+    }
+
+
+def validate_bundle_media(output_dir: Path, ffprobe: str) -> list[dict[str, Any]]:
+    """Open every downloaded entry and compare media-track duration to metadata."""
+    info_paths = sorted(output_dir.rglob("*.info.json"))
+    if not info_paths:
+        raise DownloadError("download completed without an .info.json sidecar")
+
+    validations: list[dict[str, Any]] = []
+    seen: set[Path] = set()
+    for info_path in info_paths:
+        try:
+            info = json.loads(info_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise DownloadError(f"could not read metadata sidecar: {info_path.name}") from exc
+
+        base_name = info_path.name.removesuffix(".info.json")
+        media_paths = [
+            path
+            for path in sorted(info_path.parent.glob(f"{base_name}.*"))
+            if path.is_file()
+            and path.suffix.lower() in MEDIA_SUFFIXES
+            and ".tmp" not in path.parts
+        ]
+        if not media_paths:
+            raise DownloadError(f"download completed without media for entry: {base_name}")
+
+        expected_duration = _duration(info.get("duration"))
+        vcodec = str(info.get("vcodec") or "").lower()
+        acodec = str(info.get("acodec") or "").lower()
+        expect_video = bool(vcodec and vcodec != "none")
+        expect_audio = bool(acodec and acodec != "none")
+
+        for media_path in media_paths:
+            resolved = media_path.resolve()
+            if resolved in seen:
+                continue
+            seen.add(resolved)
+            completed = subprocess.run(
+                [
+                    ffprobe,
+                    "-v", "error",
+                    "-show_entries", "stream=codec_type,duration:format=duration",
+                    "-of", "json",
+                    str(media_path),
+                ],
+                capture_output=True,
+                text=True,
+            )
+            if completed.returncode:
+                raise DownloadError(f"ffprobe could not open media: {media_path.name}")
+            try:
+                probe_payload = json.loads(completed.stdout)
+            except json.JSONDecodeError as exc:
+                raise DownloadError(
+                    f"ffprobe returned invalid data for media: {media_path.name}"
+                ) from exc
+            result = evaluate_media_probe(
+                probe_payload,
+                expected_duration=expected_duration,
+                expect_video=expect_video,
+                expect_audio=expect_audio,
+            )
+            validations.append({
+                "path": str(media_path.relative_to(output_dir)),
+                **result,
+            })
+    return validations
+
+
 def write_manifest(
     output_dir: Path,
     args: argparse.Namespace,
@@ -525,6 +702,7 @@ def write_manifest(
     selected_cdn: str | None,
     probes: Sequence[ProbeResult],
     use_aria2: bool,
+    media_validation: Sequence[dict[str, Any]],
 ) -> Path:
     metadata = load_written_metadata(output_dir)
     subtitle_languages = sorted({
@@ -539,7 +717,7 @@ def write_manifest(
         else ("requested-not-confirmed" if cookie_summary(args)["mode"] != "none" else "not-requested")
     )
     manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "source_url": args.url,
         "site": site_kind(args.url),
@@ -559,6 +737,10 @@ def write_manifest(
             "probe_results": [asdict(result) for result in probes],
         },
         "metadata_only": args.metadata_only,
+        "media_validation": {
+            "status": "passed" if media_validation or args.metadata_only else "not-run",
+            "items": list(media_validation),
+        },
         "entries": metadata,
         "files": collect_bundle_files(output_dir),
     }
@@ -587,8 +769,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
     output_dir = Path(args.output_dir).expanduser().resolve()
     yt_dlp = require_executable("yt-dlp")
-    use_aria2 = args.accelerator != "off" and shutil.which("aria2c") is not None
-    is_bilibili = site_kind(args.url) == "bilibili"
+    site = site_kind(args.url)
+    is_bilibili = site == "bilibili"
+    use_aria2 = should_use_aria2(
+        site,
+        args.accelerator,
+        shutil.which("aria2c") is not None,
+    )
     use_bili_plugin = False
 
     if args.dry_run:
@@ -599,8 +786,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
 
     output_dir.mkdir(parents=True, exist_ok=True)
+    ffprobe = None
     if not args.metadata_only:
         ffmpeg = require_executable("ffmpeg")
+        ffprobe = require_executable("ffprobe")
         probe = subprocess.run([ffmpeg, "-version"], capture_output=True, text=True)
         if probe.returncode:
             raise DownloadError("ffmpeg exists but cannot start; repair it before downloading merged media")
@@ -637,12 +826,18 @@ def main(argv: Sequence[str] | None = None) -> int:
     if selected_cdn:
         env["AX_BILI_CDN_HOST"] = selected_cdn
     run_checked(command, env=env)
+    media_validation = (
+        []
+        if args.metadata_only
+        else validate_bundle_media(output_dir, str(ffprobe))
+    )
     manifest = write_manifest(
         output_dir,
         args,
         selected_cdn=selected_cdn,
         probes=probes,
         use_aria2=use_aria2,
+        media_validation=media_validation,
     )
     print(json.dumps({
         "result": "ok",

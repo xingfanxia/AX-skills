@@ -13,8 +13,11 @@ then keep the signed path and query while changing only the media host.
 - Live video is excluded because Bilibili live delivery uses a different tier.
 - The original URL remains the default unless it looks unhealthy or another
   host is materially faster.
-- Direct HTTP media can use aria2 split connections; DASH/HLS stays on
+- YouTube direct HTTP media can use aria2 split connections; DASH/HLS stays on
   yt-dlp's native fragment downloader.
+- Bilibili `auto` uses the selected CDN with yt-dlp's native downloader. aria2
+  splitting is reserved for explicit `force` mode because several UPOS mirrors
+  have returned inconsistent ranges after a retry.
 
 ## What is intentionally different
 
@@ -40,8 +43,13 @@ the browser.
 
 - If all CDN probes fail, retain the original URL and continue.
 - If aria2 is absent, use yt-dlp's native downloader.
-- If a chosen CDN later fails, rerun with `--accelerator off`, or rerun `auto`
-  to obtain fresh signed URLs and measurements.
+- Exit code is not treated as proof of a valid Bilibili download. The wrapper
+  probes every required stream with ffprobe and compares its duration with the
+  entry metadata; this catches containers whose video or audio track silently
+  ends early.
+- If a chosen CDN later fails or media validation rejects a track, use a clean
+  output directory and rerun with `--accelerator off`. Do not resume the
+  rejected `.part` file.
 - If captions or premium formats are unexpectedly absent, select the exact
   browser profile, for example `chrome:Default`; yt-dlp otherwise chooses the
   most recently used profile, which may not be logged in to the target site.

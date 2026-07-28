@@ -67,9 +67,11 @@ profile and pass it explicitly, such as `chrome:Default`.
 
 For Bilibili VOD, `auto` probes a bounded UPOS candidate set and rewrites only
 signed media hosts when the original is unhealthy or a candidate is materially
-faster. Read [references/acceleration.md](references/acceleration.md) before
-changing the host policy, credential boundary, or the local
-`bili_cdn_accel.py` yt-dlp plugin.
+faster. It deliberately keeps yt-dlp's native single-stream downloader: some
+UPOS mirrors mishandle resumed multi-range transfers. `--accelerator force`
+opts into aria2 splitting, but the wrapper still rejects incomplete tracks.
+Read [references/acceleration.md](references/acceleration.md) before changing
+the host policy, validation boundary, or local yt-dlp plugin.
 
 ## Verify the bundle
 
@@ -82,7 +84,12 @@ Require all applicable conditions:
 - Requested captions exist when the site advertises them; otherwise report that
   captions were unavailable rather than inventing a transcript.
 - `manifest.json` contains neither cookie values nor signed media URLs.
-- The media opens with `ffprobe` and has the expected duration.
+- Every required audio/video track opens with `ffprobe` and reaches the
+  metadata duration within tolerance. Container duration alone is insufficient:
+  a Bilibili MP4 can report the full duration while one track ends early.
+- A failed validation exits non-zero and does not write a success manifest.
+  Retry in a clean output directory with `--accelerator off`; do not reuse a
+  suspect `.part` file.
 
 ## Output
 
