@@ -458,17 +458,29 @@ Examples:
         output_path.write_text(full_html, encoding="utf-8")
         print(f"HTML written to {output_path}")
     else:
-        # Use Playwright for PDF — same approach as Obsidian plugin (Electron printToPDF)
+        # Use Playwright for PDF — same approach as Obsidian plugin (Electron printToPDF).
+        # NOTE: the HTML must be served from a file:// URL, not set_content() — set_content
+        # gives the page an about:blank origin, and Chromium refuses to load file:// images
+        # (local <img> subresources) from there, so embedded images silently break.
+        import tempfile
         with sync_playwright() as p:
             browser = p.chromium.launch()
             page = browser.new_page()
-            page.set_content(full_html, wait_until="networkidle")
-            page.pdf(
-                path=str(output_path),
-                format=args.page_size,
-                margin={"top": args.margin, "right": args.margin, "bottom": args.margin, "left": args.margin},
-                print_background=True,
-            )
+            with tempfile.NamedTemporaryFile(
+                "w", suffix=".html", delete=False, encoding="utf-8"
+            ) as tf:
+                tf.write(full_html)
+                tmp_html = tf.name
+            try:
+                page.goto(f"file://{tmp_html}", wait_until="networkidle")
+                page.pdf(
+                    path=str(output_path),
+                    format=args.page_size,
+                    margin={"top": args.margin, "right": args.margin, "bottom": args.margin, "left": args.margin},
+                    print_background=True,
+                )
+            finally:
+                Path(tmp_html).unlink(missing_ok=True)
             browser.close()
         print(f"PDF written to {output_path}")
 
