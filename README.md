@@ -24,7 +24,7 @@ for when it matters. The full catalog is further down.
 | [`neat-freak`](./neat-freak/) | The most-invoked skill in this repo (170+ real invocations) — end-of-session knowledge sync so docs and memory never rot. |
 | [`pr-fix-loop`](./pr-fix-loop/) + [`audit-fix-loop`](./audit-fix-loop/) | Autonomous fix loops: PR review feedback until green; code audits until clean. |
 | [`plan-design-review`](./plan-design-review/) | 7-dimension design review for plan/spec docs before code goes in. |
-| [`khazix-writer`](./khazix-writer/) + [`wandian-writer`](./wandian-writer/) | The Chinese long-form writing pair — 口语叙事 vs 冷静深度, both with anti-AI-slop self-check layers. |
+| [`wandian-writer`](./wandian-writer/) | Chinese long-form deep-dive writing — 冷静判断、数据先行, with an anti-AI-slop self-check layer. |
 | [`mtc`](./mtc/) | Concept → design → data → code, the signature full-product workflow. |
 
 ## Skill pages (live)
@@ -50,7 +50,6 @@ Covered so far: `banxian-skill` · `jewelry-marketing` · `game-script-creation`
 
 | Skill | Purpose | Status |
 |---|---|---|
-| [`khazix-writer`](./khazix-writer/) | 卡兹克风格中文公众号长文 — 强口语化、叙事驱动、四层自检（L1 硬性规则 → L2 风格 → L3 内容 → L4 活人感）。Personal-experience / methodology long-form. | ✅ |
 | [`wandian-writer`](./wandian-writer/) | 晚点 LatePost 风格中文深度长文 — 冷静判断、数据先行、判断式 header、段尾落点、对立面陈述。Industry analysis / company breakdown. Includes 6-范文 in-context reference. | ✅ |
 | [`game-script-creation`](./game-script-creation/) | 二游剧本陪写全流程 — 校准创作者水平 → 世界观/主题/主线/人物/场景脚本，Canon 状态管理 + 反 AI 味，二游覆盖最深。 | ✅ v2 |
 | [`web-novel-writing`](./web-novel-writing/) | 约束 AI 写好中文网文长篇连载的工业化流水线 — 人类当导演/AI 当受约束子程序：Canon 五态+按卷可见性的 typed 状态层、确定性防泄漏单章 prompt 编译、量化 rubric 审校闭环、反 AI 味三桶、4 个极小确定性脚本。专治"放手写 4-5 章就崩 / prompt 泄漏到正文 / AI 味"。 | ✅ v1 |
@@ -185,7 +184,6 @@ When the agent has multiple candidate skills, route by intent:
 - **Video → transcript + frames + evidence-grounded analysis** → `analyze-video-evidence`
 
 **Writing**
-- **ZH long-form**, personal experience / methodology / 活人感 → `khazix-writer`
 - **ZH long-form**, industry analysis / company breakdown / cold judgment → `wandian-writer`
 
 **Research**
