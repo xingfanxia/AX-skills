@@ -1,0 +1,213 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/apple-photos-skill/schemas/operation-manifest-v1.schema.json",
+  "title": "Apple Photos operation manifest",
+  "type": "object",
+  "required": ["schema_version", "manifest_type", "manifest_id", "created_at", "expires_at", "generator", "library_snapshot", "library_snapshot_digest", "items", "manifest_sha256"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "manifest_type": {"enum": ["apple_photos_import", "apple_photos_delete"]},
+    "manifest_id": {"type": "string", "pattern": "^(imp|del)_[A-Za-z0-9_-]+$"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "generator": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {"name": {"const": "apple-photos-skill"}, "version": {"type": "string", "minLength": 1}},
+      "additionalProperties": false
+    },
+    "library_snapshot": {"$ref": "#/$defs/librarySnapshot"},
+    "library_snapshot_digest": {"$ref": "#/$defs/digest"},
+    "target_album": {"$ref": "#/$defs/targetAlbum"},
+    "duplicate_policy": {"$ref": "#/$defs/duplicatePolicy"},
+    "delete_policy": {"$ref": "#/$defs/deletePolicy"},
+    "effect": {"const": "move_to_recently_deleted"},
+    "items": {"type": "array", "minItems": 1},
+    "evidence_attestation": {"$ref": "#/$defs/evidenceAttestation"},
+    "manifest_sha256": {"$ref": "#/$defs/digest"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"manifest_type": {"const": "apple_photos_import"}}},
+      "then": {
+        "required": ["target_album", "duplicate_policy"],
+        "properties": {"items": {"items": {"$ref": "#/$defs/importItem"}}},
+        "not": {"anyOf": [{"required": ["effect"]}, {"required": ["delete_policy"]}, {"required": ["evidence_attestation"]}]}
+      }
+    },
+    {
+      "if": {"properties": {"manifest_type": {"const": "apple_photos_delete"}}},
+      "then": {
+        "required": ["effect", "delete_policy", "evidence_attestation"],
+        "properties": {"items": {"maxItems": 50, "items": {"$ref": "#/$defs/deleteItem"}}},
+        "not": {"anyOf": [{"required": ["target_album"]}, {"required": ["duplicate_policy"]}]}
+      }
+    }
+  ],
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "rawDigest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "librarySnapshot": {
+      "type": "object",
+      "required": ["kind", "canonical_path", "is_system_library", "physical_identity_verified", "sentinel_asset_ids", "asset_ids_sha256", "asset_count", "observed_at"],
+      "properties": {
+        "kind": {"enum": ["selected_osxphotos_snapshot", "system_photo_library_snapshot"]},
+        "canonical_path": {"type": ["string", "null"]},
+        "is_system_library": {"type": "boolean"},
+        "physical_identity_verified": {"const": false},
+        "sentinel_asset_ids": {"type": "array", "maxItems": 3, "items": {"type": "string"}, "uniqueItems": true},
+        "asset_ids_sha256": {"$ref": "#/$defs/digest"},
+        "asset_count": {"type": ["integer", "null"], "minimum": 0},
+        "observed_at": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "targetAlbum": {
+      "type": "object",
+      "required": ["namespace", "value", "title_at_plan"],
+      "properties": {
+        "namespace": {"const": "photokit_local_identifier"},
+        "value": {"type": "string", "minLength": 1},
+        "title_at_plan": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "duplicatePolicy": {
+      "type": "object",
+      "required": ["proof", "coverage_complete", "on_single_exact", "on_multiple_exact"],
+      "properties": {
+        "proof": {"const": "sha256_resource_set"},
+        "coverage_complete": {"type": "boolean"},
+        "on_single_exact": {"const": "reuse_and_add_to_album"},
+        "on_multiple_exact": {"const": "block"}
+      },
+      "additionalProperties": false
+    },
+    "deletePolicy": {
+      "type": "object",
+      "required": ["proof", "pure_byte_duplicates", "report_sha256", "source_manifest_sha256", "pair_manifest_path", "network_access_allowed", "policy"],
+      "properties": {
+        "proof": {"const": "pixel_similarity"},
+        "pure_byte_duplicates": {"const": "unsupported"},
+        "report_sha256": {"$ref": "#/$defs/digest"},
+        "source_manifest_sha256": {"$ref": "#/$defs/digest"},
+        "pair_manifest_path": {"type": "string", "minLength": 1},
+        "network_access_allowed": {"type": "boolean"},
+        "policy": {
+          "type": "object",
+          "required": ["max_rgb_mae", "max_luma_mae", "max_rgb_p99"],
+          "properties": {
+            "max_rgb_mae": {"type": "number", "minimum": 0, "maximum": 0.01},
+            "max_luma_mae": {"type": "number", "minimum": 0, "maximum": 0.01},
+            "max_rgb_p99": {"type": "number", "minimum": 0, "maximum": 0.05}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "evidenceAttestation": {
+      "type": "object",
+      "required": ["algorithm", "claims_sha256", "signed_claims", "signature"],
+      "properties": {
+        "algorithm": {"const": "hmac-sha256"},
+        "claims_sha256": {"$ref": "#/$defs/digest"},
+        "signed_claims": {"type": "string", "minLength": 1},
+        "signature": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "required": ["path", "byte_count", "sha256", "file_identity", "resource_role", "uti"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "byte_count": {"type": "integer", "minimum": 0},
+        "sha256": {"$ref": "#/$defs/rawDigest"},
+        "file_identity": {
+          "type": "object",
+          "required": ["device", "inode", "mode"],
+          "properties": {"device": {"type": "integer"}, "inode": {"type": "integer"}, "mode": {"type": "integer"}},
+          "additionalProperties": false
+        },
+        "resource_role": {"enum": ["photo", "video"]},
+        "uti": {"enum": ["public.jpeg", "public.png", "public.heic", "public.heif", "public.tiff", "com.compuserve.gif", "com.apple.quicktime-movie", "public.mpeg-4", "com.apple.m4v-video"]}
+      },
+      "additionalProperties": false
+    },
+    "importItem": {
+      "type": "object",
+      "required": ["item_id", "source", "resource_set_digest", "planned_action", "exact_duplicate_ids", "weak_candidate_ids", "batch_duplicate_of"],
+      "properties": {
+        "item_id": {"type": "string", "pattern": "^src_[0-9]{6}$"},
+        "source": {"$ref": "#/$defs/source"},
+        "resource_set_digest": {"$ref": "#/$defs/digest"},
+        "planned_action": {"enum": ["create_asset", "reuse_exact_duplicate", "reuse_batch_duplicate", "blocked_ambiguous_duplicate", "blocked_duplicate_coverage_incomplete"]},
+        "exact_duplicate_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "weak_candidate_ids": {"type": "array", "maxItems": 0},
+        "batch_duplicate_of": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "deleteItem": {
+      "type": "object",
+      "required": ["item_id", "local_identifier", "expected", "pixel_similarity_proof", "planned_action"],
+      "properties": {
+        "item_id": {"type": "string", "pattern": "^del_[0-9]{6}$"},
+        "local_identifier": {"type": "string", "minLength": 1},
+        "planned_action": {"const": "move_to_recently_deleted"},
+        "expected": {"$ref": "#/$defs/deleteExpected"},
+        "pixel_similarity_proof": {
+          "type": "object",
+          "required": ["pair_id", "keeper_local_identifier", "keeper_expected", "candidate_source_sha256", "keeper_source_sha256", "bytes_different", "dimensions", "metrics"],
+          "properties": {
+            "pair_id": {"type": "string", "minLength": 1},
+            "keeper_local_identifier": {"type": "string", "minLength": 1},
+            "keeper_expected": {"$ref": "#/$defs/deleteExpected"},
+            "candidate_source_sha256": {"$ref": "#/$defs/digest"},
+            "keeper_source_sha256": {"$ref": "#/$defs/digest"},
+            "bytes_different": {"const": true},
+            "dimensions": {
+              "type": "object",
+              "required": ["width", "height"],
+              "properties": {
+                "width": {"type": "integer", "minimum": 1},
+                "height": {"type": "integer", "minimum": 1}
+              },
+              "additionalProperties": false
+            },
+            "metrics": {
+              "type": "object",
+              "required": ["rgb_mean_absolute_error", "luma_mean_absolute_error", "rgb_p99_absolute_error", "rgb_max_absolute_error"],
+              "properties": {
+                "rgb_mean_absolute_error": {"type": "number", "minimum": 0, "maximum": 0.01},
+                "luma_mean_absolute_error": {"type": "number", "minimum": 0, "maximum": 0.01},
+                "rgb_p99_absolute_error": {"type": "number", "minimum": 0, "maximum": 0.05},
+                "rgb_max_absolute_error": {"type": "number", "minimum": 0, "maximum": 1}
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "deleteExpected": {
+      "type": "object",
+      "required": ["original_filename", "media_type", "date_taken", "date_modified", "width", "height", "resource_descriptor_digest", "in_trash"],
+      "properties": {
+        "original_filename": {"type": ["string", "null"]},
+        "media_type": {"const": "image"},
+        "date_taken": {"type": ["string", "null"]},
+        "date_modified": {"type": ["string", "null"]},
+        "width": {"type": "integer", "minimum": 1},
+        "height": {"type": "integer", "minimum": 1},
+        "resource_descriptor_digest": {"$ref": "#/$defs/digest"},
+        "in_trash": {"const": false}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

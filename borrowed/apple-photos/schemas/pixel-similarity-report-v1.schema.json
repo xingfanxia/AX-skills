@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/apple-photos/pixel-similarity-report-v1.schema.json",
+  "title": "Apple Photos Pixel Similarity Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "report_type",
+    "created_at",
+    "mode",
+    "delete_authorizing",
+    "source_manifest_sha256",
+    "policy",
+    "counts",
+    "gate_passed",
+    "items",
+    "report_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "report_type": {"const": "apple_photos_pixel_similarity"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "mode": {"const": "pixel_similarity_delete_evidence"},
+    "delete_authorizing": {"type": "boolean"},
+    "source_manifest_sha256": {"$ref": "#/$defs/sha256"},
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_rgb_mae", "max_luma_mae", "max_rgb_p99"],
+      "properties": {
+        "max_rgb_mae": {"type": "number", "minimum": 0, "maximum": 1},
+        "max_luma_mae": {"type": "number", "minimum": 0, "maximum": 1},
+        "max_rgb_p99": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total", "compared", "passed", "failed", "rejected", "byte_identical"],
+      "properties": {
+        "total": {"type": "integer", "minimum": 1},
+        "compared": {"type": "integer", "minimum": 0},
+        "passed": {"type": "integer", "minimum": 0},
+        "failed": {"type": "integer", "minimum": 0},
+        "rejected": {"type": "integer", "minimum": 0},
+        "byte_identical": {"type": "integer", "minimum": 0}
+      }
+    },
+    "gate_passed": {"type": "boolean"},
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": {"oneOf": [{"$ref": "#/$defs/compared"}, {"$ref": "#/$defs/rejected"}]}
+    },
+    "report_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "compared": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pair_id",
+        "candidate_local_identifier",
+        "keeper_local_identifier",
+        "status",
+        "passed",
+        "byte_identical",
+        "dimensions_equal",
+        "left",
+        "right",
+        "metrics",
+        "failed_checks"
+      ],
+      "properties": {
+        "pair_id": {"type": "string", "minLength": 1},
+        "candidate_local_identifier": {"type": "string", "minLength": 1},
+        "keeper_local_identifier": {"type": "string", "minLength": 1},
+        "status": {"const": "compared"},
+        "passed": {"type": "boolean"},
+        "byte_identical": {"type": "boolean"},
+        "dimensions_equal": {"type": "boolean"},
+        "left": {"$ref": "#/$defs/input"},
+        "right": {"$ref": "#/$defs/input"},
+        "metrics": {"$ref": "#/$defs/metrics"},
+        "failed_checks": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "rejected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pair_id", "candidate_local_identifier", "keeper_local_identifier", "status", "passed", "error"],
+      "properties": {
+        "pair_id": {"type": "string", "minLength": 1},
+        "candidate_local_identifier": {"type": "string", "minLength": 1},
+        "keeper_local_identifier": {"type": "string", "minLength": 1},
+        "status": {"const": "rejected"},
+        "passed": {"const": false},
+        "error": {"$ref": "#/$defs/error"}
+      }
+    },
+    "metrics": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rgb_mean_absolute_error",
+            "luma_mean_absolute_error",
+            "rgb_p99_absolute_error",
+            "rgb_max_absolute_error"
+          ],
+          "properties": {
+            "rgb_mean_absolute_error": {"type": "number", "minimum": 0, "maximum": 1},
+            "luma_mean_absolute_error": {"type": "number", "minimum": 0, "maximum": 1},
+            "rgb_p99_absolute_error": {"type": "number", "minimum": 0, "maximum": 1},
+            "rgb_max_absolute_error": {"type": "number", "minimum": 0, "maximum": 1}
+          }
+        }
+      ]
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message", "exception_type"],
+      "properties": {
+        "code": {"type": "string"},
+        "message": {"type": "string"},
+        "exception_type": {"type": "string"},
+        "detail": {"type": "object"}
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256", "decode"],
+      "properties": {
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "decode": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["width", "height", "orientation_normalization", "color_normalization", "source_mode", "source_bit_depth"],
+          "properties": {
+            "width": {"type": "integer", "minimum": 1},
+            "height": {"type": "integer", "minimum": 1},
+            "orientation_normalization": {"const": "exif_transpose"},
+            "color_normalization": {"enum": ["assumed_srgb", "embedded_icc_to_srgb"]},
+            "source_mode": {"enum": ["1", "L", "LA", "P", "RGB", "RGBA"]},
+            "source_bit_depth": {"type": "integer", "minimum": 1, "maximum": 8}
+          }
+        }
+      }
+    }
+  }
+}

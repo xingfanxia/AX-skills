@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/apple-photos-skill/schemas/authorization-claims-v1.schema.json",
+  "title": "Delete authorization claims",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "action",
+    "manifest_sha256",
+    "evidence_claims_sha256",
+    "library_snapshot_digest",
+    "item_count",
+    "issued_at",
+    "expires_at",
+    "nonce",
+    "cli_major"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "action": {"const": "delete_assets"},
+    "manifest_sha256": {"$ref": "#/$defs/digest"},
+    "evidence_claims_sha256": {"$ref": "#/$defs/digest"},
+    "library_snapshot_digest": {"$ref": "#/$defs/digest"},
+    "item_count": {"type": "integer", "minimum": 1, "maximum": 50},
+    "issued_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "nonce": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "cli_major": {"type": "integer", "minimum": 1}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}

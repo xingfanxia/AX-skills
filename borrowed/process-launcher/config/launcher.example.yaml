@@ -1,0 +1,60 @@
+server:
+  host: 127.0.0.1
+  port: 7997
+
+logging:
+  dir: logs
+  heartbeat_retention_days: 30
+  output_retention_days: 30
+
+storage:
+  sqlite_path: state/launcher.db
+
+services:
+  demo_service:
+    label: demo_service
+    command: ["python", "-m", "http.server", "8080"]
+    cwd: /path/to/demo/project
+    env:
+      DEMO_MODE: development
+    restart_delay: 10
+    max_restarts: 3
+    restart_window: 60
+
+periodic_jobs:
+  demo_daily_job:
+    label: demo_daily_job
+    command: ["python", "scripts/daily.py"]
+    cwd: /path/to/demo/project
+    env_file: .env
+    enabled: true
+    schedule:
+      type: daily
+      time: "19:00"
+      timezone: America/Los_Angeles
+    overlap_policy: skip
+    misfire_policy: skip
+    timeout: 1800
+
+  demo_weekly_job:
+    label: demo_weekly_job
+    command: ["python", "scripts/weekly.py"]
+    cwd: /path/to/demo/project
+    enabled: true
+    schedule:
+      type: weekly
+      days_of_week: [thu]
+      time: "07:30"
+      timezone: America/Los_Angeles
+    overlap_policy: skip
+    misfire_policy: skip
+
+  demo_interval_job:
+    label: demo_interval_job
+    command: ["python", "scripts/poll.py"]
+    cwd: /path/to/demo/project
+    enabled: false
+    schedule:
+      type: interval
+      every_seconds: 600
+    overlap_policy: skip

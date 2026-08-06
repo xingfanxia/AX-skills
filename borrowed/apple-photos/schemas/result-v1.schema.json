@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/apple-photos-skill/schemas/result-v1.schema.json",
+  "title": "Apple Photos command result",
+  "type": "object",
+  "required": ["schema_version", "command", "ok", "status"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "command": {"type": "string", "minLength": 1},
+    "run_id": {"type": "string"},
+    "ok": {"type": "boolean"},
+    "status": {"enum": ["running", "succeeded", "planned", "authorized", "noop", "partial", "failed", "outcome_unknown", "cancelled"]},
+    "started_at": {"type": "string"},
+    "finished_at": {"type": "string"},
+    "phase": {"type": "string"},
+    "manifest_sha256": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"},
+    "library_snapshot": {"type": ["object", "null"]},
+    "counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+    "items": {"type": "array"},
+    "artifacts": {"type": "object", "additionalProperties": {"type": "string"}},
+    "warnings": {"type": "array", "items": {"type": ["string", "object"]}},
+    "errors": {"type": "array", "items": {"$ref": "#/$defs/error"}},
+    "effect": {"type": "string"},
+    "expires_at": {"type": "string"},
+    "backup": {"type": "object"},
+    "python": {"type": "object"},
+    "osxphotos": {"type": "object"},
+    "photokit_helper": {"type": "object"},
+    "capability_requested": {"enum": ["read", "mutation", "all"]},
+    "read_ready": {"type": "boolean"},
+    "mutation_ready": {"type": ["boolean", "null"]},
+    "helper_source": {"type": "object"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"ok": {"const": true}}, "required": ["ok"]},
+      "then": {"properties": {"status": {"enum": ["succeeded", "planned", "authorized", "noop"]}}}
+    },
+    {
+      "if": {"properties": {"status": {"enum": ["running", "partial", "failed", "outcome_unknown", "cancelled"]}}, "required": ["status"]},
+      "then": {"properties": {"ok": {"const": false}}}
+    }
+  ],
+  "$defs": {
+    "error": {
+      "type": "object",
+      "required": ["code", "message", "exception_type"],
+      "properties": {
+        "code": {"type": "string"}, "message": {"type": "string"},
+        "exception_type": {"type": "string"}, "detail": {"type": "object"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

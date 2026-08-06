@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "process-launcher"
+version = "0.1.0"
+description = "Localhost process launcher with a FastAPI control surface."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+authors = [{ name = "Process Launcher contributors" }]
+keywords = ["fastapi", "process", "launcher", "localhost", "automation"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: FastAPI",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "httpx",
+    "pyyaml",
+    "pydantic",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+]
+
+[project.scripts]
+process-launcher = "process_launcher.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+asyncio_mode = "strict"
+markers = [
+    "live_integration: tests that start a real launcher process on port 7976 (run with -m live_integration)",
+]

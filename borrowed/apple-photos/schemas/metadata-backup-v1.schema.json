@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/apple-photos-skill/schemas/metadata-backup-v1.schema.json",
+  "title": "Apple Photos metadata backup manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "backup_type",
+    "created_at",
+    "complete",
+    "library_snapshot",
+    "library_snapshot_digest",
+    "generator",
+    "files"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "backup_type": {"const": "apple_photos_metadata"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "complete": {"const": true},
+    "library_snapshot": {"type": "object"},
+    "library_snapshot_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "generator": {"type": "object"},
+    "files": {
+      "type": "object",
+      "minProperties": 4,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["record_count", "byte_count", "sha256"],
+        "properties": {
+          "record_count": {"type": "integer", "minimum": 0},
+          "byte_count": {"type": "integer", "minimum": 0},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

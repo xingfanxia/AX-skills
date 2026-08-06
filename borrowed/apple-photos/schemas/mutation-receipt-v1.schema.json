@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/apple-photos-skill/schemas/mutation-receipt-v1.schema.json",
+  "title": "Durable mutation journal and receipt",
+  "type": "object",
+  "required": ["schema_version", "command", "run_id", "ok", "status", "started_at", "finished_at", "phase", "manifest_sha256", "library_snapshot", "counts", "items", "artifacts", "warnings", "errors"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "command": {"enum": ["import.apply", "delete.apply"]},
+    "run_id": {"type": "string", "pattern": "^run_[A-Za-z0-9_-]{1,128}$"},
+    "ok": {"type": "boolean"},
+    "status": {"enum": ["running", "succeeded", "partial", "outcome_unknown"]},
+    "started_at": {"type": "string"},
+    "finished_at": {"type": "string"},
+    "phase": {"enum": ["commit_pending", "commit_reported", "verified", "verification_inconclusive"]},
+    "manifest_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "library_snapshot": {
+      "type": "object", "required": ["kind", "snapshot_digest"],
+      "properties": {"kind": {"const": "system_photo_library_snapshot"}, "snapshot_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}},
+      "additionalProperties": false
+    },
+    "counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["item_id", "status"],
+        "properties": {
+          "item_id": {"type": "string"}, "local_identifier": {"type": "string"},
+          "status": {"enum": ["resolution_known", "imported_verified", "reused_verified", "imported_integrity_failed", "deleted_confirmed", "outcome_unknown", "not_attempted", "not_attempted_after_unknown"]},
+          "resource_digest_match": {"type": "boolean"}, "album_membership_verified": {"type": "boolean"},
+          "evidence": {"enum": ["photokit_placeholder", "placeholder_missing_after_creation_registered", "transaction_outcome_unknown", "transaction_not_started", "not_attempted", "not_attempted_after_unknown", "batch_duplicate_parent_outcome_unknown", "batch_duplicate_parent_not_attempted", "batch_duplicate_parent_not_attempted_after_unknown", "batch_duplicate_parent", "exact_duplicate_sha256"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "artifacts": {"type": "object", "additionalProperties": {"type": "string"}},
+    "warnings": {"type": "array"},
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object", "required": ["code", "message", "exception_type"],
+        "properties": {"code": {"type": "string"}, "message": {"type": "string"}, "exception_type": {"type": "string"}, "detail": {"type": "object"}},
+        "additionalProperties": false
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"ok": {"const": true}}, "required": ["ok"]},
+      "then": {"properties": {"status": {"const": "succeeded"}, "phase": {"const": "verified"}}}
+    },
+    {
+      "if": {"properties": {"status": {"enum": ["running", "partial", "outcome_unknown"]}}, "required": ["status"]},
+      "then": {"properties": {"ok": {"const": false}}}
+    }
+  ],
+  "additionalProperties": false
+}

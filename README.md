@@ -77,6 +77,7 @@ Covered so far: `banxian-skill` · `jewelry-marketing` · `game-script-creation`
 | Skill | Purpose | Status |
 |---|---|---|
 | [`apple-pdf`](./apple-pdf/) | Markdown / notes / reports → professionally formatted PDFs with SF typography. Default PDF generator. | ✅ |
+| [`mineru-pdf-parser`](./mineru-pdf-parser/) | Parse complex PDFs (and images / DOCX / PPTX / XLSX) into LLM-ready Markdown + structured JSON with MinerU — tables, formulas, reading order preserved. The ingestion counterpart to `apple-pdf` (which generates). | ✅ |
 
 ### DevOps / Infrastructure
 
@@ -117,6 +118,21 @@ Useful adaptations remain available with explicit attribution, but are intention
 | [`context-infrastructure`](./context-infrastructure/) | Design durable agent context with L0–L3 layers, Observer/Reflector separation, conservative promotion, progressive disclosure, privacy, and replay. AX adaptation inspired by [grapeot/context-infrastructure](https://github.com/grapeot/context-infrastructure) and [Mastra Observational Memory](https://mastra.ai/research/observational-memory); architecture is reusable, personal axioms are not. | ✅ v1.0 adapted |
 | [`trident`](./trident/) | 三重心智 — 深度阅读 prompt。同一篇材料同时占据三个不重叠视角：建构者（抽框架）/ 挑战者（找最强反驳）/ 实践者（落到自己的行动），每个视角有明确产出契约，不发散成空话。改进自 [秒秒Guo](https://mmguo.dev/prompts/trident/)。 | ✅ |
 | [`dr-sharp`](./dr-sharp/) | 犀利博士 — 诚实高于善意的深度自审 prompt。把 LLM 变成心理手术刀：揭示隐藏叙事 / 根本矛盾 / 毒性循环 + 荣格镜像，对模式锋利、对人不残忍，内建危机安全底线。改进自 [秒秒Guo](https://mmguo.dev/prompts/dr-sharp/)。 | ✅ |
+
+
+### Borrowed（借来的 · [borrowed/](./borrowed/)）
+
+Vendored external skills adopted into the working setup mostly as-is — upstream author's code,
+light AX adaptation, upstream LICENSE preserved. License-gated: unlicensed upstreams are
+pointer-only, never republished. Full table, rules, and the evaluated-and-declined ledger:
+[borrowed/README.md](./borrowed/README.md).
+
+| Skill | Upstream | One-liner |
+|---|---|---|
+| [`tavily-skill`](./borrowed/tavily-skill/) | grapeot | File-mode Tavily search CLI — research sessions without context bloat |
+| [`process-launcher`](./borrowed/process-launcher/) | grapeot | macOS TCC-bridging background job/service launcher |
+| [`apple-photos`](./borrowed/apple-photos/) | grapeot | Structured Apple Photos CLI (read-only usable; mutations upstream-alpha) |
+| [`human-writing`](./borrowed/human-writing/) | KKKKhazix | 中文创作与改稿 —— 活人感、反模型腔 |
 
 ## Install (Claude Code)
 

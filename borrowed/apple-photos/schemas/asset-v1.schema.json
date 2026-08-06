@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/apple-photos-skill/schemas/asset-v1.schema.json",
+  "title": "Normalized Apple Photos asset",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "asset_id",
+    "media_type",
+    "media_subtypes",
+    "original_filename",
+    "dimensions",
+    "flags",
+    "album_ids",
+    "keywords",
+    "resource_summary",
+    "provenance"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "asset_id": {
+      "type": "object",
+      "required": ["namespace", "value", "library_snapshot_digest"],
+      "properties": {
+        "namespace": {"const": "osxphotos_uuid"},
+        "value": {"type": "string", "minLength": 1},
+        "library_snapshot_digest": {"$ref": "#/$defs/digest"}
+      },
+      "additionalProperties": false
+    },
+    "media_type": {"enum": ["image", "video", "audio", "unknown"]},
+    "media_subtypes": {"type": "array", "items": {"type": "string"}},
+    "original_filename": {"type": ["string", "null"]},
+    "uti": {"type": ["string", "null"]},
+    "date_taken": {"type": ["string", "null"]},
+    "date_added": {"type": ["string", "null"]},
+    "date_modified": {"type": ["string", "null"]},
+    "dimensions": {
+      "type": "object",
+      "required": ["width", "height"],
+      "properties": {
+        "width": {"type": ["integer", "null"], "minimum": 0},
+        "height": {"type": ["integer", "null"], "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "duration_ms": {"type": ["integer", "null"], "minimum": 0},
+    "flags": {
+      "type": "object",
+      "required": ["favorite", "hidden", "edited", "missing", "in_trash", "cloud_only"],
+      "properties": {
+        "favorite": {"type": "boolean"}, "hidden": {"type": "boolean"},
+        "edited": {"type": "boolean"}, "missing": {"type": "boolean"},
+        "in_trash": {"type": "boolean"}, "cloud_only": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "album_ids": {
+      "type": "array", "uniqueItems": true,
+      "items": {
+        "type": "object", "required": ["namespace", "value"],
+        "properties": {"namespace": {"const": "osxphotos_album_uuid"}, "value": {"type": "string", "minLength": 1}},
+        "additionalProperties": false
+      }
+    },
+    "keywords": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "sensitive": {"type": ["object", "null"]},
+    "resource_summary": {
+      "type": "object",
+      "required": ["verification", "resource_count", "asset_sha256"],
+      "properties": {
+        "verification": {"enum": ["not_requested", "sha256_verified", "unavailable"]},
+        "resource_count": {"type": "integer", "minimum": 0},
+        "asset_sha256": {"anyOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]}
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["metadata_backend", "metadata_backend_version", "observed_at", "unavailable_fields"],
+      "properties": {
+        "metadata_backend": {"type": "string"},
+        "metadata_backend_version": {"type": "string"},
+        "observed_at": {"type": ["string", "null"]},
+        "unavailable_fields": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
