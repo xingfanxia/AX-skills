@@ -1,10 +1,10 @@
 ---
 name: deep-research
 description: |
-  验证型调研：多Agent并行、交叉验证（Tier 1-4信源分级）、可追溯的调研工作流。产出决策备忘录，核心是判断claim的真伪和可信度。
-  适用场景：需要做决策的调研（"该选A还是B"、"X靠不靠谱"、"evaluate"、"帮我验证"）、技术评估、方案对比、行业可行性判断。
-  不适用：纯粹想了解一个东西的来龙去脉（用 narrative-research）、想要叙事风格的研究报告（用 narrative-research）。
-  触发词：深度调研、帮我调研、evaluate、该选哪个、靠不靠谱、对比一下、investigate、competitive analysis。
+  验证型调研：多Agent并行、Tier 1-4信源交叉验证、可追溯，产出决策备忘录。
+  适用：要做决策的调研（该选A还是B、X靠不靠谱、帮我验证）、技术评估、方案对比、行业可行性。
+  不适用：了解来龙去脉/叙事型报告→narrative-research。
+  触发词：深度调研、帮我调研、evaluate、该选哪个、靠不靠谱、对比一下、competitive analysis。
 version: 3.1.0
 ---
 

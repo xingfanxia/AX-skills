@@ -1,17 +1,13 @@
 ---
 name: gpt-image
 description: |
-  Generate images via OpenAI's GPT Image family (Azure deployment
-  gpt-image-2, OpenAI direct fallback on rate-limit). PREFER this skill
-  for: photorealistic scenes, product shots, editorial/brand imagery, UI
-  mockups, and any image where embedded text MUST render correctly
-  (posters with titles, infographics with labels, logos with wordmark).
-  AVOID for: illustration, anime, watercolor, Chiikawa / 吉卜力 / hand-drawn
-  aesthetics, reference-image editing, or character-consistency across
-  scenes — use the separate nanobanana skill (Google Gemini) for those.
-  When genuinely ambiguous (no style signal), ask once: "realistic /
-  editorial (gpt-image) or illustration / anime (nanobanana)?" — do NOT
-  silently default.
+  Generate images via OpenAI GPT Image (Azure gpt-image-2, OpenAI-direct
+  fallback on rate-limit). PREFER for: photorealistic / product / editorial
+  / UI mockups, and any image whose embedded text must render correctly
+  (posters, infographics, logos). AVOID for: illustration / anime /
+  watercolor / 吉卜力 / hand-drawn, multi-reference editing, character
+  consistency — use nanobanana. Ambiguous with no style signal → this
+  skill silently, do NOT ask; offer a nanobanana regen if the aesthetic misses.
 ---
 
 # /gpt-image — Azure-first, OpenAI-fallback image generation

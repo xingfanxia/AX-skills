@@ -1,16 +1,13 @@
 ---
 name: neat-freak
 description: >
-  End-of-session knowledge cleanup with OCD-level rigor — reconciles project docs
-  (CLAUDE.md, README.md, docs/) and agent memory against the code so nothing rots.
-  会话结束后对项目文档和记忆进行洁癖级审查与同步。MUST trigger when the user says:
-  "sync up", "tidy up docs", "update memory", "clean up docs", "/sync", "/neat", "同步一下",
+  End-of-session knowledge cleanup — reconciles project docs (CLAUDE.md, README, docs/)
+  and agent memory against the code so nothing rots. MUST trigger on: "sync up",
+  "tidy up docs", "update memory", "clean up docs", "/sync", "/neat", "同步一下",
   "整理文档", "整理一下", "更新记忆", "梳理一下", "收尾", "这个阶段做完了",
-  "新人能直接上手", or any phrase suggesting a dev milestone where knowledge needs
-  reconciliation. Also trigger when the user reports stale docs, conflicting memories,
-  or wants a clean handoff to teammates or other agents. Bare "整理" / "tidy" with
-  prior dev context counts — do not under-trigger. Cross-platform: works on Claude Code,
-  OpenAI Codex, OpenCode, and OpenClaw.
+  "新人能直接上手", stale-docs/conflicting-memory reports, or any dev-milestone phrase
+  needing reconciliation. Bare "整理" / "tidy" with prior dev context counts — do not
+  under-trigger. Cross-platform (Claude Code · Codex · OpenCode · OpenClaw).
 ---
 
 # 洁癖 — Knowledge Base Neat-Freak

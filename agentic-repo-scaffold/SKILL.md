@@ -1,16 +1,14 @@
 ---
 name: agentic-repo-scaffold
 description: >
-  Scaffold a repository's agent-maintainability contract: an AGENTS.md architecture
-  contract, an executable verification harness (boundary / giant-file / generated-clean
-  checks), a single `make verify` / `pnpm verify` command, `.agent/` refactor ledgers,
-  and optional Cursor rules. Stack-aware (frontend / backend / general). Use when the
-  user says "scaffold AGENTS.md", "set up the agent contract", "add a verification
-  harness", "make this repo agent-maintainable", "add architecture boundary checks",
-  "wire up make verify", or starts/hardens a repo for long-horizon AI-agent maintenance.
-  Implements the bundled agentic-repo-architecture blueprint (references/). Distinct from
-  /init (which writes a codebase-documentation file): this writes the architecture
+  Scaffold a repo's agent-maintainability contract: AGENTS.md architecture contract +
+  executable verify harness (boundary / giant-file / generated-clean checks) + a single
+  `make verify` / `pnpm verify` + `.agent/` ledgers. Stack-aware. Use on "scaffold
+  AGENTS.md", "set up the agent contract", "add a verification harness", "make this repo
+  agent-maintainable", "wire up make verify", or starting/hardening a repo for
+  long-horizon agent maintenance. Distinct from /init (docs CLAUDE.md): this writes the
   CONTRACT + executable gates.
+
 ---
 
 # agentic-repo-scaffold
