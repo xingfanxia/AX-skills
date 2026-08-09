@@ -27,8 +27,9 @@ to OpenAI direct if Azure rate-limits.
 | Batch > 10 images per minute | **gpt-image** (it falls back to OpenAI direct, no throttle) |
 
 If the user doesn't specify a style and no clear signal points either way,
-ask once; otherwise default to gpt-image for text-heavy / photorealistic
-requests and nanobanana for illustrative requests.
+default to gpt-image silently — do NOT ask (garbled text is worse than a
+less-illustrative image); offer a nanobanana regen afterward if the
+aesthetic misses.
 
 ## Invocation
 
@@ -39,9 +40,20 @@ requests and nanobanana for illustrative requests.
 The script is a PEP 723 uv script with inline dependencies — no venv setup
 needed. uv caches `openai` after first run.
 
+**Timeout**: Azure `generate` latency is 100-125s, which straddles the Bash
+tool's default 120s timeout — a plain call can return empty output and read
+as a silent failure. Invoke `generate.py` with `timeout=300000` (5 min) for
+single images, ~420000 for `--n` batches.
+
 ### Options
 
-- `--size` — `1024x1024` (default), `1792x1024` (landscape), `1024x1792` (portrait)
+- `--size` — any `WxH` with dims multiples of 16, long edge ≤ 3840, and total
+  pixels ≤ 8,294,400 (= 3840×2160; probed live 2026-07-21 — the API rejects
+  even budget+12k px with "exceeds the current pixel budget"). The script
+  auto-clamps oversized requests to the largest same-aspect valid size, so 4K
+  asks always succeed. Default `1024x1024`. **4K/max presets**: `3840x2160`
+  (landscape UHD), `2160x3840` (portrait UHD), `2880x2880` (square max),
+  `2480x3312` (3:4 portrait max) — note there is NO true 16MP 4096² tier
 - `--n` — number of images (default 1; batch throttled to 10 RPM on Azure)
 - `--output` — output directory (default `~/Downloads/gpt-image/`)
 - `--name` — basename for output files (default `gpt-image-<timestamp>`)
@@ -164,6 +176,12 @@ GPT Image is strongest when you give it:
 For typography/text integration, GPT Image is usually better than Gemini.
 For reference-image editing, use nanobanana instead.
 
+**Repaint over a draft, don't generate from text**: for infographics, charts,
+and diagrams, text-prompt-only generation is unreliable. Build the structure
+first (matplotlib / hand-SVG / a rough render), pass it via `--edit
+draft.png`, and let GPT Image improve the presentation while preserving the
+title and annotation text.
+
 ## 中文文字排版纪律 (CJK text discipline)
 
 Any prompt that renders Chinese text MUST end with this suffix, appended
@@ -185,5 +203,10 @@ never trust the model to remember it):
   against the cover every ~5 images; on drift, regenerate reusing the cover
   prompt's style paragraph.
 - 中文横排；标点不出现在行首；中英混排时英文占比 ≤ 20%。
+- **Prompt 里的内部约束不要直接喂给模型**: any constraint in a prompt
+  ("public data only", "no logo") is frequently rendered as visible text on
+  the image. Separate rules from copy — phrase constraints as "Do not render
+  any text about X" AND enumerate the exact visible strings the model is
+  allowed to draw.
 
 <!-- Adapted from staruhub/ClaudeSkills (MIT) -->

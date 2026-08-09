@@ -35,6 +35,36 @@ from openai import APIError, AzureOpenAI, OpenAI, RateLimitError
 
 CONFIG_FILE = Path.home() / ".config" / "gpt-image" / "credentials"
 
+# gpt-image-2 size validation (probed live 2026-07-21):
+#   * dims must be multiples of 16
+#   * long edge <= 3840
+#   * total pixels <= 8,294,400 (exactly 3840x2160 UHD; the API rejects
+#     2496x3328 = budget + 12k px with "exceeds the current pixel budget",
+#     while 2160x3840 and 2880x2880 = exactly budget pass)
+# clamp_size() shrinks any oversized request to the largest same-aspect size
+# that satisfies all three rules, so "4K" asks degrade instead of erroring.
+SIZE_MULTIPLE = 16
+LONG_EDGE_MAX = 3840
+PIXEL_BUDGET = 3840 * 2160  # 8,294,400
+
+
+def clamp_size(size: str) -> str:
+    """Clamp WxH to gpt-image-2's validation rules, preserving aspect ratio."""
+    try:
+        w_s, h_s = size.lower().split("x")
+        w, h = int(w_s), int(h_s)
+    except ValueError:
+        return size  # let the API produce its own error for junk input
+    if w <= 0 or h <= 0:
+        return size
+    scale = min(1.0, LONG_EDGE_MAX / max(w, h), (PIXEL_BUDGET / (w * h)) ** 0.5)
+    cw = int(w * scale) // SIZE_MULTIPLE * SIZE_MULTIPLE
+    ch = int(h * scale) // SIZE_MULTIPLE * SIZE_MULTIPLE
+    clamped = f"{cw}x{ch}"
+    if clamped != size:
+        print(f"size {size} exceeds gpt-image-2 limits, clamped to {clamped}", file=sys.stderr)
+    return clamped
+
 CRED_KEYS = (
     "AZURE_OPENAI_API_KEY",
     "AZURE_OPENAI_ENDPOINT",
@@ -207,7 +237,11 @@ def main() -> int:
     parser.add_argument(
         "--size",
         default="1024x1024",
-        help="Size: 1024x1024 | 1792x1024 | 1024x1792 (default: 1024x1024)",
+        help=(
+            "WxH, any multiples of 16 up to long edge 3840 and 8,294,400 px "
+            "total (auto-clamped). 4K presets: 3840x2160 landscape, 2160x3840 "
+            "portrait, 2880x2880 square, 2480x3312 3:4 (default: 1024x1024)"
+        ),
     )
     parser.add_argument(
         "--n", type=int, default=1, help="Number of images (default: 1)"
@@ -260,6 +294,7 @@ def main() -> int:
         help="Max concurrent API calls when --n > 1 (default: 5, capped by --n).",
     )
     args = parser.parse_args()
+    args.size = clamp_size(args.size)
 
     # Normalize: jpg ↔ jpeg — API wants "jpeg", filename extension is "jpg"
     api_format = "jpeg" if args.fmt == "jpg" else args.fmt
