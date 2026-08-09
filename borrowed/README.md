@@ -40,7 +40,14 @@ author's **code**, kept close to upstream so `git pull` on the live clone stays 
 
 A 48-item sweep of the grapeot skill ecosystem produced these 5 adoptions; the other 43 were
 declined as duplicates of the existing roster (20), low-value for this profile (14), or
-borderline-判负 (9). Decision matrix lives in the `~/.claude` session records; headline reasons:
+borderline-判负 (9).
+
+**2026-08-08 follow-up:** the 20 "duplicates" were re-compared head-to-head for QUALITY (not
+just overlap). Outcome: 4 confirmed keep-ours with nothing to steal; 15 yielded ~49 concrete
+mechanisms merged into AX incumbents (doc-level applied same day; code-level tracked as
+SKILLMERGE-0 = Linear AX-134); 1 adopt-theirs — grapeot/semantic-search-skill is the designated
+replacement ENGINE if the archived knowledge-search need ever revives (recorded in memory,
+nothing installed). Decision matrix lives in the `~/.claude` session records; headline reasons:
 `semantic-search-skill` / `ai_usage_dashboard` / `presentation_skill` / `image-generation-skill` /
 `design_skill` / `writing-skill` / `playwright-test-skill` duplicate existing or deliberately
 archived capabilities; `gdocs-skill`'s Docs surface is covered by the generic `gws` API CLI;

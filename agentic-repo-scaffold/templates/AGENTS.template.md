@@ -29,6 +29,7 @@ Contractize every cross-boundary value and import it from the contract file — 
 - routes/params · API request/response · storage keys + payloads · events/messages · errors · config/env · domain entities · DOM test IDs · design tokens · telemetry names
 - **Backend also:** OpenAPI/proto/AsyncAPI specs · RFC 9457 error envelope · DB constraints in migrations (append-only) · idempotency contracts for retried mutations · versioned async payloads · observability span/metric/log field names.
 - Runtime-validate all external/persisted/untrusted input at the boundary (schema, e.g. Zod/JSON Schema); pass validated domain types inward. Don't change a public contract without compatibility checks + tests.
+- Deployment path prefix / base URL derives from a single env var (e.g. `APP_ROOT_PATH`) that backend root_path, frontend build base, and client router basename all read — never three independently maintained prefix strings.
 
 ## File limits (split or allowlist with owner/reason/expiry)
 - route page `<80>` · layout/route handler `<100>` · transport handler `<100>` · component `<200>` · core/application/adapter `<250>` · general source `<300>` · test `<400>` · non-generated hard cap `<500>`.

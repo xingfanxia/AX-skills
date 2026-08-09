@@ -14,6 +14,8 @@ description: |
 
 Wraps the [MinerU](https://github.com/opendatalab/MinerU) CLI (PyPI `mineru`, v3.4.0 verified 2026-07). CLI-only — there is no stable `from mineru import MinerU` Python API; drive it via the `mineru` command.
 
+**Why MinerU over the alternatives**: PyMuPDF4LLM is AGPL and Marker is GPL — both license blockers for most codebases. MarkItDown's `pdfminer.six` backend loses heading levels (~0% retention on structured docs). Docling (MIT, ~3s/page on CPU) is the legitimate fallback if MinerU install fails.
+
 ## Install
 
 ```bash
@@ -60,7 +62,12 @@ Models auto-download from HuggingFace on first parse (large; looks like a hang �
 | No GPU, default backend crawls | Force `-b pipeline` (the only pure-CPU-safe backend) |
 | Scanned PDFs | Quality tracks scan clarity; retry once with another backend, then report honestly — don't silently deliver garbage |
 | Hundreds of pages | Memory pressure — parse in `-s/-e` ranges or split the file first |
+| Heading-swallow | A section title rendered as emphasized text inside a table cell isn't detected as a layout heading — consecutive identical `##` headers appear with no separating context. Recover by cross-referencing an anchor value (account number, opening balance, figure caption) against the source page |
 
-Before declaring done: confirm `{name}.md` + `{name}_content_list.json` exist (report actual paths), and spot-check 1–2 pages against the original for lost/garbled tables and formulas.
+Before declaring done: confirm `{name}.md` + `{name}_content_list.json` exist (report actual paths), and spot-check 1–2 pages against the original for lost/garbled tables and formulas. Also check:
+- **Compression ratio** — a text-born PDF should compress ~5-10x into Markdown; a scan should barely shrink. A ratio outside that range means OCR silently no-op'd or the parse collapsed.
+- **Dedupe** — if two differently-named PDFs produce byte-identical or equal-length Markdown, md5 the source files before reporting — MinerU does not dedupe inputs.
+
+**Mandatory human review** (don't deliver unchecked): complex math (LaTeX export is lossy), archival needs that preserve page numbers/headers/footers (parsers strip them), and legal/financial/medical documents (sample back-check against the source PDF is required, not optional).
 
 <!-- Pitfall rows adapted from staruhub/ClaudeSkills (MIT); all CLI facts verified against `mineru --help` v3.4.0 + https://opendatalab.github.io/MinerU/ -->

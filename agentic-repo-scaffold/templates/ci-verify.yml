@@ -3,7 +3,7 @@
 name: verify
 on:
   push:
-    branches: [main]
+    branches: [main, master]   # widen rather than assume `main` — repos vary
   pull_request:
 jobs:
   verify:
@@ -16,5 +16,8 @@ jobs:
         with: { node-version: '22' }
       # - uses: actions/setup-go@v5    with: { go-version: '1.23' }
       # - uses: actions/setup-python@v5 with: { python-version: '3.12' }
+      #   Do NOT run `uv pip install --system` on GitHub Actions runners —
+      #   the system Python is externally managed and this hard-fails.
+      #   Use `uv venv && uv pip install -e '.[dev]'` instead.
       - run: corepack enable && pnpm install --frozen-lockfile
       - run: pnpm verify          # or: make verify
