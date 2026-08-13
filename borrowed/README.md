@@ -50,5 +50,9 @@ replacement ENGINE if the archived knowledge-search need ever revives (recorded 
 nothing installed). Decision matrix lives in the `~/.claude` session records; headline reasons:
 `semantic-search-skill` / `ai_usage_dashboard` / `presentation_skill` / `image-generation-skill` /
 `design_skill` / `writing-skill` / `playwright-test-skill` duplicate existing or deliberately
-archived capabilities; `gdocs-skill`'s Docs surface is covered by the generic `gws` API CLI;
+archived capabilities (**2026-08-13 revision**: `writing-skill`, now standalone at
+grapeot/writing-skill, was re-assessed at mechanism level — 24 novel mechanisms distilled into
+`~/.claude` (references/internal-writing.md + a Review Discipline gate-validity clause) and its
+prose-lint CLI vendored as a tool at `~/projects/_forks/writing-skill`; still not installed as a
+skill — 12 doctrine conflicts + trigger-word collisions with the writing roster); `gdocs-skill`'s Docs surface is covered by the generic `gws` API CLI;
 `smtp/resend/kit/smart-home/health/eink` presume accounts or hardware AX doesn't run.
