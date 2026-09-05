@@ -1,5 +1,7 @@
 > Purpose: 反 AI 味的"裁决知识库"——把文学/游戏 craft 的反 AI 味铁律批判性地翻译成网文版，拆成三桶（词句层全量复用 / 结构层分层裁决 / 网文专属轴），逐条标清哪条文学律在网文成立、哪条反转、哪条有害；再给一份分区可量化的《网文章节质检清单》。用在 9 步循环的**步骤 8（style/anti-slop-editor 去味）+ 交付前人工自检**。机械实现见 `scripts/antislop_lint.py`（桶1），打分入口与硬门见 `references/04-review-rubric.md`（桶2/3 的语义判定挂在 reviewer 的 `ai_taste` / `sao_payoff` / `ending_hook` 等加权项上）。
 
+> **运行模式边界**：默认 agent 驱动时，所有角色继承调用者的模型、推理和协作配置。本文的关 thinking、异模型或 provider 调参只属于用户已请求的独立 LLM 应用实验，不改变 coding-agent 配置；详见 `10-model-orchestration.md` 的适用边界。审查独立性仍需通过隔离上下文和职责保证。
+
 ---
 
 ## 0. 一句话原理：方向相反，所以不能照搬
@@ -154,7 +156,7 @@
 | 桶2 结构层 | reviewer 的 `ai_taste` / `dialogue_natural` / `emotion_immersion` 加权项（语义） | 步骤 6 | 跌破各项 `min` → REVISE（各最低线见 `04`） |
 | 桶3 网文专属轴 | reviewer `sao_payoff`/`ending_hook`/`pacing_density` + 毒点【词面归 `output_check.py`／语义归 reviewer】/剧透**硬门** | 步骤 5 前 `output_check.py` 扫毒点词面 + 步骤 5（continuity 查剧透/战力）+ 步骤 6 | 硬门任一 `false`（毒点/剧透/战力崩）→ 一票否决 REVISE，不可被高分平均 |
 
-**铁律重申（与 cheat-sheet 一致）**：能 code 判的（字数/POV/可见性截断/专名唯一/毒点词面/残留符号/开篇阈值/段落匀速）**绝不写进 prompt 让模型自觉**——伪约束是头号反模式。桶1 词句层交给 `antislop_lint.py`；正文输出侧硬门（字数/POV/格式/残留符号 `no_prompt_leak`/毒点词面/开篇阈值）交给 `output_check.py`；桶2/桶3 的语义判定交给**独立上下文/异模型**的 reviewer（步骤 8 的去味也是独立 pass，不喂回同源模型重写，否则改写后仍 96-98% 被检测）。**本文档自身产出的任何文字也不许违反这三桶清单。**
+**铁律重申（与 cheat-sheet 一致）**：能 code 判的（字数/POV/可见性截断/专名唯一/毒点词面/残留符号/开篇阈值/段落匀速）**绝不写进 prompt 让模型自觉**——伪约束是头号反模式。桶1 词句层交给 `antislop_lint.py`；正文输出侧硬门（字数/POV/格式/残留符号 `no_prompt_leak`/毒点词面/开篇阈值）交给 `output_check.py`；桶2/桶3 的语义判定交给**独立上下文**的 reviewer。步骤 8 的去味也是独立 pass，按具体问题改写，并保留调用者的模型与推理配置。**本文档自身产出的任何文字也不许违反这三桶清单。**
 
 ---
 

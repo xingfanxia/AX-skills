@@ -2,6 +2,12 @@
 
 ---
 
+## 适用边界：应用参数与 coding-agent 分开
+
+默认 Agent-driven mode 中，所有角色保留调用者已配置的模型和推理强度。不要因为写正文就关闭 coding-agent 推理，也不要为审校换成另一个模型或 provider；通过独立上下文、限制输入和结构化审查报告实现角色分离。已有调用者选择优先于下文的实验建议。
+
+下文 thinking、temperature、异 provider 与 A/B 表格仅供用户已要求调整的独立 LLM 应用实验。它们不是可移植 API schema；先核实所选模型支持哪些参数，再由应用适配器实现，未支持的字段不得硬传。原有研究结论不构成对所有新模型的默认参数要求。
+
 ## 0. 一句话原理
 
 长篇崩坏的根因是"AI 自我一致性随篇幅衰减"，**这是内在衰减，换更贵的模型解决不了**（来源：腾讯复盘，见 `01-six-stream-findings`）。所以模型编排不解决"会不会崩"（那是架构层 §3 循环 + 状态层的事），它解决两件次要但有 ROI 的事：① 把**对的能力放到对的步骤**（推理强的去做结构/校验，文笔强的去写正文，异模型去交叉审校）；② 在**模型天花板以内**把可控旋钮（thinking / temperature / 候选采样）调到最优。
@@ -72,7 +78,7 @@ reviewer = lambda p: make_call(base_url=REASON_URL, model=REASON_MODEL, thinking
 ```
 
 **两种 mode 的诚实区分**：
-- **Agent-driven mode（默认 MVP）**：没有上面的 client 代码——你（Codex/Claude Code 这个 agent）**本体**轮流扮 writer/reviewer/continuity，"换模型"= 人类/编排层换调用哪个模型来跑这一步。`scripts/` 里现有的 `compile_prompt.py` / `state_check.py` / `antislop_lint.py` 是**纯确定性、不调 LLM**的。
+- **Agent-driven mode（默认 MVP）**：没有上面的 client 代码。主控和所有子 agent 保留调用者的模型与推理设置，按职责及上下文划分写作和独立审查；本 skill 不指示编排层换模型。`scripts/` 里现有的 `compile_prompt.py` / `state_check.py` / `antislop_lint.py` 是**纯确定性、不调 LLM**的。
 - **硬化 mode（可选）**：未来若把循环真正脚本化（`chapter_loop.py`），client 注入是必须的接口设计——别在脚本里硬编一个 provider。
 
 ---

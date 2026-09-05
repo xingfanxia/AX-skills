@@ -23,9 +23,9 @@
 | 项目级 override | `AGENTS.override.md`(若存在,覆盖同目录 AGENTS.md) |
 | Skills 目录 | `~/.codex/skills/<name>/SKILL.md` 或项目内 `.codex/skills/<name>/` |
 
-Codex 没有独立的"记忆文件 + 索引"机制,所有跨会话信息都直接写在 `AGENTS.md` 里。同步时把"项目事实"那部分内容统一放 AGENTS.md。
+Codex 环境可能另有用户配置的记忆系统；先读实际配置和项目路由。`AGENTS.md` 保存项目指令与必要路由，不是所有事实或会话记录的默认容器。
 
-发现项目里有 `TEAM_GUIDE.md` 或 `.agents.md` 也要看——这是 Codex 的 fallback 文件名。
+只有实际配置声明的 fallback 文件名才视为指令入口；其他文件按任务相关性作为文档阅读，不假定任意文件名会自动加载。
 
 ## OpenClaw
 
@@ -37,7 +37,7 @@ Codex 没有独立的"记忆文件 + 索引"机制,所有跨会话信息都直�
 
 **加载优先级**：workspace > project-agent > personal-agent > managed/local > bundled > extra dirs。同名 skill 高优先级覆盖低优先级。
 
-OpenClaw 没有独立的"记忆文件 + 索引"机制，跨会话信息可放在项目根的 markdown（CLAUDE.md / AGENTS.md / 等价文件）里，参照 Codex 的做法。frontmatter 支持 `metadata.openclaw` 字段做加载时的 gating（按 OS、环境变量、二进制依赖筛选），但不是 neat-freak 必需的。
+OpenClaw 的记忆位置按实际安装和 workspace 配置检查，不从项目根指令文件推断全部记忆来源。frontmatter 支持 `metadata.openclaw` 字段做加载时的 gating（按 OS、环境变量、二进制依赖筛选），但不是 neat-freak 必需的。
 
 ## OpenCode
 
@@ -52,7 +52,7 @@ OpenCode 同时读取 Claude Code 和 Codex 的目录,所以同一个 skill 装�
 
 ## 如果当前 agent 没有独立记忆系统
 
-跳过"记忆"那一层,把功夫全花在:
+跳过独立记忆整理，在用户授权范围内维护:
 - 项目根 markdown(CLAUDE.md / AGENTS.md / 本平台等价文件)
 - README.md
 - docs/

@@ -1,12 +1,13 @@
 ---
 name: mtc
-description: "More Than Coding — full product workflow from concept to code. Iterates design/story first, generates aligned data, builds the app, then polishes. For games, demos, prototypes, and interactive experiences. Triggers: /mtc, build a game, make a demo, interactive experience."
-user-invocable: true
+description: "Plan and build an interactive product when the user requests a complete concept-to-code workflow or invokes mtc. Coordinate unresolved design, story, data, and implementation while using an already complete brief directly."
 ---
 
 # /mtc: More Than Coding
 
-You are a product designer, storyteller, and engineer rolled into one. You don't jump to code — you think first, design first, iterate the concept until it's sharp, THEN build.
+Combine product design, storytelling, and engineering as the request needs.
+Resolve uncertain design or narrative decisions before dependent implementation;
+when the brief already settles them, proceed with the requested build.
 
 **Your posture:** Creative director who also ships. Opinionated about design, flexible on implementation. You propose, explain your reasoning, and welcome pushback. At any point the user can just talk — this is a conversation, not a pipeline.
 
@@ -18,16 +19,16 @@ You are a product designer, storyteller, and engineer rolled into one. You don't
 
 ```
 Phase 0: Context Gathering     — What are we making? Who is it for?
-Phase 1: Concept & Narrative   — Story/concept iteration (expect 2-3 versions)
+Phase 1: Concept & Narrative   — Resolve the concept and narrative choices
 Phase 2: System Design         — Mechanics, interaction flow, information architecture
 Phase 3: Data & Content        — Mock data, copy, assets — all aligned with the concept
 Phase 4: Build                 — Code generation with full project structure
 Phase 5: Polish                — Sound, animation, visual details, easter eggs
 ```
 
-Each phase ends with a checkpoint. The user confirms before moving on. Phases can be re-entered at any time ("let's go back to the story").
+Use checkpoints to share decisions and progress, not to repeat existing authorization. Follow a user-requested interactive design conversation; when the user asks for a complete build, continue through the authorized work and ask only for unresolved choices that materially affect the result. Phases can be revisited when feedback changes them.
 
-**CRITICAL:** Do NOT skip phases. The whole point is that Phase 1-3 make Phase 4-5 dramatically better. Rushing to code defeats the purpose.
+Scale concept, system, content, build, and polish work to the request. Reuse existing decisions and artifacts, and skip already-satisfied or irrelevant work. Concept-only requests stop before code; a build request carries through implementation and verification. Deployment, external messages, commits, and publishing require their own existing authorization.
 
 ---
 
@@ -35,7 +36,7 @@ Each phase ends with a checkpoint. The user confirms before moving on. Phases ca
 
 **Goal:** Understand what we're building and establish the project.
 
-### Step 1: Ask the user (one message, all of these)
+### Step 1: Establish the brief from context; ask only about consequential gaps
 
 1. **What's the idea?** Game, demo, tool, interactive experience, art piece?
 2. **Who experiences it?** Target audience — age, context, what they care about
@@ -46,7 +47,7 @@ Each phase ends with a checkpoint. The user confirms before moving on. Phases ca
 
 ### Step 2: Research (if user wants it or names references)
 
-Spawn a research subagent to analyze referenced works:
+Analyze referenced works directly, or delegate an independent question when current session policy allows it and it can improve speed or quality:
 - Core mechanics breakdown (what makes it work?)
 - Emotional design patterns (how does it create the feeling?)
 - What's missing or could be improved?
@@ -67,13 +68,13 @@ Save context to `<project-name>/docs/CONCEPT.md`:
 - References and research findings
 - Scope and tech stack
 
-**Checkpoint:** "Here's what I'm hearing: [summary]. Sound right? Ready to start designing the concept?"
+**Checkpoint:** Briefly state the understood goal and proceed with the requested concept work; ask only if a material ambiguity remains.
 
 ---
 
 ## Phase 1: Concept & Narrative
 
-**Goal:** Iterate the core concept until it's sharp. Expect 2-3 versions minimum.
+**Goal:** Make the core concept specific and coherent. Revise when evidence or feedback identifies a weakness, without a minimum version count.
 
 ### For Games / Interactive Narratives:
 - Draft a story bible: setting, characters, conflict, resolution
@@ -98,7 +99,7 @@ Present it, then self-critique:
 
 Save final version to `docs/STORY.md` or `docs/CONCEPT.md`.
 
-**Checkpoint:** "The concept is locked. Here's the one-sentence pitch: [pitch]. Ready to design the systems?"
+**Checkpoint:** State the concept and one-sentence pitch, then continue the authorized system design.
 
 ---
 
@@ -159,7 +160,7 @@ Based on the system design, identify every piece of content needed:
 
 ### Process:
 
-Spawn parallel subagents for independent data sets. Each subagent gets:
+When permitted and useful, delegate independent data sets with separate ownership. Otherwise generate them directly. Each delegated task gets:
 - The concept doc (CONCEPT.md)
 - The system design (SYSTEMS.md)
 - Specific data requirements with consistency constraints
@@ -168,7 +169,7 @@ Save all generated content to `docs/data/` or `src/data/`:
 - One file per data type (messages.json, records.json, etc.)
 - A `docs/data/DATA-MAP.md` documenting what exists and how it connects
 
-**Checkpoint:** "All content is generated. Here's a summary: [list of data files and key stats]. Want to review any of it before we build?"
+**Checkpoint:** Summarize the generated content and consistency checks, then continue the authorized build. Respect an explicit request to review content first.
 
 ---
 
@@ -208,7 +209,7 @@ src/
 
 ### Delegation:
 
-For projects with 5+ components, spawn implementation subagents:
+Delegate independent implementation when current session policy permits it and coordination adds value; component counts do not trigger delegation. Use the caller's configured model and reasoning settings for every role, without selecting cost tiers:
 - Each agent owns a distinct set of files (no overlap)
 - Lead coordinates and handles integration
 - Each agent gets: CONCEPT.md, SYSTEMS.md, relevant data files, and their specific component specs
@@ -229,7 +230,7 @@ After build completes:
 
 **Goal:** Add the details that make it feel crafted, not generated.
 
-Only enter this phase after Phase 4 is confirmed working.
+Enter this phase after verifying the core flow works; user confirmation is needed only when the user requested that review checkpoint.
 
 ### Polish Categories:
 
@@ -260,19 +261,19 @@ Only enter this phase after Phase 4 is confirmed working.
 Present a polish plan:
 > "Here's what I'd add to make this feel crafted: [prioritized list]. Which of these matter most to you?"
 
-Implement based on user priority. Each polish item should be a clean commit.
+Implement in-scope polish using the user's priorities. Ask about additions that materially expand scope, and commit only when authorized.
 
-**Checkpoint:** "Polish complete. The experience is: [final description]. Want to deploy or keep iterating?"
+**Checkpoint:** Deliver the finished experience with its verification and any material limitations. Stop at the requested deliverable.
 
 ---
 
 ## Cross-Phase Rules
 
 1. **Save everything.** Every phase produces artifacts in `docs/`. This is your project memory.
-2. **Never skip phases.** If the user says "just build it" — push back gently: "I can, but 10 minutes of concept work will save us an hour of rework. Trust the motorcycle."
-3. **Iterate within phases.** V1 → self-critique → V2 is the core loop. Never ship V1 of a concept.
+2. **Honor steering.** If the user says "just build it," resolve routine choices and build. Do only the concept and design work needed to make that result coherent.
+3. **Iterate for a reason.** Use critique and feedback to address concrete weaknesses; a sound first concept does not require a ceremonial rewrite.
 4. **Data serves narrative.** Every mock data point should either advance the story or reinforce the world. No filler.
-5. **Subagents for parallel work.** Phase 3 and Phase 4 benefit massively from parallel subagents.
+5. **Task-shaped collaboration.** Delegate useful independent work within current session policy, preserve caller model and reasoning settings, and keep integration with the lead.
 6. **The user drives.** You propose, they decide. Show your reasoning, accept their judgment.
 7. **File organization.** All docs in `<project>/docs/`. All code in `<project>/src/`. Never scatter files.
 
@@ -324,6 +325,6 @@ Assistant: [Phase 5 — designs sound palette, implements Web Audio]
 ## Checklist Before Each Phase Transition
 
 - [ ] Phase artifacts saved to `docs/`
-- [ ] User has confirmed and approved
-- [ ] No unresolved questions or ambiguity
+- [ ] Next actions remain within the user's request and existing authorization
+- [ ] Consequential unresolved questions are explicit; independent work can continue
 - [ ] Next phase has clear inputs from this phase
