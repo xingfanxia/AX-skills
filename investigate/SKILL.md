@@ -8,14 +8,19 @@ description: Diagnose unclear, intermittent, cross-component, or high-impact bug
 Build enough evidence to identify the root cause, then make the smallest coherent
 fix allowed by the user's request.
 
+Diagnosis-only requests stay read-only on every path below: establish the cause
+and propose the correction without applying it. Existing authority for a fix
+does not need another approval question.
+
 ## Choose the path
 
 Use the fast path for a local, reproducible failure with an evident cause:
 
 1. Read the failing code and exact error.
 2. Reproduce with the smallest useful command or test.
-3. Fix the producer or invariant that causes the wrong behavior.
-4. Run the focused regression check.
+3. Correct the producer or invariant when a fix is authorized; otherwise explain
+   the evidenced cause and proposed change.
+4. Verify the authorized correction with a focused regression check.
 
 Use the investigation path when the cause is unclear, intermittent,
 cross-component, environment-sensitive, high impact, or already survived one
@@ -55,11 +60,11 @@ State one falsifiable hypothesis in this form:
 Run the smallest check that can disprove it. Change one meaningful variable at a
 time. Do not accumulate speculative patches and call the combined result proof.
 
-- After two failed hypotheses, stop editing and re-map the data/control flow.
-- After three failed hypotheses, question the current abstraction, summarize
-  the evidence, and identify the missing observation before another attempt.
-- Ask the user only when the next choice would materially change behavior,
-  architecture, cost, a public contract, private data, or an external system.
+- If attempts fail or evidence conflicts, stop speculative editing and seek a
+  discriminating observation. Re-map the flow or reconsider the abstraction when
+  coupling is implicated; an attempt count alone does not decide the next step.
+- Ask only for a consequential missing decision or authority the user has not
+  supplied. Inspect accepted context first and continue independent useful work.
 
 Search official documentation or primary sources when behavior depends on an
 unfamiliar or version-sensitive dependency. Read only the relevant contract; do
@@ -71,9 +76,7 @@ Prefer fixing the producer or violated invariant. Add a boundary guard when
 invalid external input is part of the real contract. Avoid duplicating validation
 at every layer unless each layer owns a distinct invariant.
 
-Keep nearby cleanup out of scope unless it is necessary for the fix or materially
-reduces recurrence risk. If the user asked only for diagnosis, stop after proving
-the cause and propose the fix without modifying code.
+Keep nearby cleanup out of scope unless it is necessary for the requested fix.
 
 ## Verify proportionally
 

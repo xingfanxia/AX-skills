@@ -25,11 +25,14 @@ Do not use for small deterministic code fixes unless the bug crosses an AI/tool 
 
 ## Core Pattern
 
-Default spine:
+For a workflow with several engineering and AI stages, a useful shape is:
 
 `PRD -> RFC -> deterministic boundary artifact -> AI judgment step -> replayable output -> tests`
 
-Use the lightest version that fits the task. A one-day project may need a short README section instead of separate docs, but it still needs the boundary and verification.
+Use the lightest version that fits the task. A short request may need only a
+clear input, expected output, and relevant check. PRD/RFC files, replay stores,
+and separate stages are warranted by actual dependencies, not by invoking this
+skill. Preserve the user's requested scope and configured model/effort.
 
 ## Instructions
 
@@ -70,7 +73,9 @@ Use the lightest version that fits the task. A one-day project may need a short 
 
 ## Acceptance Criteria
 
-A workflow shaped by this skill is done when:
+A workflow shaped by this skill is done when the applicable conditions below
+hold. A skill or configuration edit does not require creating an unattended
+runner, new documentation family, or API test environment:
 
 - The deterministic layer and AI judgment layer are explicitly separated.
 - There is a named boundary artifact with a stable schema or format.

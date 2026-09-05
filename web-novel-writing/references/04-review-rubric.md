@@ -1,5 +1,7 @@
 > Purpose: 章节生产循环里"审校层"的可执行规格 —— 一张量化质检表（硬门清单 + 加权分各项最低线 + 通过阈值），加上 continuity-checker（对不对）/ quality-reviewer（好不好）的分离契约、独立调用防自欺协议、双免疫终分公式、末行裸 sentinel 容错解析、改稿循环 ≤3 轮 + 净改善门控。用在 9 步循环的**步骤 5（continuity-checker）/ 步骤 6（reviewer）/ 步骤 7（revise）**。落地产物对照 `templates/review-report-template.json`，机械扣分来自 `scripts/antislop_lint.py`。
 
+> **运行模式边界**：默认 agent 驱动时，所有角色继承调用者的模型、推理和协作配置。本文的关 thinking、异模型或 provider 调参只属于用户已请求的独立 LLM 应用实验，不改变 coding-agent 配置；详见 `10-model-orchestration.md` 的适用边界。审查独立性仍需通过隔离上下文和职责保证。
+
 ---
 
 ## 0. 一句话原理
@@ -96,8 +98,8 @@ PASS ⟺ final_score >= 80
 铁律：**reviewer 不能是刚写完这章的 writer。**
 
 - **新会话/新上下文**：reviewer 的 prompt 只给"正文 + 章纲 + rubric"，不带 writer 的思考链、不带"我刚才是这么构思的"。带了 = 它在为自己的稿子辩护。
-- **异模型优先**：writer 与 reviewer 用不同模型/不同 provider（`client` 可注入：换 `base_url + model` 即可），减同源盲点。同源模型互洗 AI 味无效（改写后仍 96–98% 被检测）。
-- **style/anti-slop-editor 同理**：去 AI 味是**独立 pass，不喂回同源模型重写**（步骤 8）。
+- **配置继承**：默认 agent 驱动时，writer 与 reviewer 沿用调用者模型和推理配置，以独立上下文及不同输入避免共享写作结论。异 provider 对比只在用户请求独立应用实验时采用，见 `10-model-orchestration.md`。
+- **style/anti-slop-editor 同理**：去 AI 味使用独立 pass，按具体 findings 改写并复检一致性；不要求换掉用户指定的模型（步骤 8）。
 - 来源：prior-art §4-§5（oh-story-claudecode / webnovel-writer 把"审校是找问题不是验证正确""reviewer 单一不持 Write"写成铁律）；blueprint 设计哲学支柱 3。
 
 ---

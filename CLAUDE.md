@@ -5,7 +5,7 @@ Live: <https://xingfanxia.github.io/AX-skills/>
 
 ## Layout
 
-- `<skill-name>/SKILL.md` — one dir per skill = the skill source (mirrors the canonical copy in `~/.claude/skills/`). E.g. `banxian-skill/`, `jewelry-marketing/`, `game-script-creation/`, `proxy-node-setup/`.
+- `<skill-name>/SKILL.md` — maintained AX skill source. Runtime links or installed copies consume this source; resolve their ownership before editing or syncing, rather than treating a runtime copy as a competing authority. Preserve upstream ownership and attribution for borrowed skills.
 - `docs/` — the Pages site (**served from `main` branch `/docs`**, legacy branch-build, auto-deploys on push):
   - `docs/index.html` — showcase landing (card grid; each card has a JS-injected `▶ 影片` button → R2-streamed demo video in a lightbox).
   - `docs/<skill>/index.html` — that skill's interactive demo page (+ `assets/motion.min.js`, optional `images/`, optional PDF; carries the shared `#promo-link` snippet + a per-skill `#source-link` (`源码 ↗` → `tree/main/<skill-dir>`) after `#home-link`). Existing `*-roadshow.pdf` filenames are legacy compatibility names, not current product terminology.

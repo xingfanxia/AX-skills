@@ -1,12 +1,18 @@
-# Profile-routing worked examples (Phase 0.0 Step 2.5)
+# Work-shape examples
 
-Teaching examples showing task-intent judgment, not keyword lookup. Read when the combining rule doesn't settle a classification cleanly.
+Use these to calibrate judgment, not as triggers or fixed tiers.
 
-- Blog repo + "translate this post" → `light` — task is prose translation; repo is light; align.
-- Blog repo + "add Stripe paywall for premium posts" → `heavy` — task introduces a revenue boundary; blast radius is customer money; repo shape is irrelevant.
-- Backend repo + "fix a typo in README" → `light` — task is prose; no system-risk boundary; repo shape is irrelevant.
-- Backend repo + "add a new column to the users table" → `heavy` — task modifies persistence; even though it's a small diff, the blast radius of a bad migration is high.
-- UI repo + "build a real-time notification subsystem from scratch" → `heavy` — task introduces a new architectural subsystem that will set patterns.
-- UI repo + "restyle the button to match the new design reference" → `ui` — task is translation-of-design, N+1 pattern application.
-- UI repo + "decide whether to use Zustand or Redux for state management" → `heavy` — task is a design decision that will be copied across the codebase.
-- Any repo + "fix alignment of the footer on mobile" → `light` — pure cosmetic tweak, no pattern change.
+- A README typo can be edited and checked directly even in a complex backend.
+- Restyling many existing screens from a locked reference can use bounded
+  parallel ownership and targeted rendered checks without redoing product design.
+- A small migration needs evidence about existing data and compatibility;
+  the small diff does not establish that it is safe to deploy.
+- An atomic credit-deduction change needs evidence about retries, transactions,
+  and concurrent requests even if it touches one function.
+- A new real-time subsystem merits clarifying its contracts and dependencies
+  before implementation; optional planning detail should address those unknowns.
+- Choosing a state-management library may be routine if the project has already
+  chosen a pattern. If it creates an expensive new dependency boundary, compare
+  concrete options and resolve the material choice.
+- A request to review a plan yields findings. A request to improve it also
+  authorizes clear plan edits, without authorizing product implementation.

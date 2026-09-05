@@ -1,5 +1,7 @@
 # 01 · 流水线架构（三层结构 + 9 步 IO 契约 + 循环 driver）
 
+> **运行模式边界**：默认 agent 驱动时，所有角色继承调用者的模型、推理和协作配置。本文的关 thinking、异模型或 provider 调参只属于用户已请求的独立 LLM 应用实验，不改变 coding-agent 配置；详见 `10-model-orchestration.md` 的适用边界。审查独立性仍需通过隔离上下文和职责保证。
+
 > Purpose: 给整条 pipeline 画一张总装配图——三层架构怎么分、章节生产循环 9 步的输入/输出契约各是什么、确定性 for-loop 当 driver 怎么把每个 LLM 调用包成窄子程序、断点续跑/可幂等怎么落、"草稿只读 state、定稿才回写"和"审校→生成闭环"怎么接。用在**阶段3 搭循环**（决定 agent-as-driver 或硬化脚本怎么编排），是 `03-prompt-compiler`（步骤3/4）、`04-review-rubric`（步骤5/6/7）、`02-state-schema`（状态层）三篇的总纲。
 
 ---
@@ -248,18 +250,11 @@ for n in range(resume_from(book_dir), last_chapter + 1):   # 断点续跑：从 
 
 ---
 
-## 7. 多 agent vs 单循环的取舍（结论：单循环串行 + 单 reviewer 多 rubric）
+## 7. 按章节依赖与审查职责安排协作
 
-**复杂度预算放在"状态结构 + 确定性校验"，不放在"agent 编排"。** novelix 反例：10 个串行 agent + 33 维审计 + 22 改写规则——每多一个 agent 多一处可漂移/可泄漏的接缝；防退化的上限是**架构约束**而非机制数量。
+章节正文依赖上一章的定稿与状态，因此按章串行推进和提交；不要并发改写同一份 canon。独立的事实核查、素材准备或审查任务可在当前会话允许且有实际收益时并行。
 
-| 方案 | 结论 | 依据 |
-|---|---|---|
-| **单主循环串行逐章** | ✅ 采用 | 章节依赖上一章正文 + 追踪文件，禁多章并发（oh-story-claudecode）；串行才能 resume |
-| **单 reviewer 内含多 rubric** | ✅ 采用 | webnovel-writer 明确选"单 reviewer 5 维"而非多 agent 并行，blocking issue 定点修复不重跑（成本权衡） |
-| **10 个专职 agent 并行** | ❌ 拒绝 | inkos"10 agent"是叙事夸大，多数是同一 client 上的 prompt 变体 + 确定性胶水；真并行是 token 黑洞且非确定性 |
-| **reader_panel / Elo 锦标赛审校** | ⚠️ 仅有界单本可奢侈 | autonovel 的多人格共识能抓"全员点头无摩擦"，但它自己承认这是有界单本的奢侈，**连载承担不起** |
-
-**唯一例外的"多调用"是 writer/reviewer/style 的异模型分离**——但那不是"多 agent 并行协作"，而是同一串行循环里**换 client（`base_url + model`）做独立调用防自欺**（见 `04-review-rubric` §5、`10-model-orchestration`）。串行单循环 + 一步内多 rubric + 确定性脚本兜底，对 Codex CLI substrate 是成本/可靠性最优。
+writer、continuity、reviewer 和 style 是职责边界，不是固定 agent 名单。审查调用使用独立上下文及各自需要的输入，返回可定位的 findings；按问题决定实际人数和轮次。所有 coding-agent 沿用调用者的模型与推理配置。更换 API client 只属于用户另行要求的应用模型实验，不是完成章节循环的前置条件。
 
 > **审校是"找问题"不是"验证正确"**（oh-story-claudecode / webnovel-writer 都写成铁律）：reviewer/continuity-checker **只返 JSON、不评判情节走向、不持 Write**。越权改稿 = 把"找问题"偷换成"验证自己改得对"，回到自欺。
 
@@ -274,7 +269,7 @@ for n in range(resume_from(book_dir), last_chapter + 1):   # 断点续跑：从 
 - **改稿净改善才采纳、≤3 轮转人工**：定向 fix 非重抽（重抽 6–7 次自我重复塌缩）；`final_score` 不升则回滚。
 - **审校→生成闭环**：`ai_taste_hits` 累积成 PATTERNS-TO-AVOID 反喂后续章 prompt，事后挑错升级成事前避坑（⚠️ 当前待接，见 §5）。
 - **断点续跑串行 resume**：逐章 checkpoint + 幂等跳过；禁多章并发（章依赖前章末段）。
-- **不堆 agent**：单循环串行 + 单 reviewer 多 rubric + 异模型独立调用，复杂度预算花在状态层和校验门，不花在编排花活。
+- **按依赖协作**：章节状态串行提交，独立工作按需委派；角色和上下文分离不要求固定人数或更换模型。
 
 ---
 
