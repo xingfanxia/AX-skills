@@ -53,9 +53,14 @@ class BoundaryChecks(unittest.TestCase):
         with self.assertRaises(ValueError):
             handbook.validate_time({'kind': 'exact', 'local_datetime': '2030-03-10T02:30',
                                     'time_zone': 'America/New_York', 'instant': '2030-03-10T07:30:00Z'})
+        labels = []
         for hour in ('05', '06'):
             handbook.validate_time({'kind': 'exact', 'local_datetime': '2030-11-03T01:30',
                                     'time_zone': 'America/New_York', 'instant': f'2030-11-03T{hour}:30:00Z'})
+            labels.append(handbook.time_label({'kind': 'exact', 'local_datetime': '2030-11-03T01:30',
+                                               'time_zone': 'America/New_York', 'instant': f'2030-11-03T{hour}:30:00Z'}))
+        self.assertIn('UTC-04:00', labels[0])
+        self.assertIn('UTC-05:00', labels[1])
 
     def test_reverse_duration_rejected(self):
         self.draft['events'][0]['end'] = copy.deepcopy(self.draft['events'][0]['start'])

@@ -156,7 +156,9 @@ def time_label(value):
         return 'Unknown — ' + value['reason']
     if value['kind'] == 'date':
         return value['local_date'] + ' · ' + value['time_zone'] + ' · time unknown'
-    return value['local_datetime'].replace('T', ' ') + ' · ' + value['time_zone']
+    offset = utc(value['instant']).astimezone(ZoneInfo(value['time_zone'])).strftime('%z')
+    offset = offset[:3] + ':' + offset[3:5] + (':' + offset[5:] if len(offset) > 5 else '')
+    return value['local_datetime'].replace('T', ' ') + ' · ' + value['time_zone'] + ' (UTC' + offset + ')'
 
 
 def state_label(value):
