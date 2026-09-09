@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "mode": "plan",
+  "trip": {
+    "id": "fictional-island-trip",
+    "title": "Synthetic island journey · 架空旅行",
+    "home_time_zone": "Pacific/Honolulu",
+    "window": "April 2030",
+    "start_date": "2030-04-10",
+    "end_date": "2030-04-14",
+    "notes": [
+      "Entire example is fictional; it is not travel advice.",
+      "Keep the first afternoon free for rest."
+    ]
+  },
+  "sources": [
+    {
+      "id": "request",
+      "label": "Fictional traveler request",
+      "kind": "user",
+      "checked_at": "2030-04-01T12:00:00Z"
+    },
+    {
+      "id": "flight-note",
+      "label": "Fictional airline confirmation",
+      "kind": "supplier",
+      "checked_at": "2030-04-01T12:00:00Z"
+    },
+    {
+      "id": "stay-note",
+      "label": "Fictional hotel confirmation",
+      "kind": "supplier",
+      "checked_at": "2030-04-01T12:00:00Z"
+    },
+    {
+      "id": "food-note",
+      "label": "Fictional food article",
+      "kind": "article",
+      "checked_at": null
+    }
+  ],
+  "events": [
+    {
+      "id": "outbound",
+      "title": "Fictional flight: Tokyo to Honolulu",
+      "kind": "flight",
+      "start": {
+        "kind": "exact",
+        "local_datetime": "2030-04-11T00:30",
+        "time_zone": "Asia/Tokyo",
+        "instant": "2030-04-10T15:30:00Z"
+      },
+      "end": {
+        "kind": "exact",
+        "local_datetime": "2030-04-10T13:30",
+        "time_zone": "Pacific/Honolulu",
+        "instant": "2030-04-10T23:30:00Z"
+      },
+      "origin": "Tokyo (fictional service)",
+      "destination": "Honolulu (fictional service)",
+      "party_size": 2,
+      "booking": "confirmed",
+      "payment": "unknown",
+      "completion": "unconfirmed",
+      "source_ids": [
+        "flight-note"
+      ],
+      "notes": [
+        "Arrival is on the previous local calendar day. Payment was not stated."
+      ]
+    },
+    {
+      "id": "stay",
+      "title": "Fictional Hibiscus House · 海风与晚霞小屋",
+      "kind": "stay",
+      "start": {
+        "kind": "date",
+        "local_date": "2030-04-10",
+        "time_zone": "Pacific/Honolulu"
+      },
+      "end": {
+        "kind": "date",
+        "local_date": "2030-04-14",
+        "time_zone": "Pacific/Honolulu"
+      },
+      "origin": null,
+      "destination": "Honolulu",
+      "party_size": 2,
+      "booking": "confirmed",
+      "payment": "unpaid",
+      "completion": "unconfirmed",
+      "source_ids": [
+        "stay-note"
+      ],
+      "notes": [
+        "Pay at property. Check-in and checkout hours are unknown."
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "id": "noodle-idea",
+      "title": "Fictional Moon Noodles · 月光面馆与街角小厨房",
+      "area": "Imaginary harbor neighborhood",
+      "timing": {
+        "kind": "unknown",
+        "reason": "Meal date has not been chosen."
+      },
+      "status": "candidate",
+      "verification": "source_only",
+      "source_ids": [
+        "food-note"
+      ],
+      "notes": [
+        "Article mentions sesame noodles; branch address and current hours are unverified.",
+        "Keep as a flexible option with a nearby alternative once location is checked."
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "subject_id": "outbound",
+      "field": "start",
+      "source_id": "flight-note",
+      "summary": "Local departure and matching UTC instant supplied in fictional confirmation."
+    },
+    {
+      "subject_id": "outbound",
+      "field": "end",
+      "source_id": "flight-note",
+      "summary": "Local arrival is the prior day, eight elapsed hours after departure."
+    },
+    {
+      "subject_id": "outbound",
+      "field": "booking",
+      "source_id": "flight-note",
+      "summary": "Confirmation says issued; it gives no payment receipt."
+    },
+    {
+      "subject_id": "stay",
+      "field": "payment",
+      "source_id": "stay-note",
+      "summary": "Reservation is confirmed and payable at the property."
+    },
+    {
+      "subject_id": "noodle-idea",
+      "field": "verification",
+      "source_id": "food-note",
+      "summary": "Article-only suggestion, no current branch or operating-hours check."
+    }
+  ],
+  "questions": [
+    "What are the property check-in and checkout hours?",
+    "Which day, if any, should include the noodle candidate?",
+    "What is the return transport plan?"
+  ],
+  "change_summary": [
+    "Create a planning draft with two confirmed reservations and one unscheduled food candidate.",
+    "Preserve unknown flight payment status and unpaid hotel status."
+  ]
+}

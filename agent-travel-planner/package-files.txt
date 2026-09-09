@@ -1,0 +1,13 @@
+LICENSE
+SKILL.md
+examples/expected-draft.json
+examples/request.md
+package-files.txt
+references/adapter.md
+references/privacy.md
+references/provenance.md
+references/sources.md
+references/time.md
+schemas/draft.schema.json
+scripts/check.py
+scripts/handbook.py
