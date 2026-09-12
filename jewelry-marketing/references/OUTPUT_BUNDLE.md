@@ -1,5 +1,7 @@
 # Output Bundle Format
 
+> Historical examples and measurements below predate GPT Image 2.5. Current runners use Sunburst by default and Flare on 429; remeasure cost and latency.
+
 Every successful run produces a bundle in `<output>/<timestamp>/`:
 
 ```

@@ -66,7 +66,7 @@ Covered so far: `banxian-skill` · `jewelry-marketing` · `game-script-creation`
 
 | Skill | Purpose | Status |
 |---|---|---|
-| [`gpt-image`](./gpt-image/) | OpenAI gpt-image-2 image generation — Azure-routed with auto fallback to OpenAI direct on rate-limit. Defaults to JPG. Best for photorealistic / editorial / product / UI mockups / images with rendered text. Sister to `gemini-image`. | ✅ |
+| [`gpt-image`](./gpt-image/) | OpenAI gpt-image-2.5-sunburst image generation — Azure-routed with auto fallback to OpenAI direct on rate-limit. Defaults to JPG. Best for photorealistic / editorial / product / UI mockups / images with rendered text. Sister to `gemini-image`. | ✅ |
 | [`gemini-image`](./gemini-image/) | Google Gemini 3.1 Flash Image generation. Sister to `gpt-image` — same shape, different provider. Best for **multi-reference image input** (background swap, character consistency across scenes — gpt-image cannot do this) and softer / illustrated / Studio Ghibli / watercolor aesthetics. | ✅ |
 | [`transcribe`](./transcribe/) | Audio / video transcription via Google Gemini 3 Flash. Speaker diarization, auto language detection, files up to 500MB / ~8.4 hours. ~\$0.50/M input tokens. | ✅ |
 | [`download-web-video`](./download-web-video/) | Reproducibly download Bilibili or YouTube media with yt-dlp, browser/file cookie auth, captions, hashes, and optional measured Bilibili CDN acceleration. Keeps credentials and signed media URLs out of the public skill source. | ✅ |
@@ -184,7 +184,7 @@ Open an issue with the skill name in the title.
 ## Acknowledgments
 
 - [Anthropic Claude Code](https://docs.claude.com/en/docs/claude-code) — the runtime
-- [OpenAI gpt-image-2](https://platform.openai.com/docs/guides/images) — image generation
+- [OpenAI gpt-image-2.5-sunburst](https://platform.openai.com/docs/guides/images) — image generation
 - [Google Gemini](https://ai.google.dev/) — multimodal analysis
 - 千瓜 · 数英 · 我是产品经理 · fxbaogao — XHS merchant research foundation
 

@@ -1,5 +1,7 @@
 # Example: 小肥 (Munchkin)
 
+> Historical examples and measurements below predate GPT Image 2.5. Current runners use Sunburst by default and Flare on 429; remeasure cost and latency.
+
 Real pet: AX's golden tabby British Shorthair Munchkin with jade-green eyes. Short legs, chubby body, distinctive medium-tabby markings.
 
 ## Reproducing this pet

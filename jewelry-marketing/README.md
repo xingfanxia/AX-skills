@@ -48,7 +48,8 @@ ln -sf ~/AX-skills/jewelry-marketing ~/.claude/skills/jewelry-marketing
 
 ```bash
 export GEMINI_API_KEY="..."   # 商品分析（Gemini Flash 3，免费 tier 够）
-export OPENAI_API_KEY="..."   # 生图（gpt-image-2 via OpenAI direct）
+export NEWAPI_API_KEY="..."
+export NEWAPI_BASE_URL="https://<gateway>/v1" # GPT Image 2.5 Sunburst，429 切 Flare
 ```
 
 ## 调用
@@ -111,8 +112,8 @@ jewelry_bundle/<timestamp>/
 | 项 | 成本 |
 |---|---|
 | 商品分析（Gemini Flash 3） | ~$0.005 |
-| 12 张营销图（gpt-image-2 medium） | 12 × ~$0.04 = ~$0.48 |
-| **总计** | **~$0.48 / 完整 bundle** |
+| 12 张营销图（GPT Image 2.5） | 以网关实际用量为准；Sunburst 质量优先 |
+| **总计** | **按 GPT Image 2.5 网关实际用量计费，不沿用旧版估价** |
 | 时效（concurrency=4） | 3-5 分钟 |
 
 对比外包：摄影 ¥300-800 + 文案 ¥100-300 + 设计 ¥200-500 = ¥600-1600 / SKU，周期 3-7 天。

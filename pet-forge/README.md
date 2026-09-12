@@ -45,7 +45,7 @@ EOF
   --display-name "小肥"
 ```
 
-After ~6-8 minutes and ~$2.30 of API spend, you'll have a complete `clawd-on-desk/themes/munchkin/` ready to use.
+When generation completes (cost and latency depend on current model usage), you'll have a complete `clawd-on-desk/themes/munchkin/` ready to use.
 
 ## How it works
 
@@ -54,7 +54,7 @@ After ~6-8 minutes and ~$2.30 of API spend, you'll have a complete `clawd-on-des
         │
         ▼
 ┌────────────────────┐
-│ STAGE 1: Refs      │   gpt-image-2 (Azure preferred, OpenAI direct fallback)
+│ STAGE 1: Refs      │   GPT Image 2.5 (Sunburst default, Flare on 429)
 │  · main-ref        │   character anchor — defines breed, coat, eye color
 │  · sleep-final-ref │   curled-up sleeping pose
 │  · 5 pose-refs     │   one per "active" state (idle-dozing, working-typing, etc.)
