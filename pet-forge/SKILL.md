@@ -28,7 +28,7 @@ For each pet:
 ```
    ┌────────────────────────┐    ┌──────────────────────────┐    ┌────────────────────────┐
    │  Stage 1: Refs         │───▶│  Stage 2: Animation      │───▶│  Stage 3: Install      │
-   │  gpt-image-2 ×7        │    │  Doubao Seedance ×10     │    │  chroma + theme.json   │
+   │  GPT Image 2.5 ×7        │    │  Doubao Seedance ×10     │    │  chroma + theme.json   │
    │  ~$0.30 (7 × $0.04)    │    │  ~$2.00 (10 × $0.20)     │    │  $0 (local)            │
    └────────────────────────┘    └──────────────────────────┘    └────────────────────────┘
         Character anchor              State-pose-refs drive            APNG + theme.json
@@ -69,7 +69,7 @@ generate.py --description "..." --dry-run
 ```
   --pet-id <id>         filesystem-safe slug; becomes theme dir name + APNG prefix
   --description TEXT    text describing the pet (breed, color, eye color, build, vibe)
-  --photo PATH          photo of the real pet (gpt-image-2 will edit-mode anchor on it)
+  --photo PATH          photo of the real pet (GPT Image 2.5 will edit-mode anchor on it)
   --breed TEXT          breed override (used to refine character prefix)
   --display-name TEXT   what shows in clawd-on-desk theme picker (Unicode OK: 小肥, 胖猫)
 
@@ -85,18 +85,19 @@ generate.py --description "..." --dry-run
   --dry-run             print plan without API spend
 ```
 
+The reference stage defaults to Sunburst for identity fidelity and switches to
+Flare on HTTP 429. Use `--image-variant flare` for previews (Sunburst fallback).
+
 ## Credentials
 
 Reads from env vars OR `~/.config/gpt-image/credentials`:
 
 ```
-# Required for stage 1 (refs)
-OPENAI_API_KEY=sk-...                # OpenAI direct (gpt-image-2)
-# OR Azure-contracted (preferred, 10 RPM):
+# Required for stage 1 (refs): Azure or NewAPI, see gpt-image/SKILL.md
 AZURE_OPENAI_API_KEY=...
-AZURE_OPENAI_ENDPOINT=https://...
-AZURE_OPENAI_DEPLOYMENT=gpt-image-2-1
+AZURE_OPENAI_ENDPOINT=https://<resource>.openai.azure.com
 AZURE_OPENAI_API_VERSION=2025-04-01-preview
+# Or NEWAPI_API_KEY + NEWAPI_BASE_URL (including /v1)
 
 # Required for stage 2 (videos)
 DOUBAO_API_KEY=...                   # ByteDance Volcengine doubao-seedance
@@ -124,7 +125,7 @@ These come from the dogfood production of 小肥 / 胖猫 — see `references/7-
 
 | Stage | API | Per-pet cost | Wall-clock (parallel) |
 |---|---|---|---|
-| 1: refs | gpt-image-2 (Azure or OpenAI) | $0.28 (7 × $0.04) | ~3 min (10 RPM Azure cap) |
+| 1: refs | GPT Image 2.5 (Azure or NewAPI) | Measure current usage | Sunburst quality / Flare speed |
 | 2: animations | Doubao Seedance | $2.00 (10 × ~$0.20) | ~3-4 min (configurable parallel) |
 | 3: chroma + install | local Python + ffmpeg | $0 | ~30 s |
 | **Total** | | **~$2.30 / pet** | **~6–8 min** |

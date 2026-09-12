@@ -28,7 +28,7 @@ Options:
 
 Credentials (env vars, or ~/.config/gpt-image/credentials):
     GEMINI_API_KEY            — required for analysis (Gemini Flash 3, free tier OK)
-    OPENAI_API_KEY            — required for image gen (gpt-image-2 via OpenAI direct)
+    NEWAPI_API_KEY + NEWAPI_BASE_URL — image generation via GPT Image 2.5
 """
 from __future__ import annotations
 
@@ -97,8 +97,9 @@ def load_credentials() -> dict[str, Optional[str]]:
     file_creds = _load_cred_file()
     return {
         "gemini_key": _env_or_file("GEMINI_API_KEY", file_creds),
-        "openai_key": _env_or_file("OPENAI_API_KEY", file_creds)
-        or _env_or_file("OPENAI_API_KEY_GPT_IMAGE", file_creds),
+        "openai_key": _env_or_file("NEWAPI_API_KEY", file_creds),
+        "image_base_url": _env_or_file("NEWAPI_BASE_URL", file_creds),
+        "image_variant": _env_or_file("GPT_IMAGE_VARIANT", file_creds) or "sunburst",
     }
 
 
@@ -152,7 +153,7 @@ def analyze_product(
     return parse_analysis_json(text)
 
 
-# ─── GPT Image 2 generation (OpenAI direct) ────────────────────
+# ─── GPT Image 2.5 generation (NewAPI) ────────────────────
 
 OPENAI_RETRIES = 2
 REQUEST_TIMEOUT = 240
@@ -168,6 +169,14 @@ class ProviderError(Exception):
 
 def _extract_b64(resp: requests.Response, op: str) -> str:
     if resp.status_code == 429:
+        try:
+            error = resp.json().get("error", {})
+        except (ValueError, AttributeError):
+            error = {}
+        if isinstance(error, dict) and any(error.get(key) in (
+            "insufficient_quota", "image_generation_user_error", "billing_hard_limit_reached"
+        ) for key in ("code", "type")):
+            raise ProviderError("Image quota or request error; do not retry")
         raise RateLimitError(f"openai {op} 429")
     if not resp.ok:
         raise ProviderError(f"openai {op} {resp.status_code}: {resp.text[:300]}")
@@ -181,15 +190,15 @@ def _extract_b64(resp: requests.Response, op: str) -> str:
     return b64
 
 
-def _openai_generate(prompt: str, key: str, size: str, output_format: str) -> str:
+def _openai_generate(prompt: str, key: str, size: str, output_format: str, base_url: str, model: str) -> str:
     resp = requests.post(
-        "https://api.openai.com/v1/images/generations",
+        f"{base_url.rstrip('/')}/images/generations",
         headers={
             "Content-Type": "application/json",
             "Authorization": f"Bearer {key}",
         },
         json={
-            "model": "gpt-image-2",
+            "model": model,
             "prompt": prompt,
             "n": 1,
             "size": size,
@@ -203,11 +212,11 @@ def _openai_generate(prompt: str, key: str, size: str, output_format: str) -> st
 
 
 def _openai_edit(
-    prompt: str, image_bytes: bytes, key: str, size: str, output_format: str
+    prompt: str, image_bytes: bytes, key: str, size: str, output_format: str, base_url: str, model: str
 ) -> str:
     files = {"image": ("input.jpg", image_bytes, "image/jpeg")}
     data = {
-        "model": "gpt-image-2",
+        "model": model,
         "prompt": prompt,
         "n": "1",
         "size": size,
@@ -217,7 +226,7 @@ def _openai_edit(
     if output_format != "png":
         data["output_compression"] = "85"
     resp = requests.post(
-        "https://api.openai.com/v1/images/edits",
+        f"{base_url.rstrip('/')}/images/edits",
         headers={"Authorization": f"Bearer {key}"},
         files=files,
         data=data,
@@ -251,30 +260,26 @@ def generate_image(
     size: str = "1024x1536",
     output_format: str = "jpeg",
 ) -> tuple[bytes, str]:
-    """Generate one image via OpenAI direct (gpt-image-2). Returns (bytes, "openai").
-
-    If image_bytes is given, uses image-edit endpoint (img2img); else
-    text-to-image generate.
-    """
-    openai_key = creds.get("openai_key")
-    if not openai_key:
-        raise RuntimeError(
-            "OPENAI_API_KEY not set. Put it in env or ~/.config/gpt-image/credentials."
-        )
-
-    if image_bytes:
-        b64 = _retry(
-            lambda: _openai_edit(prompt, image_bytes, openai_key, size, output_format),
-            OPENAI_RETRIES,
-            "edit",
-        )
-    else:
-        b64 = _retry(
-            lambda: _openai_generate(prompt, openai_key, size, output_format),
-            OPENAI_RETRIES,
-            "generate",
-        )
-    return base64.b64decode(b64), "openai"
+    """Quality-first Sunburst; use Flare only on 429 (or choose it explicitly)."""
+    key, base_url = creds.get("openai_key"), creds.get("image_base_url")
+    if not key or not base_url:
+        raise RuntimeError("NEWAPI_API_KEY and NEWAPI_BASE_URL are required for images")
+    variant = creds.get("image_variant", "sunburst")
+    if variant not in ("sunburst", "flare"):
+        raise ValueError("image_variant must be sunburst or flare")
+    other = "flare" if variant == "sunburst" else "sunburst"
+    for index, selected in enumerate((variant, other)):
+        model = f"gpt-image-2.5-{selected}"
+        try:
+            if image_bytes:
+                b64 = _openai_edit(prompt, image_bytes, key, size, output_format, base_url, model)
+            else:
+                b64 = _openai_generate(prompt, key, size, output_format, base_url, model)
+            return base64.b64decode(b64), model
+        except RateLimitError:
+            if index:
+                raise
+            print(f"  [429] switching to gpt-image-2.5-{other}", file=sys.stderr)
 
 
 # ─── Marketing pipeline ─────────────────────────────────────────
@@ -449,6 +454,7 @@ def parse_args() -> argparse.Namespace:
         description="Jewelry e-commerce marketing material generator (XHS-ready bundle)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
+    p.add_argument("--image-variant", choices=["sunburst", "flare"], help="Sunburst for finished marketing; Flare for fast drafts")
     p.add_argument("image", help="Path to product photo (jpg/png)")
     p.add_argument("--output", help="Output directory (default: ./jewelry_bundle/<timestamp>)")
     p.add_argument(
@@ -509,6 +515,8 @@ def main() -> int:
         return 1
 
     creds = load_credentials()
+    if args.image_variant:
+        creds["image_variant"] = args.image_variant
     if not creds["gemini_key"]:
         print("ERROR: GEMINI_API_KEY not set (required for analysis).", file=sys.stderr)
         return 2

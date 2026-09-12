@@ -15,7 +15,7 @@ Produces:
     output/<pet-id>/animations/<state>/...    # 10 mp4s + 10 result.apngs
     {clawd-on-desk}/themes/<pet-id>/          # installed theme + 10 APNGs
 
-Cost: ~$2.30/pet (7 gpt-image-2 + 10 Doubao). Wall: ~6-8 min.
+Reference generation uses GPT Image 2.5; latency and cost vary by variant.
 
 Read SKILL.md for the full recipe and references/7-critical-lessons.md before
 tweaking. The defaults here encode hard-won knowledge; resist the urge to
@@ -45,7 +45,7 @@ ALL_STATES = [
 # States that need their own pose-ref (Lesson 1: state-pose refs are the liveliness unlock)
 POSE_REF_STATES = ["idle-dozing", "happy", "thinking", "working-typing", "notification", "error"]
 
-# Pose-ref prompts. Anchored on main-ref via gpt-image-2 --edit. Generic
+# Pose-ref prompts. Anchored on main-ref via GPT Image 2.5 --edit. Generic
 # enough to work for any cartoon-cat character; the CHARACTER_PREFIX from
 # template.js carries breed/coat/eye details.
 POSE_REF_PROMPTS = {
@@ -112,6 +112,7 @@ class PetSpec:
     green_eye: bool = False
     fluffy: bool = False
     template_path: Optional[Path] = None
+    image_variant: str = "sunburst"
 
     def __post_init__(self):
         # Auto-detect green eyes from description
@@ -169,7 +170,7 @@ def gen_main_ref(spec: PetSpec, output_dir: Path, gpt_image: Path) -> Path:
     )
 
     cmd = [
-        str(gpt_image), prompt,
+        str(gpt_image), prompt, "--variant", spec.image_variant,
         "--output", str(refs_dir),
         "--name", "main-ref",
         "--size", "1024x1024",
@@ -204,7 +205,7 @@ def gen_sleep_ref(spec: PetSpec, output_dir: Path, main_ref: Path, gpt_image: Pa
         "Solid bright green chroma key background #00B140."
     )
     cmd = [
-        str(gpt_image), prompt,
+        str(gpt_image), prompt, "--variant", spec.image_variant,
         "--edit", str(main_ref),
         "--output", str(refs_dir),
         "--name", "sleep-final-ref",
@@ -234,7 +235,7 @@ def gen_pose_refs(spec: PetSpec, output_dir: Path, main_ref: Path, gpt_image: Pa
             continue
         prompt = POSE_REF_PROMPTS[state]
         cmd = [
-            str(gpt_image), prompt,
+            str(gpt_image), prompt, "--variant", spec.image_variant,
             "--edit", str(main_ref),
             "--output", str(refs_dir),
             "--name", f"{state}-ref",
@@ -451,12 +452,14 @@ def parse_args() -> PetSpec:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
+    p.add_argument("--image-variant", choices=["sunburst", "flare"], default="sunburst",
+                   help="Sunburst for reference fidelity; Flare for fast previews")
     p.add_argument("--pet-id", required=True,
                    help="Filesystem-safe slug; becomes theme dir name + APNG prefix")
     p.add_argument("--description",
                    help="Text describing the pet (breed, color, eye color, build)")
     p.add_argument("--photo", type=Path,
-                   help="Photo of the real pet (gpt-image-2 will edit-anchor on it)")
+                   help="Photo of the real pet (GPT Image 2.5 will edit-anchor on it)")
     p.add_argument("--breed",
                    help="Breed override (refines character prefix)")
     p.add_argument("--display-name",
@@ -482,7 +485,8 @@ def parse_args() -> PetSpec:
     if not args.description and not args.photo and not args.main_ref:
         p.error("must provide one of: --description, --photo, --main-ref")
     return PetSpec(
-        pet_id=args.pet_id, description=args.description,
+        pet_id=args.pet_id,
+        image_variant=args.image_variant, description=args.description,
         photo=args.photo, breed=args.breed,
         display_name=args.display_name, main_ref=args.main_ref,
         only_states=args.only, skip_install=args.skip_install,
@@ -503,7 +507,7 @@ def main() -> int:
     output_dir = Path.cwd() / "output" / spec.pet_id
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    print("\n[Stage 1] Refs (gpt-image-2)")
+    print("\n[Stage 1] Refs (GPT Image 2.5)")
     gpt_image = find_gpt_image_script()
     main_ref = gen_main_ref(spec, output_dir, gpt_image)
     if not spec.only_states:

@@ -105,9 +105,12 @@ jewelry_bundle/<timestamp>/
 | Var | Purpose |
 |---|---|
 | `GEMINI_API_KEY` | Product analysis — Gemini Flash 3, free tier OK |
-| `OPENAI_API_KEY` | Image generation — `gpt-image-2` via OpenAI direct |
+| `NEWAPI_API_KEY` + `NEWAPI_BASE_URL` | GPT Image 2.5 via your NewAPI gateway (URL includes `/v1`) |
 
-Both can sit in env vars or `~/.config/gpt-image/credentials` (auto-loaded). Image generation calls `gpt-image-2` directly through OpenAI's `/v1/images/{generations,edits}` endpoint — best for photorealistic + on-image text rendering (price tags, Chinese headlines, mass-market XHS feel).
+Credentials can sit in env vars or `~/.config/gpt-image/credentials`.
+Sunburst is the default for finished marketing and design images; Flare is the
+HTTP 429 fallback for both generation and edits. `--image-variant flare` selects
+faster drafts and makes Sunburst the fallback. There is no older-model fallback.
 
 ## Why this skill (vs writing your own prompts)
 

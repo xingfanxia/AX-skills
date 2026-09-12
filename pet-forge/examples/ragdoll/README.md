@@ -1,5 +1,7 @@
 # Example: 胖猫 (Ragdoll)
 
+> Historical examples and measurements below predate GPT Image 2.5. Current runners use Sunburst by default and Flare on 429; remeasure cost and latency.
+
 Real pet: AX's seal-point bicolor Ragdoll with sky-blue eyes. Fluffy long coat, distinctive white inverted-V blaze on forehead, plumed tail (signature Ragdoll trait — visibly larger and fluffier than typical cartoon cat).
 
 ## Reproducing this pet

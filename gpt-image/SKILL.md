@@ -1,168 +1,67 @@
 ---
 name: gpt-image
-description: |
-  Generate images via OpenAI GPT Image (Azure gpt-image-2, OpenAI-direct
-  fallback on rate-limit). PREFER for: photorealistic / product / editorial
-  / UI mockups, and any image whose embedded text must render correctly
-  (posters, infographics, logos). AVOID for: illustration / anime /
-  watercolor / 吉卜力 / hand-drawn, multi-reference editing, character
-  consistency — use nanobanana. Ambiguous with no style signal → this
-  skill silently, do NOT ask; offer a nanobanana regen if the aesthetic misses.
+description: Generate or edit product, editorial, photographic and typography images with GPT Image 2.5. Sunburst favors quality; Flare favors speed. Automatically use the other variant on rate limits.
 ---
 
-# /gpt-image — Azure-first, OpenAI-fallback image generation
+# GPT Image 2.5
 
-Generate images using GPT Image via Azure (preferred — user has contracted
-compute at 10 RPM on deployment `gpt-image-2`), with automatic fallback
-to OpenAI direct if Azure rate-limits.
-
-## When to use this skill vs nanobanana
-
-| User intent | Skill |
-|---|---|
-| Photorealistic, editorial, UI mock, typographic, product shot | **gpt-image** |
-| Logo with embedded text | **gpt-image** |
-| Illustration, anime, reference-image editing, style transfer | **nanobanana** |
-| Character consistency across scenes using reference images | **nanobanana** |
-| Batch > 10 images per minute | **gpt-image** (it falls back to OpenAI direct, no throttle) |
-
-If the user doesn't specify a style and no clear signal points either way,
-default to gpt-image silently — do NOT ask (garbled text is worse than a
-less-illustrative image); offer a nanobanana regen afterward if the
-aesthetic misses.
+Use **Sunburst** by default for final artwork, product and jewelry marketing,
+pet reference assets, covers, typography, and fidelity-sensitive edits. Use
+**Flare** for quick previews, drafts and interactive iteration. The other 2.5
+variant is the fallback on HTTP 429, in either direction. Other errors surface
+without switching models. Generation and edits follow the same routing.
 
 ## Invocation
 
 ```bash
 ~/.claude/skills/gpt-image/generate.py "<prompt>" [options]
+# Fast preview, with Sunburst fallback on rate limits:
+~/.claude/skills/gpt-image/generate.py "<prompt>" --variant flare
+# Final edit, with Flare fallback on rate limits:
+~/.claude/skills/gpt-image/generate.py "<prompt>" --edit source.png --variant sunburst
 ```
 
-The script is a PEP 723 uv script with inline dependencies — no venv setup
-needed. uv caches `openai` after first run.
+The executable uses `uv` and its inline OpenAI dependency. Allow up to ten
+minutes per image; Sunburst is slower than Flare. Do not reuse old image-model
+latency or cost estimates as current measurements.
 
-**Timeout**: Azure `generate` latency is 100-125s, which straddles the Bash
-tool's default 120s timeout — a plain call can return empty output and read
-as a silent failure. Invoke `generate.py` with `timeout=300000` (5 min) for
-single images, ~420000 for `--n` batches.
+- `--quality low|medium|high|xhigh|max|auto`: optional; omitted means API auto.
+  Keep the actual application setting when comparing models.
+- `--variant sunburst|flare`: CLI wins over `GPT_IMAGE_VARIANT`; default Sunburst.
+- `--provider auto|azure|newapi`: auto uses configured Azure, then NewAPI.
+- `--azure-retries N`: optional 429 retries per variant, default zero so the
+  alternate deployment is tried immediately. Both rate limited: fail visibly.
+- `--edit PATH`: repeat for multiple references; inputs reopen on every retry.
+- `--size WxH`: default 1024x1024. Conservatively clamps to multiples of 16,
+  long edge 3840 and 8,294,400 pixels. These are inherited bounds, not a claim
+  that the new model's maximum dimensions have been measured.
+- `--n N`, `--concurrency N`: image count and parallel workers (default 1 / 5).
+- `--format jpg|jpeg|png|webp`: default JPG; PNG for transparency or crisp assets.
+- `--output DIR`, `--name NAME`: output location and basename. Each saved path
+  is printed to stdout. Use project scratch for temporary review images.
 
-### Options
+## Credentials and routing
 
-- `--size` — any `WxH` with dims multiples of 16, long edge ≤ 3840, and total
-  pixels ≤ 8,294,400 (= 3840×2160; probed live 2026-07-21 — the API rejects
-  even budget+12k px with "exceeds the current pixel budget"). The script
-  auto-clamps oversized requests to the largest same-aspect valid size, so 4K
-  asks always succeed. Default `1024x1024`. **4K/max presets**: `3840x2160`
-  (landscape UHD), `2160x3840` (portrait UHD), `2880x2880` (square max),
-  `2480x3312` (3:4 portrait max) — note there is NO true 16MP 4096² tier
-- `--n` — number of images (default 1; batch throttled to 10 RPM on Azure)
-- `--output` — output directory (default `~/Downloads/gpt-image/`)
-- `--name` — basename for output files (default `gpt-image-<timestamp>`)
-- `--provider` — `auto` (default, Azure → OpenAI fallback) | `azure` (Azure only) | `openai` (OpenAI direct only)
-- `--azure-retries` — 429 retries on Azure before fallback (default 3)
-- `--edit PATH` — **image-to-image edit mode**. When provided, routes to `images.edit` (input image + prompt → edited image) instead of `images.generate`. Repeatable for multi-image input: `--edit a.png --edit b.png`.
+Credentials come from environment or `~/.config/gpt-image/credentials` (the
+local compatibility path points into `~/creds/`). Never commit keys.
 
-### Examples (text → image)
-
-```bash
-# Single image, default landscape
-~/.claude/skills/gpt-image/generate.py "editorial product shot of a matte-black espresso machine, soft window light, shallow depth of field" --size 1792x1024
-
-# Batch of 4 (auto-throttled on Azure)
-~/.claude/skills/gpt-image/generate.py "minimalist poster for a jazz club, 1960s swiss style, bold typography reading 'BLUE NOTE'" --n 4 --output ./assets
-
-# Force OpenAI direct (skip Azure for known-large batches)
-~/.claude/skills/gpt-image/generate.py "cover art variations for Mio AI" --n 8 --provider openai
-
-# Force Azure (use contracted compute, no fallback)
-~/.claude/skills/gpt-image/generate.py "retry this one on Azure only" --provider azure
-```
-
-### Examples (image + text → edited image)
-
-```bash
-# Edit: change background while preserving subject + pose
-~/.claude/skills/gpt-image/generate.py "replace the background with a cozy library, keep the cat and pose unchanged" --edit ./cat.png --size 1024x1792
-
-# Hybrid/style transfer: use source image as structural reference
-~/.claude/skills/gpt-image/generate.py "transform into a Golden British Shorthair × Munchkin hybrid — plush golden fur, short legs kept" --edit ./munchkin.png --name hybrid
-
-# Multi-image (pose + style)
-~/.claude/skills/gpt-image/generate.py "draw this person in this pose" --edit ./person.png --edit ./pose.png
-```
-
-Azure latency: edit ~42s, generate ~100-125s (as of 2026-04, eastus2). Edit is actually faster because much of the composition comes from the input image.
-
-## Rate-limit behaviour
-
-- **Azure**: 10 RPM. Batch mode sleeps 7s between requests for headroom.
-- **On 429**: exponential backoff (5s → 10s → 20s) for `--azure-retries`
-  attempts, then falls through to OpenAI direct if `OPENAI_API_KEY` is set.
-- **OpenAI direct**: 2 retries on 429 before bailing.
-- **Sticky fallback**: once the Azure batch has fallen over to OpenAI for
-  one image, the remaining batch stays on OpenAI.
-
-## Credentials setup (one-time per machine)
-
-The script reads credentials from environment variables first, then from
-`~/.config/gpt-image/credentials`. Env vars win.
-
-### Option 1 — shell environment (preferred for scripting)
-
-Add to `~/.zshrc`:
-
-```bash
-export AZURE_OPENAI_API_KEY="<azure-key>"
-export AZURE_OPENAI_ENDPOINT="https://xingf-mnqrf4mc-eastus2.cognitiveservices.azure.com"
-export AZURE_OPENAI_DEPLOYMENT="gpt-image-2"      # deployment name (URL path)
-export AZURE_OPENAI_MODEL="gpt-image-2"           # underlying model (body)
-export AZURE_OPENAI_API_VERSION="2025-04-01-preview"
-export OPENAI_API_KEY="<openai-direct-key>"       # for fallback
-```
-
-### Option 2 — credentials file (preferred for one-off machines)
-
-```bash
-mkdir -p ~/.config/gpt-image
-cat > ~/.config/gpt-image/credentials <<'EOF'
-AZURE_OPENAI_ENDPOINT=https://xingf-mnqrf4mc-eastus2.cognitiveservices.azure.com
-AZURE_OPENAI_DEPLOYMENT=gpt-image-2
-AZURE_OPENAI_MODEL=gpt-image-2
+```dotenv
+AZURE_OPENAI_ENDPOINT=https://<resource>.cognitiveservices.azure.com
+AZURE_OPENAI_API_KEY=<key-for-that-resource>
 AZURE_OPENAI_API_VERSION=2025-04-01-preview
-AZURE_OPENAI_API_KEY=<azure-key>
-OPENAI_API_KEY=<openai-direct-key>
-EOF
-chmod 600 ~/.config/gpt-image/credentials
+# Optional NewAPI provider; base URL includes /v1:
+NEWAPI_BASE_URL=https://<your-gateway>/v1
+NEWAPI_API_KEY=<gateway-key>
+GPT_IMAGE_VARIANT=sunburst
 ```
 
-**Azure deployment vs model name** — two names that Azure distinguishes:
-- **Deployment name** (`AZURE_OPENAI_DEPLOYMENT`) is what YOU named the deployment in
-  Azure portal. It goes in the URL path.
-- **Model name** (`AZURE_OPENAI_MODEL`) is what Azure internally calls the underlying
-  model. It goes in the request body. For the `gpt-image-2` family, Azure typically
-  names the model `gpt-image-2` regardless of what you named the deployment.
-
-If you pass the deployment name where the model name is expected, Azure's edit
-endpoint returns `"The model 'X' does not exist"` — even though the deployment
-does exist. Get the real model name via:
-```bash
-az cognitiveservices account deployment show \
-  --name <resource> --resource-group <rg> \
-  --deployment-name <deployment> \
-  --query "properties.model.name" -o tsv
-```
-
-If only `AZURE_OPENAI_API_KEY` is set, fallback is disabled — rate-limit
-errors surface directly. If only `OPENAI_API_KEY` is set, Azure is skipped
-entirely.
-
-## Output
-
-The script prints the path of each saved PNG to stdout (one per line),
-which makes it easy to pipe into subsequent tools:
-
-```bash
-~/.claude/skills/gpt-image/generate.py "prompt" --n 3 | xargs open
-```
+Azure needs deployments named `gpt-image-2.5-sunburst` and
+`gpt-image-2.5-flare` on the same resource. Each deployment/model is selected
+explicitly; obsolete `AZURE_OPENAI_DEPLOYMENT`, `AZURE_OPENAI_MODEL`, and
+`OPENAI_IMAGE_MODEL` no longer override the routing. The generic Foundry `v1`
+API version is ignored in favor of the classic image API version above.
+NewAPI uses those same two model aliases. There is no silent fallback to an
+older image model or an unrelated OpenAI direct account.
 
 ## Prompting tips
 
@@ -210,3 +109,5 @@ never trust the model to remember it):
   allowed to draw.
 
 <!-- Adapted from staruhub/ClaudeSkills (MIT) -->
+
+Migration evidence and application timings: [references/image25-migration.md](references/image25-migration.md).

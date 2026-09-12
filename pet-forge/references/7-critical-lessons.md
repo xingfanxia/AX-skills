@@ -1,5 +1,7 @@
 # 7 critical lessons — how to avoid the 12-hour debug spiral
 
+> Historical examples and measurements below predate GPT Image 2.5. Current runners use Sunburst by default and Flare on 429; remeasure cost and latency.
+
 Distilled from the production session that built 小肥 (Munchkin) and 胖猫 (Ragdoll) for clawd-on-desk on 2026-05-06.
 
 Each lesson here cost real time and real API spend. Read all 7 before tweaking the pipeline.

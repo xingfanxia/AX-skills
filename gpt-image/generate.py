@@ -3,21 +3,10 @@
 # requires-python = ">=3.10"
 # dependencies = ["openai>=1.50"]
 # ///
-"""GPT Image generation with Azure-first, OpenAI-direct fallback.
+"""GPT Image 2.5: quality-first Sunburst, Flare on rate limits.
 
-Usage:
-    generate.py "prompt" [--size 1024x1024] [--n 1] [--output DIR] [--name NAME]
-                         [--provider auto|azure|openai] [--azure-retries 3]
-
-Reads credentials from environment variables (preferred) or
-~/.config/gpt-image/credentials. See this skill's SKILL.md for setup.
-
-Rate-limit behaviour:
-  * Azure GPT Image has a strict 10 RPM limit. In --n N mode we sleep 7s
-    between Azure calls for safety.
-  * On Azure 429: exponential backoff (5s, 10s, 20s) for --azure-retries
-    attempts, then fall through to OpenAI direct if OPENAI_API_KEY is set.
-  * OpenAI direct gets 2 retries on 429 before bailing.
+Azure and NewAPI support both generation and edits. --variant flare selects
+latency-first routing, with Sunburst as its 429 fallback.
 """
 
 from __future__ import annotations
@@ -26,16 +15,15 @@ import argparse
 import base64
 import os
 import sys
-import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-from openai import APIError, AzureOpenAI, OpenAI, RateLimitError
+from openai import AzureOpenAI, OpenAI, RateLimitError
 
 CONFIG_FILE = Path.home() / ".config" / "gpt-image" / "credentials"
 
-# gpt-image-2 size validation (probed live 2026-07-21):
+# Conservative image size bounds inherited from the previous image model:
 #   * dims must be multiples of 16
 #   * long edge <= 3840
 #   * total pixels <= 8,294,400 (exactly 3840x2160 UHD; the API rejects
@@ -49,7 +37,7 @@ PIXEL_BUDGET = 3840 * 2160  # 8,294,400
 
 
 def clamp_size(size: str) -> str:
-    """Clamp WxH to gpt-image-2's validation rules, preserving aspect ratio."""
+    """Clamp WxH to the conservative image size bounds, preserving aspect ratio."""
     try:
         w_s, h_s = size.lower().split("x")
         w, h = int(w_s), int(h_s)
@@ -62,35 +50,15 @@ def clamp_size(size: str) -> str:
     ch = int(h * scale) // SIZE_MULTIPLE * SIZE_MULTIPLE
     clamped = f"{cw}x{ch}"
     if clamped != size:
-        print(f"size {size} exceeds gpt-image-2 limits, clamped to {clamped}", file=sys.stderr)
+        print(f"size {size} exceeds image size bounds, clamped to {clamped}", file=sys.stderr)
     return clamped
 
-CRED_KEYS = (
-    "AZURE_OPENAI_API_KEY",
-    "AZURE_OPENAI_ENDPOINT",
-    "AZURE_OPENAI_DEPLOYMENT",
-    "AZURE_OPENAI_MODEL",
-    "AZURE_OPENAI_API_VERSION",
-    "OPENAI_API_KEY",
-    "OPENAI_IMAGE_MODEL",
-)
-
-# Azure's quirk: the deployment name (URL path) and the underlying model name
-# (request body) are different. For the user's setup:
-#   deployment = "gpt-image-2"     # what the user named it in Azure
-#   model      = "gpt-image-2"     # what Azure calls the actual model
-# When calling images.edit on the classic deployment path, Azure requires the
-# REAL model name in the request body — passing the deployment name there
-# raises "The model 'X' does not exist." Set AZURE_OPENAI_MODEL explicitly to
-# override the default.
-DEFAULT_AZURE_MODEL = "gpt-image-2"
-
-# Default Azure API version — 2025-04-01-preview is what the user's
-# gpt-image-2 deployment accepts for both generations and edits (classic
-# deployment path). The unified /openai/v1 endpoint supports generations
-# but NOT edits as of 2026-04, so we use AzureOpenAI which routes to
-# /openai/deployments/{deployment}/images/{op}?api-version=X natively.
+VARIANTS = ("sunburst", "flare")
 DEFAULT_AZURE_API_VERSION = "2025-04-01-preview"
+CRED_KEYS = (
+    "AZURE_OPENAI_API_KEY", "AZURE_OPENAI_ENDPOINT", "AZURE_OPENAI_API_VERSION",
+    "NEWAPI_API_KEY", "NEWAPI_BASE_URL", "GPT_IMAGE_VARIANT",
+)
 
 
 def load_credentials() -> dict[str, str]:
@@ -98,44 +66,19 @@ def load_credentials() -> dict[str, str]:
     if CONFIG_FILE.exists():
         for raw in CONFIG_FILE.read_text().splitlines():
             line = raw.strip()
-            if not line or line.startswith("#") or "=" not in line:
+            if line and not line.startswith("#") and "=" in line:
+                key, value = line.split("=", 1)
+                creds[key.strip()] = value.strip().strip('"').strip("'")
+    for key in CRED_KEYS:
+        if os.environ.get(key):
+            # Foundry's global v1 setting is not the classic image API version.
+            if key == "AZURE_OPENAI_API_VERSION" and os.environ[key] == "v1":
                 continue
-            k, v = line.split("=", 1)
-            creds[k.strip()] = v.strip().strip('"').strip("'")
-    env_has_azure_image_identity = bool(
-        os.environ.get("AZURE_OPENAI_ENDPOINT") or os.environ.get("AZURE_OPENAI_API_KEY")
-    )
-    for k in CRED_KEYS:
-        v = os.environ.get(k)
-        if v:
-            if (
-                k == "AZURE_OPENAI_API_VERSION"
-                and not env_has_azure_image_identity
-                and creds.get("AZURE_OPENAI_API_VERSION")
-            ):
-                # Avoid a global Foundry v1 API version overriding the image skill's
-                # classic Azure image API version when endpoint/key come from file.
-                continue
-            creds[k] = v  # env wins over file
+            creds[key] = os.environ[key]
     return creds
 
 
-def build_azure_client(creds: dict[str, str]) -> tuple[AzureOpenAI | None, str | None]:
-    """Return (AzureOpenAI client, model_name) or (None, None).
-
-    Two Azure concepts that confusingly share names:
-      * Deployment name — e.g. `gpt-image-2`; used in the URL path
-      * Model name       — e.g. `gpt-image-2`;   sent in the request body
-
-    The AzureOpenAI client routes to
-    /openai/deployments/{deployment}/images/{op}?api-version=X via
-    `azure_deployment` kwarg, and the caller passes `model=<real model name>`
-    at call time which ends up in the request body. This matters because
-    the classic edit endpoint rejects requests where body `model` equals the
-    deployment rather than the real model name ("The model 'X' does not exist").
-
-    Accepts endpoints with or without /openai/v1 suffix — strips it.
-    """
+def build_azure_client(creds: dict[str, str], variant: str):
     endpoint = creds.get("AZURE_OPENAI_ENDPOINT")
     api_key = creds.get("AZURE_OPENAI_API_KEY")
     if not (endpoint and api_key):
@@ -143,26 +86,52 @@ def build_azure_client(creds: dict[str, str]) -> tuple[AzureOpenAI | None, str |
     base = endpoint.rstrip("/")
     for suffix in ("/openai/v1", "/openai"):
         if base.endswith(suffix):
-            base = base[: -len(suffix)]
+            base = base[:-len(suffix)]
             break
-    deployment = creds.get("AZURE_OPENAI_DEPLOYMENT", "gpt-image-2")
-    model = creds.get("AZURE_OPENAI_MODEL", DEFAULT_AZURE_MODEL)
-    api_version = creds.get("AZURE_OPENAI_API_VERSION", DEFAULT_AZURE_API_VERSION)
-    client = AzureOpenAI(
-        azure_endpoint=base,
-        api_key=api_key,
-        api_version=api_version,
-        azure_deployment=deployment,
-    )
-    return client, model
+    model = f"gpt-image-2.5-{variant}"
+    version = creds.get("AZURE_OPENAI_API_VERSION", DEFAULT_AZURE_API_VERSION)
+    if version == "v1":
+        version = DEFAULT_AZURE_API_VERSION
+    return AzureOpenAI(
+        azure_endpoint=base, api_key=api_key, api_version=version,
+        azure_deployment=model, max_retries=0, timeout=600,
+    ), model
 
 
-def build_openai_client(creds: dict[str, str]) -> tuple[OpenAI | None, str | None]:
-    api_key = creds.get("OPENAI_API_KEY")
-    if not api_key:
+def build_newapi_client(creds: dict[str, str], variant: str):
+    key, base = creds.get("NEWAPI_API_KEY"), creds.get("NEWAPI_BASE_URL")
+    if not (key and base):
         return None, None
-    model = creds.get("OPENAI_IMAGE_MODEL", "gpt-image-1")
-    return OpenAI(api_key=api_key), model
+    return OpenAI(api_key=key, base_url=base.rstrip("/"), max_retries=0,
+                  timeout=600), f"gpt-image-2.5-{variant}"
+
+
+def is_retryable_rate_limit(error):
+    """Quota exhaustion and image user errors need a fix, not another request."""
+    body = getattr(error, "body", None) or {}
+    if isinstance(body, dict):
+        detail = body.get("error", body)
+        if isinstance(detail, dict):
+            codes = (str(detail.get("code", "")), str(detail.get("type", "")))
+            if any(code in ("insufficient_quota", "image_generation_user_error", "billing_hard_limit_reached") for code in codes):
+                return False
+    return isinstance(error, RateLimitError)
+
+
+def generate_with_fallback(primary, fallback, prompt, size, retries=0,
+                           edit_images=None, output_format="jpeg", quality=None):
+    """Retry only 429s on the other variant; preserve all edit inputs."""
+    client, model = primary
+    try:
+        return generate_one(client, model, prompt, size, retries, model,
+                            edit_images, output_format, quality)
+    except RateLimitError as error:
+        if not is_retryable_rate_limit(error):
+            raise
+        client, model = fallback
+        print(f"[429] switching to {model}", file=sys.stderr)
+        return generate_one(client, model, prompt, size, retries, model,
+                            edit_images, output_format, quality)
 
 
 def generate_one(
@@ -174,6 +143,7 @@ def generate_one(
     label: str,
     edit_images: list[Path] | None = None,
     output_format: str = "jpeg",
+    quality: str | None = None,
 ):
     """Call images.generate (text→image) or images.edit (image+text→image).
 
@@ -192,6 +162,8 @@ def generate_one(
         "size": size,
         "output_format": output_format,
     }
+    if quality is not None:
+        common["quality"] = quality
     backoff = 5
     for attempt in range(retries + 1):
         try:
@@ -204,8 +176,8 @@ def generate_one(
                     for h in handles:
                         h.close()
             return client.images.generate(**common)
-        except RateLimitError:
-            if attempt == retries:
+        except RateLimitError as error:
+            if not is_retryable_rate_limit(error) or attempt == retries:
                 raise
             print(
                 f"[{label}] 429 rate-limited (attempt {attempt + 1}/"
@@ -231,7 +203,7 @@ def save_image(
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Generate images via Azure GPT Image, fallback to OpenAI direct"
+        description="Generate images via GPT Image 2.5 Sunburst / Flare"
     )
     parser.add_argument("prompt", help="Image generation prompt")
     parser.add_argument(
@@ -256,19 +228,14 @@ def main() -> int:
         default=None,
         help="Basename for output files (default: gpt-image-<timestamp>)",
     )
-    parser.add_argument(
-        "--provider",
-        choices=["auto", "azure", "openai"],
-        default="auto",
-        help="Provider: auto = Azure → OpenAI fallback; azure = Azure only; "
-        "openai = OpenAI only (default: auto)",
-    )
-    parser.add_argument(
-        "--azure-retries",
-        type=int,
-        default=3,
-        help="Retries on Azure 429 before falling back (default: 3)",
-    )
+    parser.add_argument("--quality", choices=["low", "medium", "high", "xhigh", "max", "auto"],
+                        help="Optional quality; omitted preserves API auto default")
+    parser.add_argument("--provider", choices=["auto", "azure", "newapi"],
+                        default="auto", help="auto prefers Azure, then NewAPI")
+    parser.add_argument("--variant", choices=VARIANTS,
+                        help="sunburst: quality (default); flare: speed; other variant on 429")
+    parser.add_argument("--azure-retries", type=int, default=0,
+                        help="429 retries per variant before switching (default: 0)")
     parser.add_argument(
         "--edit",
         action="append",
@@ -310,91 +277,27 @@ def main() -> int:
         edit_paths.append(p)
 
     creds = load_credentials()
-    azure_client, azure_model = build_azure_client(creds)
-    openai_client, openai_model = build_openai_client(creds)
-
-    if args.provider == "azure" and azure_client is None:
-        print(
-            "error: --provider azure but AZURE_OPENAI_API_KEY / AZURE_OPENAI_ENDPOINT missing. "
-            f"Set env vars or create {CONFIG_FILE}",
-            file=sys.stderr,
-        )
+    variant = args.variant or creds.get("GPT_IMAGE_VARIANT", "sunburst")
+    if variant not in VARIANTS or args.n < 1 or args.azure_retries < 0:
+        parser.error("invalid variant, image count, or retries")
+    other = "flare" if variant == "sunburst" else "sunburst"
+    provider = args.provider
+    if provider == "auto":
+        provider = "azure" if creds.get("AZURE_OPENAI_API_KEY") and creds.get("AZURE_OPENAI_ENDPOINT") else "newapi"
+    builder = build_azure_client if provider == "azure" else build_newapi_client
+    primary, fallback = builder(creds, variant), builder(creds, other)
+    if primary[0] is None:
+        print(f"error: {provider} credentials missing; see {CONFIG_FILE}", file=sys.stderr)
         return 2
-    if args.provider == "openai" and openai_client is None:
-        print(
-            "error: --provider openai but OPENAI_API_KEY missing. "
-            f"Set env var or create {CONFIG_FILE}",
-            file=sys.stderr,
-        )
-        return 2
-    if azure_client is None and openai_client is None:
-        print(
-            "error: no credentials found.\n"
-            "  set env vars: AZURE_OPENAI_API_KEY (+ AZURE_OPENAI_ENDPOINT) "
-            "and/or OPENAI_API_KEY\n"
-            f"  or create {CONFIG_FILE} — see ~/.codex/skills/gpt-image/SKILL.md",
-            file=sys.stderr,
-        )
-        return 2
-
     output_dir = Path(args.output).expanduser()
     basename = args.name or f"gpt-image-{int(time.time())}"
 
-    # Shared routing state across worker threads.
-    # fallback_event: once ANY worker hits an exhausted Azure + we have an
-    # OpenAI fallback configured, flip this so subsequent workers skip Azure
-    # and go straight to OpenAI. Avoids N workers all retrying Azure in
-    # parallel when Azure is obviously down/saturated.
-    fallback_event = threading.Event()
-    azure_allowed = args.provider in ("auto", "azure") and azure_client is not None
-    openai_allowed = args.provider in ("auto", "openai") and openai_client is not None
-    if args.provider == "openai":
-        fallback_event.set()
-
     def _worker(i: int) -> Path:
-        """Generate one image (index i). Thread-safe; clients are shared."""
-        use_oai_now = fallback_event.is_set() or not azure_allowed
-        result = None
-        if not use_oai_now:
-            try:
-                result = generate_one(
-                    azure_client,
-                    azure_model,
-                    args.prompt,
-                    args.size,
-                    args.azure_retries,
-                    f"azure#{i}",
-                    edit_images=edit_paths or None,
-                    output_format=api_format,
-                )
-            except (RateLimitError, APIError) as e:
-                if openai_allowed and args.provider != "azure":
-                    if not fallback_event.is_set():
-                        fallback_event.set()
-                        print(
-                            f"[azure#{i}] exhausted, switching batch to OpenAI direct: "
-                            f"{type(e).__name__}",
-                            file=sys.stderr,
-                        )
-                else:
-                    raise RuntimeError(f"azure failed — {e}") from e
-        if result is None:
-            if not openai_allowed:
-                raise RuntimeError(
-                    "azure failed and no OpenAI fallback configured"
-                )
-            result = generate_one(
-                openai_client,
-                openai_model,
-                args.prompt,
-                args.size,
-                2,
-                f"openai#{i}",
-                edit_images=edit_paths or None,
-                output_format=api_format,
-            )
-        index = i if args.n > 1 else None
-        return save_image(result, output_dir, basename, index, ext=ext)
+        result = generate_with_fallback(
+            primary, fallback, args.prompt, args.size, args.azure_retries,
+            edit_paths or None, api_format, args.quality,
+        )
+        return save_image(result, output_dir, basename, i if args.n > 1 else None, ext=ext)
 
     # Dispatch: sync for n=1 (no thread overhead), pool for n>1.
     paths: list[Path | None] = [None] * args.n
