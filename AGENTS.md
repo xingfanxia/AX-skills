@@ -1,11 +1,19 @@
-# AX-skills — repo conventions (read first)
+# AX-skills — agent guide
+
+## Project scale and verification
+
+**Profile: public skills and showcase.** Published skills and demos are reference artifacts, not the live agent configuration. Validate only the changed skill/script or render the changed demo; keep machine identifiers and credentials out of public examples. Do not install skills or rewrite borrowed upstream sources as incidental cleanup.
+
+- The requested behavior/questions define completion. Reviews are read-only unless fixes are requested; report unrelated findings briefly without adding tasks or test backfill.
+- Use the smallest existing check that proves the change. Add tests for a concrete regression or consequential boundary; do not impose blanket TDD, new coverage targets, full suites, plans or reviewers. Preserve configured CI and actual release gates; reuse still-valid results.
+- Keep the existing structure. Internal contract errors should be clear; add retries, fallbacks or compatibility layers only for an observed external failure or supported contract. Keep secrets private and inspect security only at boundaries changed by this task.
 
 Curated **public** collection of AX's Agent Skills + GitHub Pages demo pages and demo videos for selected skills.
 Live: <https://xingfanxia.github.io/AX-skills/>
 
 ## Layout
 
-- `<skill-name>/SKILL.md` — one dir per skill = the skill source (mirrors the canonical copy in `~/.claude/skills/`). E.g. `banxian-skill/`, `jewelry-marketing/`, `game-script-creation/`, `proxy-node-setup/`.
+- `<skill-name>/SKILL.md` — maintained AX skill source. Runtime links or installed copies consume this source; resolve their ownership before editing or syncing, rather than treating a runtime copy as a competing authority. Preserve upstream ownership and attribution for borrowed skills.
 - `docs/` — the Pages site (**served from `main` branch `/docs`**, legacy branch-build, auto-deploys on push):
   - `docs/index.html` — showcase landing (card grid; each card has a JS-injected `▶ 影片` button → R2-streamed demo video in a lightbox).
   - `docs/<skill>/index.html` — that skill's interactive demo page (+ `assets/motion.min.js`, optional `images/`, optional PDF; carries the shared `#promo-link` snippet + a per-skill `#source-link` (`源码 ↗` → `tree/main/<skill-dir>`) after `#home-link`). Existing `*-roadshow.pdf` filenames are legacy compatibility names, not current product terminology.

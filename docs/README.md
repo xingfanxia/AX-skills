@@ -5,7 +5,7 @@ GitHub Pages 站点，托管各 skill 的交互 demo + 一个路由 landing page
 **🔗 Live: https://xingfanxia.github.io/AX-skills/**
 
 发布配置：GitHub Pages → Source = `main` 分支 `/docs` 目录（legacy branch build，push 即自动重发布）。
-> 仓库根 `CLAUDE.md` 是 agent 约定的唯一真源（风格 / 加新 demo 流程 / 脱敏与命名规则）。
+> 仓库根 `AGENTS.md` 是 agent 约定的唯一真源（风格 / 加新 demo 流程 / 脱敏与命名规则）。
 
 ## 结构
 

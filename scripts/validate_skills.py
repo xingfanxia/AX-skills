@@ -41,7 +41,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-# Documented non-skill top-level dirs (see CLAUDE.md "Layout").
+# Documented non-skill top-level dirs (see AGENTS.md "Layout").
 NON_SKILL_DIRS = {"docs", "remotion", "scripts", "tmp", "node_modules"}
 
 # SKILL.md line-count gates.
