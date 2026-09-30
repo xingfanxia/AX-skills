@@ -7,8 +7,8 @@ remedies:
 | Kind | Examples | Remedy when it hurts |
 |---|---|---|
 | Logic | routes, services, components, domain engines | refactor or rewrite |
-| Data | knowledge bases, copy, translations, prompts, fixtures, generated types | carry over verbatim |
-| Meta | verification scripts, manifests, baselines, evidence, plans, CI glue | collapse or delete — never rewrite the product for it |
+| Data | knowledge bases, copy, translations, prompts, fixtures | carry over verbatim (regenerate generated types from the target schema) |
+| Meta | verification scripts, manifests, baselines, evidence, plans, CI glue | classify each check by the contract it protects; delete ceremony, keep and rewire real protection — never rewrite the product for it |
 
 ## Signals
 
@@ -16,7 +16,7 @@ Run the equivalent commands for the stack; record numbers, not adjectives.
 
 | Signal | How to measure | Points toward rewrite when |
 |---|---|---|
-| Logic size | LOC of logic only (exclude tests, data, generated, meta) | small enough to rebuild in days of agent time |
+| Logic size | LOC of logic only (exclude tests, data, generated, meta) | architecture plus one module spec fits a builder context |
 | Type/lint escape hatches | count of `@ts-nocheck`, `any`, `# type: ignore`, lint disables | pervasive, not a few dozen |
 | God files | logic files > 500 LOC, and whether they mix domain/UI/IO/state | many, and mixed-responsibility |
 | Duplication | copy-paste detector (e.g. `jscpd`) or diffing same-named files across features | the same logic forked across many features with divergent fixes |
@@ -30,7 +30,7 @@ Run the equivalent commands for the stack; record numbers, not adjectives.
 A useful change-coupling probe with Git:
 
 ```bash
-git log --since=<window> --no-merges --format='%H %s' | grep -viE ' (docs|test|chore)' |
+git log --since=<window> --no-merges --format='%H %s' | grep -viE '^[0-9a-f]+ (docs|test|chore)(\(|:|!)' |
   while read h _; do git show --name-only --format= "$h" | grep -cE '\.(ts|tsx|py|go)$'; done |
   sort -n | awk '{a[NR]=$1} END{print "median files/commit:", a[int(NR/2)+1]}'
 ```
@@ -47,10 +47,17 @@ git log --since=<window> --no-merges --format='%H %s' | grep -viE ' (docs|test|c
   but the whole system is too large, too stateful, or too money-bearing to
   rebuild at once.
 - **Full clean-room rewrite** — structure dominates change cost everywhere,
-  the logic fits the budget, an oracle exists, and state migrates reversibly.
+  the spec fits the builder context, the target is the existing product, an oracle exists, and state migrates reversibly.
 
 A system can land in more than one row; name the ranked actions, not a single
-label.
+label. Label which conclusions are measured and which are inferred — commit
+frequency against meta files, for example, supports "the meta layer is a tax"
+but does not by itself prove it is the dominant cost.
+
+These signals are evidence to weigh, not pass/fail thresholds. Before
+recommending a rewrite, compare its full cost (distillation, build, migration,
+acceptance, cutover) with the cost of targeted repair, and set a budget and a
+no-progress exit for whichever path is chosen.
 
 ## Cost estimate
 

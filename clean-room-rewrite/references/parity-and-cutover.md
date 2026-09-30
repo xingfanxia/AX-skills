@@ -22,8 +22,10 @@ function and logic only.
 
 ## Shadow run
 
-1. Restore a recent production snapshot into the new system's store, through
-   the real migration path.
+1. Restore a recent production snapshot into an isolated store for the new
+   system, through the real migration path. Control access to the snapshot,
+   minimize or redact personal data where the check allows it, and keep
+   production credentials and outbound channels out of the shadow environment.
 2. Mirror read traffic (or replay recorded requests) and run scheduled jobs on
    both systems. Keep external side effects — payments, messages, outbound
    webhooks, paid model calls — disabled or sandboxed on the new side.
@@ -36,11 +38,18 @@ function and logic only.
 
 ## Cutover runbook
 
-- Decide the write strategy: freeze writes during switch, dual-write, or
-  one-way sync with a replay log. Money and entitlement state must never have
-  two writers without an idempotency key and a reconciliation check.
-- Rehearse rollback end to end and record its duration; the old system stays
-  warm, with a path back for its data, until the agreed hold period ends.
+- Decide the write strategy: freeze writes during switch, or one-way sync with
+  a replay log. Money and entitlement state keeps a **single authoritative
+  writer** at every moment; idempotency keys and reconciliation do not stop two
+  independent stores from each recording the same charge. In the shadow run the
+  new side writes only to its isolated store.
+- Before cutover, replay the same input sequence of money writes — charges,
+  refunds, reversals, out-of-order and duplicate webhook events — against both
+  systems and compare balances and ledgers at the same watermark.
+- Rehearse rollback end to end and record its duration. Rollback must carry
+  back every transaction created on the new system after the switch; restoring
+  the old snapshot alone loses them. The old system stays warm until the
+  agreed hold period ends.
 - Switch by DNS, route, or flag in the smallest reversible step available.
 - Watch the same signals as the shadow run for the first full job cycle.
 - Remove the old path only after the hold period and a final reconciliation.
