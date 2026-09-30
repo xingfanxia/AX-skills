@@ -97,6 +97,7 @@ Covered so far: `banxian-skill` · `jewelry-marketing` · `game-script-creation`
 | [`big-task`](./big-task/) | Risk-tiered engineering workflow router. Auto-detects project profile × task intent → direct / light / full superpowers cycle; subagent dispatch policy (inline / serial / parallel-worktree / parallel-readonly); autonomous through to PR-merged with 4 Critical Decision Triggers as the only pauses + an auditable `## Autonomous decisions` log. Bundles the review-discipline contract (fix all findings; severity routes how, not whether). Requires the [superpowers](https://github.com/obra/superpowers) plugin for Tier 4. | ✅ v1.0 |
 | [`mtc`](./mtc/) | **More Than Coding** — full product workflow from concept to code. Iterates design / story first → aligned data → build → polish. For games, demos, prototypes, interactive experiences. The signature AX workflow. | ✅ |
 | [`plan-design-review`](./plan-design-review/) | Design-completeness review for `PLAN.md` / spec docs. Rates 7 dimensions 0-10, detects AI-slop patterns, builds interaction state tables. Catches gaps before code goes in. | ✅ |
+| [`clean-room-rewrite`](./clean-room-rewrite/) | Rewrite-vs-refactor decision gate with real measurements, then a clean-room rebuild when a rewrite wins: independent distillers → executable spec package (behavior/pitfall ledgers, contract inventory, black-box oracle) → a builder that never reads the old source → independent parity audits mapped to ledger IDs → shadow run on real data → cutover with rehearsed rollback. Strangler variant for large systems. Inspired by 卡兹克's AIHOT 2.0 rewrite. | ✅ v1.0 |
 | [`codebase-sweep`](./codebase-sweep/) | Full-codebase audit + cleanup loop (parallel reviewers + iterative fix + docs cleanup + architecture documentation + orphan-script archiving). One-shot comprehensive review of the whole project. | ✅ |
 | [`audit-fix-loop`](./audit-fix-loop/) | Multi-round code-quality pass scoped to recent changes. Loops until no high-confidence issues remain (max 5 rounds). Each round adds tests for fixed code + incremental doc updates. | ✅ |
 | [`pr-fix-loop`](./pr-fix-loop/) | Autonomously respond to GitHub PR review feedback until all comments resolved + CI green. Polls **all four** comment surfaces — `@claude` posts to issue thread, not formal reviews, so single-surface polls miss it. Max 5 rounds. | ✅ |
@@ -215,6 +216,7 @@ When the agent has multiple candidate skills, route by intent:
 - Design direct-vs-delegated execution, capability tiers, or multi-agent topology → `task-shaped-agent-routing`
 - Build a game / demo / interactive prototype → `mtc`
 - Reviewing a `PLAN.md` / spec → `plan-design-review`
+- "Is this codebase too far gone?" / rewrite or 回炉重造 a system → `clean-room-rewrite`
 - "Audit the whole codebase" / "clean up everything" → `codebase-sweep`
 - "Audit and fix" / iterative fix on recent changes → `audit-fix-loop`
 - Autonomously close out PR review feedback + CI → `pr-fix-loop`
