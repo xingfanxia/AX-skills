@@ -41,18 +41,23 @@ from the list means "not seen in the searches run", not "not available".
 | oneworld | Qatar (QR), Royal Air Maroc (AT) | `alaska` | DOH→JFK |
 | oneworld | Japan Airlines (JL), Cathay Pacific (CX) | `alaska` | SEA→NRT, HKG→NRT |
 | oneworld | Qantas (QF) | `alaska`, `qantas` | SYD→MEL |
+| oneworld | SriLankan (UL) | `alaska` | KUL→NRT |
 | SkyTeam | Delta (DL), Air France (AF), KLM (KL), Virgin Atlantic (VS) | `delta` | CDG/AMS/LHR→JFK |
 | SkyTeam | China Eastern (MU) | `delta`, `ceair` | HKG→NRT, PVG→NRT |
 | SkyTeam | China Airlines (CI) | `delta` | TPE→JFK |
+| SkyTeam | Korean Air (KE) | `alaska` | PEK→SEA |
 | SkyTeam | SAS (SK) | `sas` | CPH→EWR |
 | none | Emirates (EK), ITA Airways (AZ) | `smiles` | GRU→DXB, GRU→CDG |
 | none | Etihad (EY) | `etihad` | AUH→LHR |
-| none | Aer Lingus (EI), Icelandair (FI), Starlux (JX) | `alaska` | LHR→JFK, HEL→JFK, HKG→NRT |
+| none | Aer Lingus (EI), Icelandair (FI), Starlux (JX), Hainan (HU) | `alaska` | LHR→JFK, HEL→JFK, HKG→NRT, PEK→SEA |
+| none | LATAM (LA) | `delta` | SCL→MIA, GRU→MIA |
 | none | JetBlue (B6), Southwest (WN), Frontier (F9), Virgin Australia (VA), GOL (G3), Azul (AD) | own program | — |
 
-Not seen through any working program in these searches: Lufthansa group (LH, LX, OS), Korean Air (KE,
-absent from `delta` on ICN→JFK that day), EVA (BR), Asiana (OZ), Thai (TG), Iberia (IB), Malaysia (MH),
-China Southern (CZ), Hainan (HU), LATAM (LA). `ana` is the likeliest route to the Star Alliance ones.
+Not seen through any working program: Lufthansa group (LH, LX, OS), EVA (BR), Asiana (OZ), Thai (TG),
+Iberia (IB, absent from `alaska` on MAD→JFK and MAD→MIA), Malaysia (MH, absent on KUL→NRT), China Southern
+(CZ). `ethiopian` returned only Ethiopian's own flights, including on partner-only markets (FRA→JFK,
+ICN→NRT, BKK→NRT, TPE→NRT came back empty), so it does not reach Star Alliance partners. `ana` is the
+remaining route to the Star Alliance ones. `delta` showed no Korean Air on ICN→LAX or ICN→NRT.
 
 The price is the searching program's price: another program may charge differently for the same seat, or
 not have access to it. Partner space also differs by program, so a seat seen through `smiles` is not
