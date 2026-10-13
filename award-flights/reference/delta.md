@@ -24,3 +24,5 @@ Verified 2026-10-13. No sign-in needed.
 - A market Delta does not sell (SEA→NRT) answers `ROF4002` with a 404 in `moreInfo`; the provider
   returns no itineraries for that.
 - Taxes come in the departure country's currency (USD from SEA, JPY from HND).
+- Checked on SEA→JFK with one and two adults: miles and taxes come back per passenger (identical in both
+  runs), and domestic First (`CFIRST`) maps to `first`.

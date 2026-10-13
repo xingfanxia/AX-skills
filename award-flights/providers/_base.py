@@ -8,7 +8,8 @@ A provider answers one-way award searches for one loyalty program. `search` retu
      "fares": [{"cabin": "economy", "miles": 42500, "tax": 5.6, "currency": "USD",
                 "seats": 9, "mixed": False, "brand": "REFUNDABLE_MAIN"}]}
 
-`cabin` is one of CABINS. `seats` is None when the program does not publish a count. `mixed` marks a
+`cabin` is one of CABINS. `seats` is None when the program does not publish a count, and `tax` is None
+when the site does not price the cash part at search time. `mixed` marks a
 fare whose segments are not all in the named cabin (the name is then the highest cabin flown).
 """
 from ._browser import Browser, ProviderError  # noqa: F401  (re-exported for providers)
@@ -22,6 +23,7 @@ class Provider:
     alliance = ""    # "Star Alliance" | "oneworld" | "SkyTeam" | "none"
     pace = 10        # seconds between searches that the site has been seen to tolerate
     all_cabins = True  # False: one search per cabin (the CLI then multiplies searches)
+    cash_brand = None  # regex over fare brands that are cash fares priced in miles, not award seats
 
     def __init__(self):
         self.browser = Browser()
@@ -44,5 +46,5 @@ class Provider:
 
 def fare(cabin, miles, tax, currency, seats=None, mixed=False, brand=None):
     assert cabin in CABINS, cabin
-    return {"cabin": cabin, "miles": int(miles), "tax": round(float(tax), 2), "currency": currency,
+    return {"cabin": cabin, "miles": int(miles), "tax": None if tax is None else round(float(tax), 2), "currency": currency,
             "seats": seats, "mixed": bool(mixed), "brand": brand}

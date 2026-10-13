@@ -25,6 +25,7 @@ CAP = "maxFlightCombinationsPerBound"  # present only in the page's first, cappe
 
 class Etihad(Provider):
     name, program, alliance, pace = "etihad", "Etihad Guest", "none", 10
+    cash_brand = r"^.(?!G)"  # GuestSeat award brands have G as their second letter (YGVALUE, FGCOMFORT)
     all_cabins = False
 
     def start(self):

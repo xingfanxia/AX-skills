@@ -28,6 +28,7 @@ def minutes(hms):
 
 class SAS(Provider):
     name, program, alliance, pace = "sas", "SAS EuroBonus", "SkyTeam", 15
+    cash_brand = r"FLEX"  # cash fares converted to points; award seats are the BONUS brands
 
     def start(self):
         # Without a first visit the results page's Cloudflare check fails and it never calls the API.

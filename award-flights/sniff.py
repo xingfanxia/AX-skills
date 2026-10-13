@@ -36,7 +36,7 @@ def on_response(r):
     if post:
         open(os.path.join(out, f"{n:02d}.req"), "w").write(post)
     post = post[:300].replace("\n", " ")
-    rows.append(f"{n:02d} {r.request.method} {r.status} {len(body):>8} {r.url[:160]} | {post}")
+    rows.append(f"{n:02d} {r.request.method} {r.status} {len(body):>8} {r.url} | {post}")
 
 
 with Browser() as b:
@@ -53,5 +53,6 @@ with Browser() as b:
     except Exception:
         pass
     open(os.path.join(out, "page.txt"), "w").write(b.page.inner_text("body")[:6000])
+    open(os.path.join(out, "page.html"), "w").write(b.page.content())  # some sites inline their data
 open(os.path.join(out, "index.txt"), "w").write("\n".join(rows))
 print("\n".join(rows))

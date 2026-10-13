@@ -31,6 +31,7 @@ def local(ms):
 
 class Qantas(Provider):
     name, program, alliance, pace = "qantas", "Qantas Frequent Flyer", "oneworld", 15
+    cash_brand = r"Classic Plus"  # dynamically priced; Classic Reward is the award seat
 
     def start(self):
         self._warm()

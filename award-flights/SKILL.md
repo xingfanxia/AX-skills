@@ -1,6 +1,6 @@
 ---
 name: award-flights
-description: Search award (miles/points) flight space and prices across airline loyalty programs from the command line - Delta SkyMiles, Alaska Atmos Rewards, JetBlue TrueBlue, ANA Mileage Club and more. Use for questions about award availability, how many miles a route costs, or comparing programs for a trip.
+description: Search award (miles/points) flight space and prices across airline loyalty programs from the command line - Delta, Alaska, JetBlue, Southwest, Frontier, Qantas, Velocity, SAS, GOL Smiles, China Eastern, Ethiopian, Etihad and ANA. Use for questions about award availability, how many miles a route costs, or comparing programs for a trip.
 ---
 
 # Award flights
@@ -18,12 +18,13 @@ throwaway headless Chrome (installed Google Chrome, temporary profile, no window
 Arguments: programs (comma-separated, or `all`), origins, destinations, departure date, optional return
 date. Every search is one-way; a return date adds the reverse direction as its own search and table,
 because most programs price each direction separately. Cabins are `Y`, `PY`, `J`, `F` (default `Y,J`).
-Each cell is the cheapest fare in that cabin; `mixed` means some segment is in a lower cabin. `--json`
+Prices are per passenger on Delta, Alaska and Etihad (checked with two adults); the other programs were
+only checked with one adult. Each cell is the cheapest fare in that cabin; `mixed` means some segment is in a lower cabin. `--json`
 returns every fare of every itinerary.
 
 Several programs list cash fares converted to miles next to real award seats (Qantas Classic Plus, SAS
-FLEX, Etihad brands without a `G`); they show up as six-figure prices. Add `--brands` to see which is
-which before quoting a price as "the award rate".
+FLEX, Velocity "any seat", Etihad brands without a `G`); they show up as six-figure prices. `--awards-only`
+drops them, `--brands` labels every price. Use one of the two before quoting a price as "the award rate".
 
 Airport codes are passed to the airline as typed. City codes (`TYO`, `NYC`, `LON`) work only where the
 airline's own site accepts them; an airline that does not fly or sell a market returns an empty table,

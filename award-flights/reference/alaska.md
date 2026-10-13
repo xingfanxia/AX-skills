@@ -15,5 +15,8 @@ Verified 2026-10-13. No sign-in needed.
 - Bot protection is AWS WAF. A cold request for the results URL got an image CAPTCHA. Loading the home page
   first (its title stays "Client Challenge" in headless Chrome, yet the token cookie is set) and then
   fetching `__data.json` from inside that page worked every time. The provider waits 8 s on the home page.
-- Not verified: more than one adult, saver (non-refundable) award brands, first class, the safe request rate
+- `atmosPoints` and `grandTotal` are per passenger: SEA→JFK returned the same numbers for one and two
+  adults (`allPaxPoints` / `allPaxTotal` carry the party total). First class appears as brand
+  `REFUNDABLE_FIRST` with cabin `FIRST`.
+- Not verified: saver (non-refundable) award brands, the safe request rate
   (four searches about 10 s apart were fine).

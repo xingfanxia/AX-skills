@@ -4,7 +4,7 @@
 # dependencies = ["playwright", "beautifulsoup4", "cryptography"]
 # ///
 """Search award (miles) flights across airline loyalty programs from one command."""
-import argparse, datetime, json, os, sys, time
+import argparse, datetime, json, os, re, sys, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import providers
 from providers._base import CABINS, ProviderError
@@ -44,7 +44,8 @@ def render(res, cabins, limit, brands=False):
             if not f:
                 cells.append("—")
                 continue
-            cell = f"{f['miles']:,} + {f['currency']} {f['tax']:,.2f}".replace(".00", "")
+            cell = (f"{f['miles']:,} + {f['currency']} {f['tax']:,.2f}".replace(".00", "") if f["tax"] is not None
+                    else f"{f['miles']:,} + taxes (not quoted)")
             cell += f" ({f['seats']} left)" if f["seats"] is not None else ""
             cell += " mixed" if f["mixed"] else ""
             cells.append(cell + (f" [{f['brand']}]" if brands and f.get("brand") else ""))
@@ -68,6 +69,8 @@ def main():
     p.add_argument("--adults", type=int, default=1)
     p.add_argument("--limit", type=int, default=12, help="rows per table")
     p.add_argument("--pace", type=float, help="seconds between searches (default: each provider's own)")
+    p.add_argument("--awards-only", action="store_true",
+                   help="drop cash fares that a program merely converts to miles (Qantas Classic Plus, SAS FLEX, …)")
     p.add_argument("--brands", action="store_true", help="show each fare's brand (saver vs dynamic, award chart)")
     p.add_argument("--json", action="store_true")
     a = p.parse_args()
@@ -98,6 +101,9 @@ def main():
                     res = {"program": prov.program, "provider": name, "origin": o, "dest": d, "date": str(date)}
                     try:
                         res["itineraries"] = prov.search(o, d, date, a.adults, cab)
+                        if a.awards_only and prov.cash_brand:
+                            for it in res["itineraries"]:
+                                it["fares"] = [f for f in it["fares"] if not re.search(prov.cash_brand, f.get("brand") or "")]
                     except ProviderError as e:
                         res["error"] = str(e)
                     results.append(res)
