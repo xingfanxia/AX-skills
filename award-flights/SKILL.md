@@ -36,9 +36,11 @@ See [reference/coverage.md](reference/coverage.md) for the full list: which prog
 user's account, which block automated browsers, and what was tried. Read it before telling the user a
 program "is not supported", and before starting work on a new one.
 
-Which program to search is not the same as which airline flies the route: miles of one program book
-partner flights. For a trip, search the programs where the user holds miles plus the alliance partners
-of the airlines that fly the route.
+Which program to search is not the same as which airline flies the route: a program sells its partners'
+seats too. United, Singapore, Air Canada, British Airways, Cathay, Qatar, Air France, KLM, Emirates and
+others have sign-in walls on their own sites but showed up through programs that work; coverage.md has the
+airline-by-airline table. For a trip, search the programs where the user holds miles, plus the working
+programs that partner with the airlines flying the route.
 
 ## Programs that use the user's account
 

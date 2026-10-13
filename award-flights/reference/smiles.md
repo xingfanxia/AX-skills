@@ -83,3 +83,7 @@ an answered one are not asked, so some of them may still be unbookable.
 - `cabin` is always `ALL`; the provider's `cabin` argument is unused.
 - GOL `costTax` was checked against the page on one flight only (GRU→MIA).
 - Round trips, flexible dates and "any airport" (`originAirportIsAny`) were not explored.
+
+- 2026-10-13, later the same day: in one run of four partner-heavy searches about 15 s apart (GRU→CDG,
+  DXB, IST, JFK), the first two answered and the next two failed with the partner-airline call returning
+  `TypeError: Failed to fetch`. Treat two searches in a row as the practical budget and rest before more.

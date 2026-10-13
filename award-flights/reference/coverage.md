@@ -22,9 +22,41 @@ State on 2026-10-13, from headless Chrome on a residential US connection, signed
 | `etihad` | Etihad Guest | none | no | AUH→JFK, AUH→LHR | Brands with a `G` (`YGVALUE`) are GuestSeat awards; the rest are cash fares converted to miles. |
 | `ana` | ANA Mileage Club | Star Alliance | **yes** | see note | Shows Star Alliance partners. One cabin per search, 150 s pace, hard rate limit. The checked searches (SZX/HKG/CSX⇄TYO, round trip) ran through the standalone `ana-award` tool this provider was ported from; the provider's own one-way path has not completed a live search yet. |
 
-Alliance reach through partner awards: Star Alliance via `ana`, oneworld via `alaska` and `qantas`, SkyTeam
-via `delta`; `smiles` and `velocity` add a mixed set of partners. That shows the partner's seats at that program's price; another program may price the same
-seat differently or not see it.
+## Which airline's seats show up where
+
+A loyalty program sells seats on its partners, so an airline whose own program is behind a sign-in wall can
+still be searched through a program that works. Each airline below appeared with a priced award fare in a
+real search on 2026-10-13 (2026-12-01 or -02 departures); the route is the one it was seen on. Absence
+from the list means "not seen in the searches run", not "not available".
+
+| Alliance | Airline | Seen through | On |
+|---|---|---|---|
+| Star Alliance | United (UA) | `velocity` | SYD→NRT, SYD→LAX |
+| Star Alliance | Singapore Airlines (SQ) | `velocity` | SYD→SIN, SEA→MEL |
+| Star Alliance | Air Canada (AC), Turkish (TK), TAP (TP), Avianca (AV) | `smiles` | GRU→DXB |
+| Star Alliance | Copa (CM) | `smiles` | GRU→MIA |
+| Star Alliance | Ethiopian (ET) | `ethiopian` | ADD→IAD, ADD→FRA |
+| Star Alliance | ANA (NH), Air China (CA), Shenzhen (ZH), Juneyao (HO) | `ana` (account) | SZX/HKG/CSX⇄TYO |
+| oneworld | American (AA), British Airways (BA), Finnair (AY) | `alaska` | LHR→JFK, HEL→JFK |
+| oneworld | Qatar (QR), Royal Air Maroc (AT) | `alaska` | DOH→JFK |
+| oneworld | Japan Airlines (JL), Cathay Pacific (CX) | `alaska` | SEA→NRT, HKG→NRT |
+| oneworld | Qantas (QF) | `alaska`, `qantas` | SYD→MEL |
+| SkyTeam | Delta (DL), Air France (AF), KLM (KL), Virgin Atlantic (VS) | `delta` | CDG/AMS/LHR→JFK |
+| SkyTeam | China Eastern (MU) | `delta`, `ceair` | HKG→NRT, PVG→NRT |
+| SkyTeam | China Airlines (CI) | `delta` | TPE→JFK |
+| SkyTeam | SAS (SK) | `sas` | CPH→EWR |
+| none | Emirates (EK), ITA Airways (AZ) | `smiles` | GRU→DXB, GRU→CDG |
+| none | Etihad (EY) | `etihad` | AUH→LHR |
+| none | Aer Lingus (EI), Icelandair (FI), Starlux (JX) | `alaska` | LHR→JFK, HEL→JFK, HKG→NRT |
+| none | JetBlue (B6), Southwest (WN), Frontier (F9), Virgin Australia (VA), GOL (G3), Azul (AD) | own program | — |
+
+Not seen through any working program in these searches: Lufthansa group (LH, LX, OS), Korean Air (KE,
+absent from `delta` on ICN→JFK that day), EVA (BR), Asiana (OZ), Thai (TG), Iberia (IB), Malaysia (MH),
+China Southern (CZ), Hainan (HU), LATAM (LA). `ana` is the likeliest route to the Star Alliance ones.
+
+The price is the searching program's price: another program may charge differently for the same seat, or
+not have access to it. Partner space also differs by program, so a seat seen through `smiles` is not
+proof that United or Aeroplan miles can book it.
 
 ## Needs the user's account
 
