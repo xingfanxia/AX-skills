@@ -1,27 +1,30 @@
 #!/usr/bin/env -S uv run -q --script
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["curl_cffi", "beautifulsoup4", "cryptography"]
+# dependencies = ["playwright", "beautifulsoup4", "cryptography"]
 # ///
-"""ANA international award search over plain HTTP (JSF app `international_asw` behind Akamai).
+"""ANA international award search (JSF app `international_asw` behind Akamai), driven through headless Chrome.
 
-Flow: Chrome cookies (SSO + Akamai) -> award search entry -> password step-up -> POST the
-search form -> parse flights from the DOM and miles/tax/seats from the inline addRecommendation() calls.
+Flow: copy the member's SSO cookies from Chrome -> open the award search page in a throwaway headless
+Chrome -> password step-up -> submit the search form -> parse flights from the DOM and miles/tax/seats
+from the inline addRecommendation() calls. The site rate-limits searches hard; see SKILL.md.
 """
 import argparse, datetime, hashlib, json, os, re, shutil, sqlite3, subprocess, sys, tempfile, time
 from bs4 import BeautifulSoup
-from curl_cffi import requests
+from playwright.sync_api import TimeoutError as PwTimeout, sync_playwright
 
-CACHE = os.path.expanduser("~/.cache/ana-award")
-STATE = os.path.join(CACHE, "session.json")
 ENTRY = ("https://aswbe-i.ana.co.jp/international_asw/pages/award/search/roundtrip/"
          "award_search_roundtrip_input.xhtml?CONNECTION_KIND=JPN&LANG=en")
 # Per-user settings come from the environment so the script itself carries no account details.
 CHROME_COOKIES = os.path.expanduser("~/Library/Application Support/Google/Chrome/%s/Cookies"
                                     % os.environ.get("ANA_CHROME_PROFILE", "Default"))
 OP_ITEM, OP_VAULT = os.environ.get("ANA_OP_ITEM", "ANA"), os.environ.get("ANA_OP_VAULT")
+CHROME_BIN = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+TARPIT = ("the site did not answer within 60s: searches are being rate-limited (the result page hangs). "
+          "Stop, wait 30+ min, then rerun with a larger --pace; do not retry in a loop.")
 CABINS = {"Y": "CFF1", "PY": "CFF4", "J": "CFF2", "F": "CFF3"}
-AWARD_TYPES = {"1400": "ANA", "1200": "Star Alliance"}  # fare-family code -> award chart
+# fare-family code -> award chart (economy 1400/1200, business 800/600; other cabins show the raw code)
+AWARD_TYPES = {"1400": "ANA", "800": "ANA", "1200": "Star Alliance", "600": "Star Alliance"}
 WEEKDAYS = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"]
 
 
@@ -44,8 +47,8 @@ def chrome_cookies():
         jar = []
         for host, name, path, enc in con.execute(
                 "select host_key,name,path,encrypted_value from cookies where host_key like '%ana.co.jp'"):
-            if name == "JSESSIONID":
-                continue  # the browser's backend session times out after ~10 min; always start our own
+            if name == "JSESSIONID" or name == "_abck" or name.startswith(("bm_", "ak_bmsc")):
+                continue  # backend session and Akamai state belong to the other browser; ours mints its own
             d = Cipher(algorithms.AES(key), modes.CBC(b" " * 16)).decryptor()
             raw = d.update(enc[3:]) + d.finalize()
             raw = raw[:-raw[-1]]
@@ -69,29 +72,44 @@ def password():
 
 
 class Ana:
-    def __init__(self, fresh=False):
-        self.s = requests.Session(impersonate="chrome")
-        self.s.headers.update({"Accept-Language": "en-US,en;q=0.9"})
-        jar = chrome_cookies() if fresh or not os.path.exists(STATE) else json.load(open(STATE))
-        for c in jar:
-            self.s.cookies.set(c["name"], c["value"], domain=c["domain"], path=c["path"])
-        self.url, self.soup, self.html = None, None, ""
+    """One headless Chrome session (temporary profile, no window) logged in as the Chrome user."""
 
-    def _save(self):
-        os.makedirs(CACHE, mode=0o700, exist_ok=True)
-        jar = [{"name": c.name, "value": c.value, "domain": c.domain, "path": c.path} for c in self.s.cookies.jar]
-        fd = os.open(STATE, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-        os.write(fd, json.dumps(jar).encode())
-        os.close(fd)
+    def __init__(self):
+        ver = subprocess.run([CHROME_BIN, "--version"], capture_output=True, text=True).stdout
+        major = re.search(r"(\d+)\.", ver).group(1)
+        # Chrome's headless UA says "HeadlessChrome", which Akamai tarpits on the booking host
+        ua = (f"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) "
+              f"Chrome/{major}.0.0.0 Safari/537.36")
+        self._pw = sync_playwright().start()
+        self._browser = self._pw.chromium.launch(channel="chrome", headless=True, args=[
+            "--disable-blink-features=AutomationControlled", "--user-agent=" + ua])
+        ctx = self._browser.new_context(locale="en-US", viewport={"width": 1440, "height": 900})
+        ctx.add_cookies([{**c, "secure": True} for c in chrome_cookies()])
+        self.page = ctx.new_page()
+        self.page.set_default_timeout(60000)
+        self.soup, self.html = None, ""
 
-    def _take(self, r):
-        if r.status_code != 200:
-            raise AnaError(f"HTTP {r.status_code} from {r.url.split('?')[0]} (Akamai block or outage)")
-        self.url, self.html, self.soup = r.url, r.text, BeautifulSoup(r.text, "html.parser")
-        self._save()
+    def close(self):
+        self._browser.close()
+        self._pw.stop()
 
-    def page(self):
-        return re.sub(r".*/pages/", "", self.url.split("?")[0])
+    def _nav(self, action):
+        try:
+            with self.page.expect_navigation(wait_until="domcontentloaded"):
+                action()
+        except PwTimeout:
+            self._stuck()
+        self._read()
+
+    def _stuck(self):
+        raise AnaError(f"{TARPIT} (stuck after {self.where()})")
+
+    def _read(self):
+        self.html = self.page.content()
+        self.soup = BeautifulSoup(self.html, "html.parser")
+
+    def where(self):
+        return re.sub(r".*/pages/", "", self.page.url.split("?")[0])
 
     def errors(self):
         seen = []
@@ -101,74 +119,47 @@ class Ana:
                 seen.append(t)
         return seen
 
-    def form(self, pred):
-        for f in self.soup.find_all("form"):
-            if pred(f):
-                return f
-        raise AnaError(f"expected form missing on {self.page()}: {self.errors()}")
-
-    def submit(self, form, extra):
-        data = {}
-        for i in form.find_all(["input", "select"]):
-            n, t = i.get("name"), (i.get("type") or "").lower()
-            if not n or t in ("submit", "button", "image"):
-                continue
-            if t in ("checkbox", "radio") and not i.has_attr("checked"):
-                continue
-            if i.name == "select":
-                o = i.find("option", selected=True) or i.find("option")
-                data[n] = o.get("value", "") if o else ""
-            else:
-                data[n] = i.get("value", "")
-        data.update(extra)
-        data = {k: v for k, v in data.items() if v is not None}  # None = field the browser leaves disabled
-        try:
-            r = self.s.post(form["action"], data=data, timeout=60,
-                            headers={"Referer": self.url, "Origin": "https://aswbe-i.ana.co.jp"})
-        except requests.exceptions.Timeout:
-            # Akamai tarpits (accepts the POST, never answers) once it scores the client as a bot
-            raise AnaError("request hung for 60s: Akamai is throttling this IP/session. Stop, wait 30+ min, "
-                           "browse ana.co.jp in Chrome once, then rerun with --fresh. Do not retry in a loop.")
-        self._take(r)
-
     def open_search(self):
         """Land on the award search input page, doing the password step-up when the site asks."""
-        self._take(self.s.get(ENTRY, timeout=90))
-        if "login" in self.page():
-            f = self.form(lambda f: f.find("input", {"name": "password"}))
-            if not f.find(class_="userName") and "userName" not in self.html:
-                raise AnaError("Chrome's ana.co.jp cookies are not logged in; sign in at ana.co.jp in Chrome, then rerun with --fresh")
-            btn = f.find("input", {"type": "submit"})
-            self.submit(f, {"password": password(), btn["name"]: btn.get("value", "")})
-            if "login" in self.page():  # never retry: repeated bad passwords lock the account
+        try:
+            self.page.goto(ENTRY, wait_until="domcontentloaded")
+        except PwTimeout:
+            self._stuck()
+        self._read()
+        if "login" in self.where():
+            if not self.soup.select_one(".userName"):
+                raise AnaError("Chrome's ana.co.jp cookies are not logged in; sign in at ana.co.jp in Chrome first")
+            self.page.fill("input[name=password]", password())
+            self._nav(lambda: self.page.click("input[type=submit][value=Login]"))
+            if "login" in self.where():  # never retry: repeated bad passwords lock the account
                 raise AnaError(f"password step-up rejected: {self.errors()}")
-        if "award_search_roundtrip_input" not in self.page():
-            raise AnaError(f"unexpected page {self.page()}: {self.errors()}")
+        if "award_search_roundtrip_input" not in self.where():
+            raise AnaError(f"unexpected page {self.where()}: {self.errors()}")
 
     def search(self, origin, dest, depart, ret, cabin, adults):
         self.open_search()
-        f = self.form(lambda f: f.get("id") == "conditionInput")
         if not ret:
-            self.submit(f, {"toOneway": "toOneway"})
-            f = self.form(lambda f: f.get("id") == "conditionInput")
-        btn = next(i for i in f.find_all("input", {"type": "submit"}) if i.get("value") == "Search")
+            self._nav(lambda: self.page.click("#conditionInput a[id$=toOneway]"))
 
         def date(d):
             return (d.strftime("%Y%m%d"), f"{d:%m/%d/%Y} ({WEEKDAYS[d.weekday()]})") if d else (None, None)
         (d1, d1t), (d2, d2t) = date(depart), date(ret)
-        self.submit(f, {
+        self.page.evaluate("""(v) => { for (const [k, x] of Object.entries(v)) {
+            const e = document.getElementsByName(k)[0];
+            if (x === null) e.disabled = true; else e.value = x; } }""", {
             "departureAirportCode:field": origin, "departureAirportCode:field_pctext": origin,
             "arrivalAirportCode:field": dest, "arrivalAirportCode:field_pctext": dest,
             "awardDepartureDate:field": d1, "awardDepartureDate:field_pctext": d1t,
-            "awardReturnDate:field": d2, "awardReturnDate:field_pctext": d2t,
-            "boardingClass": CABINS[cabin], "adult:count": str(adults), btn["name"]: "Search",
+            "awardReturnDate:field": d2, "awardReturnDate:field_pctext": d2t,  # disabled in one-way mode
+            "boardingClass": CABINS[cabin], "adult:count": str(adults),
         })
+        self._nav(lambda: self.page.click("#conditionInput input[type=submit][value=Search]"))
         out = {"origin": origin, "dest": dest, "depart": str(depart), "return": str(ret) if ret else None,
                "cabin": cabin, "adults": adults}
         m = re.search(r"Mileage Balance\s*([\d,]+)", self.soup.get_text(" "))
         out["mileage_balance"] = int(m.group(1).replace(",", "")) if m else None
-        if "result" not in self.page() or not self.soup.select_one(".selectItineraryOutbound"):
-            out["error"] = self.errors() or [f"no results (page {self.page()})"]
+        if "result" not in self.where() or not self.soup.select_one(".selectItineraryOutbound"):
+            out["error"] = self.errors() or [f"no results (page {self.where()})"]
             return out
         out.update(parse_results(self.soup, self.html))
         return out
@@ -236,7 +227,8 @@ def render(r, limit):
         return f"{head}\n\nNo award space returned: {' | '.join(r['error'])}\n"
     lines = [head, "", "| Miles | Tax (JPY) | Award | Seats out/in | Outbound | Return |", "|---|---|---|---|---|---|"]
     for o in r["options"][:limit]:
-        seats = f"{o['out_seats']}/{o['in_seats']}" + (" WL" if o["waitlist"] else "")
+        # 0 seats: the page's own script treats only counts above 0 as bookable, so 0 is read as waitlist
+        seats = f"{o['out_seats']}/{o['in_seats']}" + (" WL" if o["waitlist"] or 0 in (o["out_seats"], o["in_seats"]) else "")
         ret = _fl(r["inbound"][o["in"]]) if o["in"] is not None else "—"
         lines.append(f"| {o['miles']:,} | {o['tax_jpy']:,} | {o['award']} | {seats} | {_fl(r['outbound'][o['out']])} | {ret} |")
     if len(r["options"]) > limit:
@@ -253,22 +245,28 @@ def main():
     p.add_argument("--cabin", default="Y", help="comma-separated: Y, PY, J, F")
     p.add_argument("--adults", type=int, default=1)
     p.add_argument("--limit", type=int, default=15, help="rows per table")
-    p.add_argument("--pace", type=float, default=20, help="seconds to wait between searches")
+    p.add_argument("--pace", type=float, default=150, help="seconds to wait between searches (rate limit)")
     p.add_argument("--json", action="store_true")
-    p.add_argument("--fresh", action="store_true", help="re-read cookies from Chrome instead of the cached session")
     a = p.parse_args()
-    ana, results = Ana(fresh=a.fresh), []
-    for o in a.origin.upper().split(","):
-        for c in a.cabin.upper().split(","):
-            if results:
-                time.sleep(a.pace)  # bursts of searches trip Akamai's rate scoring
-            results.append(ana.search(o, a.dest.upper(), a.depart, a.ret, c, a.adults))
-            if not a.json:
-                print(render(results[-1], a.limit), flush=True)
+    ana, results, failure = Ana(), [], None
+    try:
+        for o in a.origin.upper().split(","):
+            for c in a.cabin.upper().split(","):
+                if results:
+                    time.sleep(a.pace)  # three searches inside four minutes got the client blocked for ~30 min
+                results.append(ana.search(o, a.dest.upper(), a.depart, a.ret, c, a.adults))
+                if not a.json:
+                    print(render(results[-1], a.limit), flush=True)
+    except AnaError as e:
+        failure = e  # still hand over what was collected before the failure
+    finally:
+        ana.close()
     if a.json:
         json.dump(results, sys.stdout, ensure_ascii=False, indent=1)
     elif results and results[-1].get("mileage_balance") is not None:
         print(f"Mileage balance: {results[-1]['mileage_balance']:,}")
+    if failure:
+        raise failure
 
 
 if __name__ == "__main__":
