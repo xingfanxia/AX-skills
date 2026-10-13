@@ -41,7 +41,8 @@ from the list means "not seen in the searches run", not "not available".
 | oneworld | Qatar (QR), Royal Air Maroc (AT) | `alaska` | DOH→JFK |
 | oneworld | Japan Airlines (JL), Cathay Pacific (CX) | `alaska` | SEA→NRT, HKG→NRT |
 | oneworld | Qantas (QF) | `alaska`, `qantas` | SYD→MEL |
-| oneworld | SriLankan (UL) | `alaska` | KUL→NRT |
+| oneworld | SriLankan (UL), Oman Air (WY) | `alaska` | KUL→NRT, KUL→LHR |
+| oneworld | Malaysia Airlines (MH) | `alaska`, `qantas` | KUL→LHR, KUL→SYD, SYD→KUL |
 | SkyTeam | Delta (DL), Air France (AF), KLM (KL), Virgin Atlantic (VS) | `delta` | CDG/AMS/LHR→JFK |
 | SkyTeam | China Eastern (MU) | `delta`, `ceair` | HKG→NRT, PVG→NRT |
 | SkyTeam | China Airlines (CI) | `delta` | TPE→JFK |
@@ -54,8 +55,8 @@ from the list means "not seen in the searches run", not "not available".
 | none | JetBlue (B6), Southwest (WN), Frontier (F9), Virgin Australia (VA), GOL (G3), Azul (AD) | own program | — |
 
 Not seen through any working program: Lufthansa group (LH, LX, OS), EVA (BR), Asiana (OZ), Thai (TG),
-Iberia (IB, absent from `alaska` on MAD→JFK and MAD→MIA), Malaysia (MH, absent on KUL→NRT), China Southern
-(CZ). `ethiopian` returned only Ethiopian's own flights, including on partner-only markets (FRA→JFK,
+Iberia (IB, absent from `alaska` on MAD→JFK, MIA, BOG and MEX and from `qantas` on SYD→MAD), China Southern
+(CZ, which has no partnership with any working program). `ethiopian` returned only Ethiopian's own flights, including on partner-only markets (FRA→JFK,
 ICN→NRT, BKK→NRT, TPE→NRT came back empty), so it does not reach Star Alliance partners. `ana` is the
 remaining route to the Star Alliance ones. `delta` showed no Korean Air on ICN→LAX or ICN→NRT.
 
