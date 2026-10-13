@@ -1,7 +1,7 @@
 """Award providers, one module per loyalty program. Register a new one by adding its module name here."""
 import importlib
 
-MODULES = ["delta", "alaska", "jetblue", "southwest", "frontier", "qantas", "velocity", "sas", "smiles", "ceair", "ethiopian", "etihad", "ana"]
+MODULES = ["delta", "alaska", "jetblue", "southwest", "frontier", "qantas", "velocity", "sas", "smiles", "azul", "ceair", "ethiopian", "etihad", "ana"]
 
 # Programs that were investigated and cannot be searched signed-out from headless Chrome. The CLI names
 # the reason instead of saying "unknown program". Evidence and next steps: reference/<name>.md, or
@@ -26,6 +26,7 @@ UNAVAILABLE = {
     "latam": LOGIN,
     "tap": LOGIN,
     "westjet": LOGIN,
+    "airchina": LOGIN,
     "aerlingus": LOGIN,
     "aireuropa": LOGIN,
     "saudia": LOGIN,

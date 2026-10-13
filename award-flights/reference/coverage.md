@@ -16,6 +16,7 @@ State on 2026-10-13, from headless Chrome on a residential US connection, signed
 | `velocity` | Virgin Australia Velocity | none | no | SYD→MEL, SYD→PER, SYD→DOH, SYD→LAX | Shows partner flights (Qatar, United seen). "(any seat)" brands are cash fares converted to points. |
 | `sas` | SAS EuroBonus | SkyTeam | no | CPH→EWR, ARN→EWR | `BONUS` brands are award seats; `FLEX` brands are cash fares converted to points (hundreds of thousands). Cloudflare stalled 5 of 13 result loads; rest a few minutes between runs. |
 | `smiles` | GOL Smiles | none | no | GRU→MIA, GRU→LIS | Shows GOL plus partners (Avianca, TAP, Copa, American, Air France seen). Taxes in BRL; about a minute per search. `miles` is the regular member price; the Clube Smiles price is in the brand. |
+| `azul` | Azul Fidelidade | none | no | VCP→FLL, VCP→LIS | Taxes in BRL including the redemption fee. Seats are not published. The site limited the address after about 15 loads in 30 minutes during development: use sparingly. |
 | `ceair` | China Eastern Eastern Miles | SkyTeam | no | PVG→NRT, HKG→PVG, SZX→PVG | Miles matched the page; taxes are the API's value and were not checked against the page. Only MU/FM nonstops seen. The site's firewall cut in after about 12 loads in 20 minutes: use sparingly. |
 | `ethiopian` | Ethiopian ShebaMiles | Star Alliance | no | ADD→IAD, ADD→FRA | Miles matched the page. Taxes are not quoted at search time. Only Ethiopian nonstops in economy seen. |
 | `etihad` | Etihad Guest | none | no | AUH→JFK, AUH→LHR | Brands with a `G` (`YGVALUE`) are GuestSeat awards; the rest are cash fares converted to miles. |
@@ -53,6 +54,7 @@ Chrome) and needs an account to build and verify against.
 | Vietnam Airlines Lotusmiles | SkyTeam | choosing "Miles" opens "Lotusmiles Login" | survey only |
 | Garuda GarudaMiles | SkyTeam | search opens "GarudaMiles Login"; home page sometimes sits behind a Cloudflare check | survey only |
 | Asiana Club | Star Alliance | a signed-out "Mileage Seat Availability" calendar shows which cabins have award seats per flight (updated daily, no miles prices); booking and prices need login | survey only |
+| Air China PhoenixMiles | Star Alliance | the public booking form has no miles option; the PhoenixMiles member portal shows only "Log in" signed out, with no award search form | survey only |
 | Thai Royal Orchid Plus | Star Alliance | "Redeem Miles" opens "Royal Orchid Plus Member Sign In" | survey only |
 | Air India Maharaja Club | Star Alliance | paying with points opens "SIGN IN TO YOUR MAHARAJA CLUB ACCOUNT" | survey only |
 | Malaysia Airlines Enrich | oneworld | "Redeem Flight" search redirects to "Enrich - Log In" | survey only |
@@ -79,18 +81,10 @@ Chrome) and needs an account to build and verify against.
 
 These are not worked around. They might behave differently in the user's own Chrome; that was not tried.
 
-## Written but not yet run end to end
-
-- `providers/azul.py` (Azul Fidelidade, signed-out points search). Its mapping was checked against two real
-  captured responses and the page, but the site rate-limited the address ("We detected unusual activity
-  from your IP") before the finished provider completed a live search. Not registered until it does.
-
 ## Not determined
 
 - Air New Zealand Airpoints: the booking form has no points option and AKL→SYD results were cash only
   (Airpoints Dollars are spent at checkout, so there may be no separate award search).
-- Air China PhoenixMiles: the US site's booking form has no miles option; the member portal that probably
-  holds redemption was not opened.
 - Icelandair Saga Club and Royal Jordanian Royal Club: the public booking forms have no points option and
   results were cash only.
 - Spirit Free Spirit: `www.spirit.com` did not resolve (NXDOMAIN) on the survey day.

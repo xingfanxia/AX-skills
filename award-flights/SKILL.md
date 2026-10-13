@@ -1,6 +1,6 @@
 ---
 name: award-flights
-description: Search award (miles/points) flight space and prices across airline loyalty programs from the command line - Delta, Alaska, JetBlue, Southwest, Frontier, Qantas, Velocity, SAS, GOL Smiles, China Eastern, Ethiopian, Etihad and ANA. Use for questions about award availability, how many miles a route costs, or comparing programs for a trip.
+description: Search award (miles/points) flight space and prices across airline loyalty programs from the command line - Delta, Alaska, JetBlue, Southwest, Frontier, Qantas, Velocity, SAS, GOL Smiles, Azul, China Eastern, Ethiopian, Etihad and ANA. Use for questions about award availability, how many miles a route costs, or comparing programs for a trip.
 ---
 
 # Award flights
