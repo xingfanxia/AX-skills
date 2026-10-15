@@ -120,6 +120,7 @@ Chrome) and needs an account to build and verify against.
 | American AAdvantage | oneworld | "I'm not a robot" CAPTCHA before any search; the search API answers error 309 | `american.md` |
 | Aeromexico Rewards | SkyTeam | points search is open to guests, but its API answered 429 with an Akamai challenge three times out of three | `aeromexico.md` |
 | Copa ConnectMiles | Star Alliance | guest search exists and showed results once during the survey; three later attempts got a DataDome slider CAPTCHA. `providers/copa.py` parses the one captured response but never completed a live search, so it is not registered | `copa.md` |
+| Aerolíneas Argentinas Plus | SkyTeam | miles search is open signed out through the Argentine home page form, but direct results links answer 403 and the firewall then blocked the home page too. `providers/aerolineas.py` maps one captured answer and is not registered | `aerolineas.md` |
 | ITA Airways Volare | SkyTeam | results page answers 403 with a Cloudflare security check; the booking form has no miles option | survey only |
 | Turkish Miles&Smiles | Star Alliance | "Press & Hold to confirm you are a human" on the home page | survey only |
 
@@ -133,9 +134,6 @@ These are not worked around. They might behave differently in the user's own Chr
   results were cash only.
 - LOT, Kenya Airways and Fiji Airways: no miles search on their own sites (LOT points to Miles & More,
   Kenya books awards by phone or email, Fiji's form is cash only).
-- Aerolíneas Argentinas Plus: open signed out, only from the Argentine site (`/en-ar`, "Miles Search"
-  toggle). EZE→MIA showed 35,000 / 45,000 miles from `GET api.aerolineas.com.ar/v1/flights/offers?…
-  &awardBooking=true`, own flights only. Not built yet.
 - Spirit Free Spirit: `www.spirit.com` did not resolve (NXDOMAIN) on the survey day.
 - Hawaiian Airlines: its site now runs on Alaska's platform and showed AS-coded flights priced in Atmos
   points, so `alaska` covers it; no separate provider.

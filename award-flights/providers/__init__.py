@@ -52,6 +52,7 @@ UNAVAILABLE = {
     "aeroplan": LOGIN + "; the results page also answers headless Chrome with 403",
     "aeromexico": "aeromexico.com answers the points search with an Akamai challenge (HTTP 429)",
     "copa": "copaair.com answers headless Chrome with a slider CAPTCHA (providers/copa.py exists but never ran live)",
+    "aerolineas": "aerolineas.com.ar answered 403 after a few loads (providers/aerolineas.py exists but never ran live)",
     "american": "aa.com answers headless Chrome with a CAPTCHA before any search",
 }
 
