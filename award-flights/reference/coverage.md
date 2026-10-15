@@ -103,6 +103,12 @@ Chrome) and needs an account to build and verify against.
 | Gulf Air Falconflyer | none | "Pay with miles" opens "FalconFlyer Member Login" | survey only |
 | Royal Air Maroc Safar Flyer | oneworld | "Buy with my miles" links to "Safar Flyer Login" | survey only |
 | Oman Air Sindbad | oneworld | the Sindbad entry redirects to login; the public engine shows cash only | survey only |
+| Aegean Miles+Bonus | Star Alliance | signed-out booking form has no miles option; the login dialog offers "Earn or redeem miles" | survey only |
+| EgyptAir Plus | Star Alliance | "Award ticket" lands on an Account Number / PIN login form | survey only |
+| South African Voyager | Star Alliance | "sign in with your SAA Voyager number and PIN"; signed-out results are cash only | survey only |
+| Philippine Airlines Mabuhay Miles | none | "Sign in to book with miles" | survey only |
+| Xiamen Airlines Egret Club | SkyTeam | award flights redirect to "Member Login" | survey only |
+| Kuwait Airways Oasis Club | none | "Please login to redeem your awarded miles." | survey only |
 | LATAM Pass | none | redemption results redirect to LATAM login | survey only |
 | Emirates Skywards | none | "Log in to book Classic Rewards" | `emirates.md` |
 | WestJet Rewards | none | "Sign in to … earn or redeem WestJet points."; results show cash only | survey only |
@@ -125,6 +131,11 @@ These are not worked around. They might behave differently in the user's own Chr
   (Airpoints Dollars are spent at checkout, so there may be no separate award search).
 - Icelandair Saga Club and Royal Jordanian Royal Club: the public booking forms have no points option and
   results were cash only.
+- LOT, Kenya Airways and Fiji Airways: no miles search on their own sites (LOT points to Miles & More,
+  Kenya books awards by phone or email, Fiji's form is cash only).
+- Aerolíneas Argentinas Plus: open signed out, only from the Argentine site (`/en-ar`, "Miles Search"
+  toggle). EZE→MIA showed 35,000 / 45,000 miles from `GET api.aerolineas.com.ar/v1/flights/offers?…
+  &awardBooking=true`, own flights only. Not built yet.
 - Spirit Free Spirit: `www.spirit.com` did not resolve (NXDOMAIN) on the survey day.
 - Hawaiian Airlines: its site now runs on Alaska's platform and showed AS-coded flights priced in Atmos
   points, so `alaska` covers it; no separate provider.
